@@ -1,8 +1,9 @@
-﻿<!-- Create.cshtml para registar um mecânico -->
+﻿@model Garage88.Data.Entities.Mechanic
+
 <form asp-action="Create" method="post">
     <div>
         <label>Nome</label>
-        <input asp-for="Name" />
+        <input asp-for="FirstName" />
     </div>
     <div>
         <label>Cliente</label>

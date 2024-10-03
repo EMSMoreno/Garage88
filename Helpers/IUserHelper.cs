@@ -47,7 +47,6 @@ namespace Garage88.Helpers
 
         Task<SignInResult> CheckPasswordAsync(User user, string oldPassword);
 
-
         AuthenticationProperties ConfigureExternalAuthenticationProperties(string provider, string redirect);
 
         Task<ExternalLoginInfo> GetExternalLoginInfoAsync();
@@ -63,6 +62,5 @@ namespace Garage88.Helpers
         Task SignInAsync(User user, bool isPersistent);
 
         Task<bool> HasPasswordAsync(User user);
-
     }
 }

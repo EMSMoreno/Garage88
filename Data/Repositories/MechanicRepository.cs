@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Garage88.Data.Entities;
 using Garage88.Helpers;
+using System.Collections;
 
 namespace Garage88.Data.Repositories
 {
@@ -13,7 +14,17 @@ namespace Garage88.Data.Repositories
             _context = context;
         }
 
+        public Task AddAsync(Mechanic mechanic)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<Response> CheckIfEmployeeExistsAsync(User user)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable> GetAllAsync()
         {
             throw new NotImplementedException();
         }

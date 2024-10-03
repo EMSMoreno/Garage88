@@ -21,6 +21,11 @@ namespace Garage88.Data.Repositories
             _vehicleRepository = vehicleRepository;
         }
 
+        public Task AddAsync(Billing billing)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<Response> ConfirmEstimateAsync(string username, int customerId, int vehicleId, string faultdescription)
         {
             throw new NotImplementedException();

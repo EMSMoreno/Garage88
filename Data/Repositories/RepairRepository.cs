@@ -1,5 +1,6 @@
 ﻿using Garage88.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -52,6 +53,11 @@ namespace Garage88.Data.Repositories
         }
 
         public Task AddAsync(Repair repair)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<IEnumerable> GetAllAsync()
         {
             throw new NotImplementedException();
         }

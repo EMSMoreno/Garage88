@@ -18,7 +18,9 @@ namespace Garage88.Data.Repositories
         IEnumerable<SelectListItem> GetComboClients();
 
         Task<List<Vehicle>> GetClientVehicleAsync(int clientId);
+
         Task AddAsync(Client client);
+
         Task<string?> GetAllAsync();
     }
 }

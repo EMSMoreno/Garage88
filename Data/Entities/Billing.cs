@@ -13,13 +13,13 @@ namespace Garage88.Data.Entities
         public DateTime EstimateDate { get; set; }
 
         [Required]
-        public Client Client { get; set; }
+        public Client? Client { get; set; }
 
         [Required]
-        public User CreatedBy { get; set; }
+        public User? CreatedBy { get; set; }
 
         [Required]
-        public Vehicle Vehicle { get; set; }
+        public Vehicle? Vehicle { get; set; }
 
         public bool HasAppointment { get; set; }
     }

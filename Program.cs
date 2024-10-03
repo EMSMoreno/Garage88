@@ -74,7 +74,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 // Ativar autenticação e autorização
-app.UseAuthentication(); // Adiciona o middleware de autenticação
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
