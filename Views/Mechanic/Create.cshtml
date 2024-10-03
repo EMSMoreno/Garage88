@@ -1,0 +1,16 @@
+﻿<!-- Create.cshtml para registar um mecânico -->
+<form asp-action="Create" method="post">
+    <div>
+        <label>Nome</label>
+        <input asp-for="Name" />
+    </div>
+    <div>
+        <label>Cliente</label>
+        <select asp-for="ClientId" asp-items="ViewBag.Clients"></select>
+    </div>
+    <div>
+        <label>Veículo</label>
+        <select asp-for="VehicleId" asp-items="ViewBag.Vehicles"></select>
+    </div>
+    <button type="submit">Guardar</button>
+</form>

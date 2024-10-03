@@ -1,0 +1,15 @@
+﻿@model Garage88.Data.Entities.Repair
+
+<form asp-action="Create" method="post">
+    <div>
+        <label for="MechanicId">Mechanic</label>
+        <select asp-for="MechanicId" asp-items="ViewBag.Mechanics"></select>
+    </div>
+
+    <div>
+        <label for="ClientId">Client</label>
+        <select asp-for="ClientId" asp-items="ViewBag.Clients"></select>
+    </div>
+
+    <button type="submit">Create</button>
+</form>
