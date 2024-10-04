@@ -9,16 +9,16 @@ namespace Garage88.Data.Entities
 
         [Required]
         [MaxLength(100)]
-        public string Name { get; set; }
-        public static readonly CultureInfo UnitedKingdom =
-        CultureInfo.GetCultureInfo("en-GB");
+        public string? Name { get; set; }
+        public static readonly CultureInfo UnitedStates =
+        CultureInfo.GetCultureInfo("en-US");
 
         [Required]
         [DisplayFormat(DataFormatString = "{0:C2}", ApplyFormatInEditMode = false)]
         public decimal Price { get; set; }
 
         [MaxLength(200)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [Required]
         [Display(Name = "Discount(%)")]

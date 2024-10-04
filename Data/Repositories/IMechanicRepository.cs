@@ -9,15 +9,14 @@ namespace Garage88.Data.Repositories
     {
         IQueryable GetAllWithUsers();
 
-        Task<Mechanic> GetEmployeeByIdAsync(int employeeId);
+        Task<Mechanic> GetMechanicByIdAsync(int mechanicId);
 
-        Task<Response> CheckIfEmployeeExistsAsync(User user);
+        Task<Response> CheckIfMechanicExistsAsync(User user);
 
         Task<Mechanic> GetByEmailAsync(string email);
 
         IEnumerable<SelectListItem> GetComboTechnicians();
-        Task<List<Mechanic>> GetTechniciansEmployeesAsync();
-        Task AddAsync(Mechanic mechanic);
-        Task<IEnumerable> GetAllAsync();
+
+        Task<List<Mechanic>> GetTechniciansMechanicsAsync();
     }
 }

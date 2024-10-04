@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Garage88.Data.Repositories
 {
-    public interface IClientRepository
+    public interface IClientRepository : IGenericRepository<Client>
     {
         IQueryable GetAllWithUsers();
 
@@ -15,12 +15,8 @@ namespace Garage88.Data.Repositories
 
         Task<Client> GetClientByEmailAsync(string email);
 
-        IEnumerable<SelectListItem> GetComboClients();
+        IEnumerable<SelectListItem> GetComboClient();
 
         Task<List<Vehicle>> GetClientVehicleAsync(int clientId);
-
-        Task AddAsync(Client client);
-
-        Task<string?> GetAllAsync();
     }
 }

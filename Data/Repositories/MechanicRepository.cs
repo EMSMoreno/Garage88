@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Garage88.Data.Entities;
 using Garage88.Helpers;
-using System.Collections;
 
 namespace Garage88.Data.Repositories
 {
@@ -14,42 +14,86 @@ namespace Garage88.Data.Repositories
             _context = context;
         }
 
-        public Task AddAsync(Mechanic mechanic)
+        public async Task<Response> CheckIfEmployeeExistsAsync(User user)
         {
-            throw new NotImplementedException();
+            var employee = await _context.Mechanics.FindAsync(user);
+
+            if (employee == null)
+            {
+                return new Response { IsSuccess = false };
+            }
+            else
+            {
+                return new Response { IsSuccess = true };
+            }
         }
 
-        public Task<Response> CheckIfEmployeeExistsAsync(User user)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<IEnumerable> GetAllAsync()
+        public Task<Response> CheckIfMechanicExistsAsync(User user)
         {
             throw new NotImplementedException();
         }
 
         public IQueryable GetAllWithUsers()
         {
-            throw new NotImplementedException();
+            return _context.Mechanics.Include(e => e.User)
+                                     .Include(e => e.Role)
+                                     .Include(e => e.Specialty);
         }
 
-        public Task<Mechanic> GetByEmailAsync(string email)
+        public async Task<Mechanic> GetByEmailAsync(string email)
         {
-            throw new NotImplementedException();
+            var employee = await _context.Mechanics.Include(e => e.User)
+                                                   .Include(e => e.Role)
+                                                   .Include(e => e.Specialty)
+                                                   .Where(e => e.Email == email).FirstOrDefaultAsync();
+
+            return employee;
         }
 
         public IEnumerable<SelectListItem> GetComboTechnicians()
         {
-            throw new NotImplementedException();
+            var list = _context.Mechanics.Include(e => e.Role)
+                                         .Where(e => e.Role.PermissionsName == "Technician")
+                                         .Select(e => new SelectListItem
+                                         {
+                                             Text = e.FirstName + " " + e.LastName,
+                                             Value = e.Id.ToString(),
+                                         }).OrderBy(l => l.Text).ToList();
+
+            list.Insert(0, new SelectListItem
+            {
+                Text = "[Select a Technician]",
+                Value = "0"
+            });
+
+            return list;
         }
 
-        public Task<Mechanic> GetEmployeeByIdAsync(int employeeId)
+        public async Task<Mechanic> GetEmployeeByIdAsync(int employeeId)
+        {
+            var employee = await _context.Mechanics.Include(e => e.User)
+                                                   .Include(e => e.Role)
+                                                   .Include(e => e.Specialty)
+                                                   .Where(m => m.Id == employeeId).FirstOrDefaultAsync();
+
+            return employee;
+        }
+
+        public Task<Mechanic> GetMechanicByIdAsync(int mechanicId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<Mechanic>> GetTechniciansEmployeesAsync()
+        public async Task<List<Mechanic>> GetTechniciansEmployeesAsync()
+        {
+            List<Mechanic> list = new List<Mechanic>();
+
+            list = await _context.Mechanics.Include(e => e.User).Include(e => e.Role).Include(e => e.Specialty).Where(e => e.Role.Name == "Technician").ToListAsync();
+
+            return list;
+        }
+
+        public Task<List<Mechanic>> GetTechniciansMechanicsAsync()
         {
             throw new NotImplementedException();
         }

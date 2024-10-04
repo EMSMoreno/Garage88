@@ -13,17 +13,7 @@ namespace Garage88.Data.Repositories
             _context = context;
         }
 
-        public Task AddAsync(Client client)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> CheckIfClientInBdByEmailAsync(string clientEmail)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<bool> CheckIfCustomerInBdByEmailAsync(string customerEmail)
+        public async Task<bool> CheckIfClientInBdByEmailAsync(string customerEmail)
         {
             bool inBd = false;
 
@@ -37,37 +27,65 @@ namespace Garage88.Data.Repositories
             return inBd;
         }
 
-        public Task<string?> GetAllAsync()
-        {
-            throw new NotImplementedException();
-        }
-
         public IQueryable GetAllWithUsers()
         {
-            throw new NotImplementedException();
-        }
-
-        public Task<Client> GetClientByEmailAsync(string email)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Client> GetClientByUserIdAsync(string userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<Vehicle>> GetClientVehicleAsync(int clientId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Client> GetClientWithUserByIdAsync(int clientId)
-        {
-            throw new NotImplementedException();
+            return _context.Clients.Include(u => u.User)
+                                     .Include(v => v.Vehicles)
+                                     .OrderBy(o => o.FirstName);
         }
 
         public IEnumerable<SelectListItem> GetComboClients()
+        {
+
+            var list = _context.Clients.Select(b => new SelectListItem
+            {
+                Text = $"{b.FirstName} {b.LastName}",
+                Value = b.Id.ToString()
+            }).ToList();
+
+            list.Insert(0, new SelectListItem
+            {
+                Text = "[Select a Client]",
+                Value = "0"
+            });
+
+            return list;
+        }
+
+        public async Task<Client> GetClientByEmailAsync(string email)
+        {
+            return await _context.Clients.Include(u => u.User)
+                                           .Include(v => v.Vehicles)
+                                           .Where(c => c.Email == email).FirstOrDefaultAsync();
+        }
+
+        public async Task<Client> GetClientByUserIdAsync(string userId)
+        {
+            return await _context.Clients.Include(v => v.Vehicles).Where(c => c.User.Id == userId).FirstOrDefaultAsync();
+        }
+
+        public async Task<Client> GetClientWithUserByIdAsync(int customerId)
+        {
+            var customer = await _context.Clients.Include(u => u.User)
+                                                   .Include(v => v.Vehicles)
+                                                   .ThenInclude(v => v.Brand)
+                                                   .ThenInclude(b => b.Models)
+                                                   .FirstOrDefaultAsync(u => u.Id == customerId);
+
+            return customer;
+            ;
+        }
+
+        public async Task<List<Vehicle>> GetClientVehicleAsync(int customerId)
+        {
+            var customerVehicles = await _context.Vehicles.Where(p => p.ClientId == customerId).ToListAsync();
+
+            return customerVehicles;
+
+
+        }
+
+        public IEnumerable<SelectListItem> GetComboClient()
         {
             throw new NotImplementedException();
         }

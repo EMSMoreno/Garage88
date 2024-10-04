@@ -6,31 +6,33 @@ namespace Garage88.Data.Entities
     {
         public int Id { get; set; }
 
-        public string? Name { get; set; }
+        [Required]
+        [Display(Name = "First Name")]
+        public string? FirstName { get; set; }
 
-        public string? Email { get; set; }
+        [Required]
+        [Display(Name = "Last Name")]
+        public string? LastName { get; set; }
 
-        public string? PasswordHash { get; set; }
-
-        public string? PhoneNumber { get; set; }
-
-        public DateTime Birthdate { get; set; }
+        [Display(Name = "Tax Identification Number / NIF")]
+        public string? Nif { get; set; }
 
         public string? Address { get; set; }
 
-        public int SubscriptionPlanId { get; set; }
-
-        public DateTime RegistrationDate { get; set; }
-
-        public string? Status { get; set; }
-
-        public string? ClientImagePath { get; set; } // Caminho para a imagem do cliente
-
-        // Identificador do utilizador. É obrigatório e serve como chave estrangeira.
         [Required]
-        public string? UserId { get; set; }
+        [DataType(DataType.EmailAddress)]
+        public string? Email { get; set; }
 
-        // Navegação para a entidade `User`. Representa o utilizador.
-        public User User { get; set; }
+        [RegularExpression("^[0-9]*$", ErrorMessage = "{0} must be numeric")]
+        [Display(Name = "Phone Number")]
+        [MaxLength(20)]
+        public string? PhoneNumber { get; set; }
+
+        public User ? User { get; set; }
+
+        public ICollection<Vehicle> ? Vehicles { get; set; }
+
+        [Display(Name = "Full Name")]
+        public string FullName => $"{FirstName} {LastName}";
     }
 }

@@ -1,0 +1,511 @@
+﻿using Microsoft.EntityFrameworkCore;
+using Garage88.Helpers;
+using Garage88.Data;
+using Garage88.Data.Entities;
+using Microsoft.CodeAnalysis;
+
+namespace Garage88.Data
+{
+    public class SeedDb
+    {
+        private readonly DataContext _context;
+        private readonly IUserHelper _userHelper;
+
+        public SeedDb(DataContext context, IUserHelper userHelper)
+        {
+            _context = context;
+            _userHelper = userHelper;
+        }
+
+        public async Task SeedAsync()
+        {
+            await _context.Database.EnsureCreatedAsync();
+
+            await CheckCreatedRoles();
+            await AddUserAsync();
+            await AddMechanicsRolesAsync();
+            await AddMechanicsAsync();
+            await AddBrandsAsync();
+            await AddServicesAsync();
+            await AddClientAsync();
+            await AddClientVehiclesAsync();
+            await AddEstimateAsync();
+            await AddAppointmentAsync();
+            await AddWorkOrderAsync();
+            await AddInvoiceAsync();
+
+        }
+
+        private async Task AddInvoiceAsync()
+        {
+            if (!_context.Invoices.Any())
+            {
+                var workOrder = await _context.WorkOrders.FirstOrDefaultAsync();
+                var mechanic = await _userHelper.GetUserByEmailAsync("eduardo.sousa.moreno@formandos.cinel.pt");
+                var customer = await _context.Clients.Where(c => c.Email == "eduardo.sousa.moreno@sapo.pt").FirstOrDefaultAsync();
+                var receptionist = await _userHelper.GetUserByEmailAsync("eduardo_projeto_mecanicos@sapo.pt");
+                var estimate = await _context.Estimates.FirstOrDefaultAsync();
+                var vehicle = await _context.Vehicles.Where(v => v.PlateNumber == "AA-TO-01").FirstOrDefaultAsync();
+
+                workOrder.Status = "Closed";
+                workOrder.Observations = "It is highly recommended for the customer to align direction next time he comes to the shop";
+                workOrder.ServiceDoneBy = mechanic;
+                workOrder.IsFinished = true;
+
+                _context.WorkOrders.Update(workOrder);
+
+                _context.Invoices.Add(new Invoice
+                {
+                    Client = customer,
+                    CreatedBy = receptionist,
+                    Estimate = estimate,
+                    InvoicDate = DateTime.UtcNow.AddDays(-3),
+                    Vehicle = vehicle,
+                    WorkOrder = workOrder,
+                    Value = (decimal)estimate.ValueWithDiscount,
+                });
+
+
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        private async Task AddWorkOrderAsync()
+        {
+
+            if (!_context.WorkOrders.Any())
+            {
+
+                var appointment = await _context.Appointments.FirstOrDefaultAsync();
+                var receptionist = await _userHelper.GetUserByEmailAsync("eduardo_projeto_mecanicos@sapo.pt");
+                var mechanic = await _context.Mechanics.Where(m => m.Email == "eduardo.sousa.moreno@formandos.cinel.pt").FirstOrDefaultAsync();
+
+                _context.WorkOrders.Add(new WorkOrder
+                {
+                    Appointment = appointment,
+                    awaitsReceipt = true,
+                    CreatedBy = receptionist,
+                    IsFinished = false,
+                    OrderDateStart = DateTime.UtcNow.AddDays(-3).AddHours(-2),
+                    OrderDateEnd = DateTime.UtcNow.AddDays(-3),
+                    Status = "Opened",
+                    UpdatedBy = receptionist,
+                });
+
+                appointment.AsAttended = true;
+                _context.Appointments.Update(appointment);
+
+                await _context.SaveChangesAsync();
+            }
+
+        }
+
+        private async Task AddAppointmentAsync()
+        {
+            if (!_context.Appointments.Any())
+            {
+                var customer = await _context.Clients.Where(c => c.Email == "eduardo.sousa.moreno@sapo.pt").FirstOrDefaultAsync();
+                var vehicle = await _context.Vehicles.Where(v => v.PlateNumber == "AA-TO-01").FirstOrDefaultAsync();
+                var estimate = await _context.Estimates.FirstOrDefaultAsync();
+                var mechanic = await _context.Mechanics.Where(m => m.Email == "eduardo.sousa.moreno@formandos.cinel.pt").FirstOrDefaultAsync();
+                var receptionist = await _userHelper.GetUserByEmailAsync("eduardo_projeto_mecanicos@sapo.pt");
+
+                _context.Appointments.Add(new Appointment
+                {
+                    AppointmentStartDate = DateTime.UtcNow.AddDays(-3).AddHours(-2),
+                    AppointmentEndDate = DateTime.UtcNow.AddDays(-3),
+                    AppointmentServicesDetails = estimate.FaultDescription,
+                    AsAttended = false,
+                    CreatedBy = receptionist,
+                    CreatedDate = DateTime.UtcNow.AddDays(-5),
+                    Client = customer,
+                    Estimate = estimate,
+                    Mechanic = mechanic,
+                    Vehicle = vehicle,
+                    UpdatedBy = receptionist,
+                    UpdatedDate = DateTime.UtcNow.AddDays(-5),
+                    Observations = "Client doesn't want to align the direction",
+                });
+
+                estimate.HasAppointment = true;
+                _context.Estimates.Update(estimate);
+
+                await _context.SaveChangesAsync();
+            }
+
+        }
+
+        private async Task AddClientVehiclesAsync()
+        {
+            if (!_context.Vehicles.Any())
+            {
+
+                var brand = await _context.Brands.Where(b => b.Name == "Mazda").FirstOrDefaultAsync();
+                var model = await _context.Models.Where(m => m.Name == "MX-5 Miata").FirstOrDefaultAsync();
+                var customer = await _context.Clients.Where(c => c.Email == "eduardo.sousa.moreno@sapo.pt").FirstOrDefaultAsync();
+
+                _context.Vehicles.Add(new Vehicle
+                {
+                    Brand = brand,
+                    Model = model,
+                    Client = customer,
+                    DateOfConstruction = DateTime.Now.AddYears(-5),
+                    PlateNumber = "AA-TO-01",
+                    Horsepower = 90,
+                    ClientId = customer.Id,
+                });
+
+
+                await _context.SaveChangesAsync();
+
+            }
+        }
+
+        private async Task AddEstimateAsync()
+        {
+            if (!_context.Estimates.Any())
+            {
+
+                var customer = await _context.Clients.Where(c => c.Email == "eduardo.sousa.moreno@sapo.pt").FirstOrDefaultAsync();
+                var vehicle = await _context.Vehicles.Where(v => v.PlateNumber == "AA-TO-01").FirstOrDefaultAsync();
+
+                var estimate = new Estimate
+                {
+                    CreatedBy = await _userHelper.GetUserByEmailAsync("eduardo.sousa.moreno@formandos.cinel.pt"),
+                    Client = customer,
+                    EstimateDate = DateTime.Now.AddDays(-5),
+                    FaultDescription = "Blowed up Tyre, needs to replace front tyres.",
+                    HasAppointment = false,
+                    Vehicle = vehicle,
+                };
+
+                _context.Estimates.Add(estimate);
+
+                await _context.SaveChangesAsync();
+
+                var service = await _context.Services.Where(s => s.Name == "Change Tyres").FirstOrDefaultAsync();
+                var estimateResult = await _context.Estimates.FirstOrDefaultAsync();
+
+                var estimateDetail1 = new EstimateDetail
+                {
+                    ClientId = customer.Id,
+                    EstimateId = estimateResult.Id,
+                    Service = service,
+                    Quantity = 2,
+                    Price = service.Price * 2,
+                    VehicleId = vehicle.Id,
+                };
+
+                service = await _context.Services.Where(s => s.Name == "Michelin Tyres - Pilot Sport 5 - 221/30R19").FirstOrDefaultAsync();
+
+                var estimateDetail2 = new EstimateDetail
+                {
+                    ClientId = customer.Id,
+                    EstimateId = estimateResult.Id,
+                    Service = service,
+                    Quantity = 2,
+                    Price = service.PriceWithDiscount * 2,
+                    VehicleId = vehicle.Id,
+                };
+
+                _context.EstimateDetails.Add(estimateDetail1);
+                _context.EstimateDetails.Add(estimateDetail2);
+
+                await _context.SaveChangesAsync();
+
+            }
+
+        }
+
+        private async Task AddClientAsync()
+        {
+            if (!_context.Clients.Any())
+            {
+                // Client 1
+                var customerUser1 = new User
+                {
+                    FirstName = "Eduardo",
+                    LastName = "Moreno",
+                    Email = "eduardo.sousa.moreno@sapo.pt",
+                    UserName = "eduardo.sousa.moreno@sapo.pt",
+                    PhoneNumber = "937919871",
+                    Address = "Margem Sul"
+                };
+
+                _context.Clients.Add(new Client
+                {
+                    FirstName = "Eduardo",
+                    LastName = "Moreno",
+                    User = customerUser1,
+                    Email = customerUser1.Email,
+                    Nif = "235241660",
+                    Address = customerUser1.Address,
+                    PhoneNumber = customerUser1.PhoneNumber
+                });
+
+                await _userHelper.AddUserAsync(customerUser1, "123456");
+                await _userHelper.AddUserToRoleAsync(customerUser1, "Client");
+                var token = await _userHelper.GenerateEmailConfirmationTokenAsync(customerUser1);
+                await _userHelper.ConfirmEmailAsync(customerUser1, token);
+
+                // Client 2
+
+                var customerUser2 = new User
+                {
+                    FirstName = "Henrique",
+                    LastName = "Martins",
+                    Email = "henrique_martins99@sapo.pt", // ainda tenho q criar este email
+                    UserName = "henrique_martins99@sapo.pt",
+                    PhoneNumber = "935641236",
+                    Address = "Areeiro"
+                };
+
+                _context.Clients.Add(new Client
+                {
+                    FirstName = "Henrique",
+                    LastName = "Martins",
+                    User = customerUser2,
+                    Email = customerUser2.Email,
+                    Nif = "256243800",
+                    Address = customerUser2.Address,
+                    PhoneNumber = customerUser2.PhoneNumber
+                });
+
+                await _userHelper.AddUserAsync(customerUser2, "123456");
+                await _userHelper.AddUserToRoleAsync(customerUser2, "Client");
+                token = await _userHelper.GenerateEmailConfirmationTokenAsync(customerUser2);
+                await _userHelper.ConfirmEmailAsync(customerUser2, token);
+
+                await _context.SaveChangesAsync();
+            }
+
+        }
+
+        private async Task AddServicesAsync()
+        {
+            if (!_context.Services.Any())
+            {
+                _context.Services.Add(new Service
+                {
+                    Name = "Change Tyres",
+                    Description = "Using the latest technology and tools to work your tyres. We change the valve...",
+                    Price = 7.40m,
+                    Discount = 0m
+                });
+
+                _context.Services.Add(new Service
+                {
+                    Name = "Michelin Tyres - Pilot Sport 5 - 221/30R19",
+                    Description = "Best Michelin winter road tyres",
+                    Price = 180.66m,
+                    Discount = 10m
+                });
+
+                _context.Services.Add(new Service
+                {
+                    Name = "Oil Change",
+                    Description = "We use the oil you choose and the way you want!",
+                    Price = 29.90m,
+                    Discount = 0m
+                });
+
+                _context.Services.Add(new Service
+                {
+                    Name = "Change Engine",
+                    Description = "We change the engine for best performance.",
+                    Price = 149.90m,
+                    Discount = 10m
+                });
+
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        private async Task AddMechanicsRolesAsync()
+        {
+            if (!_context.MechanicsRoles.Any())
+            {
+                var specialties = new List<Speciality>();
+
+                specialties.Add(new Speciality { Name = "Mechanic" });
+                specialties.Add(new Speciality { Name = "Electrician" });
+                specialties.Add(new Speciality { Name = "Painter" });
+
+                _context.MechanicsRoles.Add(new Role
+                {
+                    Specialties = specialties,
+                    Name = "Technician",
+                    PermissionsName = "Technician"
+                });
+
+                var receptionistSpecialties = new List<Speciality>();
+
+                receptionistSpecialties.Add(new Speciality { Name = "Generalist" });
+                _context.MechanicsRoles.Add(new Role
+                {
+                    Specialties = receptionistSpecialties,
+                    Name = "Receptionist",
+                    PermissionsName = "Receptionist"
+                });
+
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        private async Task AddBrandsAsync()
+        {
+            if (!_context.Brands.Any())
+            {
+                var models = new List<Model>();
+
+                models.Add(new Model { Name = "MX-5 Miata" });
+                models.Add(new Model { Name = "CX-90" });
+                models.Add(new Model { Name = "CX-30" });
+                models.Add(new Model { Name = "6" });
+                models.Add(new Model { Name = "RX-7" });
+                models.Add(new Model { Name = "RX-8" });
+
+                _context.Brands.Add(new Brand
+                {
+                    Models = models,
+                    Name = "Mazda"
+                });
+
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        private async Task CheckCreatedRoles()
+        {
+            await _userHelper.CheckRoleAsync("Admin");
+            await _userHelper.CheckRoleAsync("Technician");
+            await _userHelper.CheckRoleAsync("Receptionist");
+            await _userHelper.CheckRoleAsync("Client");
+        }
+
+        private async Task AddUserAsync()
+        {
+            var user = await _userHelper.GetUserByEmailAsync("f92ferreira@gmail.com");
+
+            if (user == null)
+            {
+                user = new User
+                {
+                    FirstName = "Filipe",
+                    LastName = "Ferreira",
+                    Email = "f92ferreira@gmail.com",
+                    UserName = "f92ferreira@gmail.com",
+                    PhoneNumber = "925648979",
+                    Address = "Avenida Fialho Gouveia"
+                };
+
+                await _userHelper.AddUserAsync(user, "123456");
+            }
+
+            var isInRole = await _userHelper.CheckUserInRoleAsync(user, "Admin");
+
+            if (!isInRole)
+            {
+                await _userHelper.AddUserToRoleAsync(user, "Admin");
+            }
+
+            var token = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+            await _userHelper.ConfirmEmailAsync(user, token);
+
+            await _context.SaveChangesAsync();
+        }
+
+        private async Task AddMechanicsAsync()
+        {
+            if (!_context.Mechanics.Any())
+            {
+                // Mechanic 1
+                var employeeUser1 = new User
+                {
+                    FirstName = "Joaquim",
+                    LastName = "Guedes",
+                    Email = "joaquimguedes@yopmail.com",
+                    UserName = "joaquimguedes@yopmail.com",
+                    PhoneNumber = "965897956",
+                    Address = "Rua do barco"
+                };
+
+                _context.Mechanics.Add(new Mechanic
+                {
+                    FirstName = "Joaquim",
+                    LastName = "Guedes",
+                    About = "Born in Lisbon, Joaquim Guedes started his electrician carrer in Bosch Car Service in Lisbon...",
+                    User = employeeUser1,
+                    Role = _context.MechanicsRoles.Where(r => r.Name == "Technician").FirstOrDefault(),
+                    Specialty = _context.Specialties.Where(s => s.Name == "Electrician").FirstOrDefault(),
+                    Email = employeeUser1.Email,
+                    Color = "#8F6593"
+                });
+
+                await _userHelper.AddUserAsync(employeeUser1, "123456");
+                await _userHelper.AddUserToRoleAsync(employeeUser1, "Technician");
+                var token = await _userHelper.GenerateEmailConfirmationTokenAsync(employeeUser1);
+                await _userHelper.ConfirmEmailAsync(employeeUser1, token);
+
+                // Mechanic 2
+                var employeeUser2 = new User
+                {
+                    FirstName = "Inacio",
+                    LastName = "Torres",
+                    Email = "inaciotorres@yopmail.com",
+                    UserName = "inaciotorres@yopmail.com",
+                    PhoneNumber = "965896425",
+                    Address = "Rua das Bananas"
+                };
+
+                _context.Mechanics.Add(new Mechanic
+                {
+                    FirstName = "Inacio",
+                    LastName = "Torres",
+                    About = "Born in Setúbal, Inacio Torres studied mechatronics in ATEC and then joined Garage88, with 4 years of experience..",
+                    User = employeeUser2,
+                    Role = _context.MechanicsRoles.Where(r => r.Name == "Technician").FirstOrDefault(),
+                    Specialty = _context.Specialties.Where(s => s.Name == "Mechanic").FirstOrDefault(),
+                    Email = employeeUser2.Email,
+                    Color = "#3066BE"
+                });
+
+                await _userHelper.AddUserAsync(employeeUser2, "123456");
+                await _userHelper.AddUserToRoleAsync(employeeUser2, "Technician");
+                token = await _userHelper.GenerateEmailConfirmationTokenAsync(employeeUser2);
+                await _userHelper.ConfirmEmailAsync(employeeUser2, token);
+
+                // Mechanic 3
+
+                var employeeUser3 = new User
+                {
+                    FirstName = "Pedro",
+                    LastName = "Rato",
+                    Email = "Pedrorato@yopmail.com",
+                    UserName = "Pedrorato@yopmail.com",
+                    PhoneNumber = "923548965",
+                    Address = "Rua do Alicate"
+                };
+
+                _context.Mechanics.Add(new Mechanic
+                {
+                    FirstName = "Pedro",
+                    LastName = "Rato",
+                    About = "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. ",
+                    User = employeeUser3,
+                    Role = _context.MechanicsRoles.Where(r => r.Name == "Receptionist").FirstOrDefault(),
+                    Specialty = _context.Specialties.Where(s => s.Name == "Generalist").FirstOrDefault(),
+                    Email = employeeUser3.Email
+                });
+
+                await _userHelper.AddUserAsync(employeeUser3, "123456");
+                await _userHelper.AddUserToRoleAsync(employeeUser3, "Receptionist");
+                token = await _userHelper.GenerateEmailConfirmationTokenAsync(employeeUser3);
+                await _userHelper.ConfirmEmailAsync(employeeUser3, token);
+
+                await _context.SaveChangesAsync();
+
+            }
+        }
+    }
+}

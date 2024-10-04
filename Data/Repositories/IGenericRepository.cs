@@ -2,7 +2,7 @@
 
 namespace Garage88.Data.Repositories
 {
-    public interface IGenericRepository<T> where T : class, IEntity
+    public interface IGenericRepository<T> where T : class
     {
         IQueryable<T> GetAll();
 
@@ -15,5 +15,6 @@ namespace Garage88.Data.Repositories
         Task DeleteAsync(T entity);
 
         Task<bool> ExistAsync(int id);
+
     }
 }
