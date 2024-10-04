@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Garage88.Models
 {
-    public class AddClientAndVehicle
+    public class AddClientAndVehicleToEstimateViewModel
     {
         public IEnumerable<SelectListItem> Client { get; set; }
 

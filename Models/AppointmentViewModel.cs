@@ -13,7 +13,7 @@ namespace Garage88.Models
 
         public int EstimateId { get; set; }
 
-        public int CustomerId { get; set; }
+        public int ClientId { get; set; }
 
         public int VehicleId { get; set; }
 

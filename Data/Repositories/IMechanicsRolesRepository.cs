@@ -12,7 +12,7 @@ namespace Garage88.Data.Repositories
 
         Task<Speciality> GetSpecialtyAsync(int id);
 
-        Task AddSpecialtyAsync(SpecialtyViewModel model);
+        Task AddSpecialtyAsync(SpecialityViewModel model);
 
         Task<int> UpdateSpecialtyAsync(Speciality model);
 

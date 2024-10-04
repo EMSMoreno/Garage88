@@ -2,11 +2,11 @@
 
 namespace Garage88.Models
 {
-    public class SpecialtyViewModel
+    public class SpecialityViewModel
     {
         public int RoleId { get; set; }
 
-        public int SpecialtyId { get; set; }
+        public int SpecialityId { get; set; }
 
         [Required]
         [Display(Name = "Specialty")]

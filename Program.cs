@@ -7,8 +7,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Adicionar serviços ao contêiner.
+builder.Services.AddControllersWithViews();
 
 // Configurar Identity
 builder.Services.AddIdentity<User, IdentityRole>(options =>
@@ -49,20 +53,27 @@ builder.Services.AddDbContext<DataContext>(options =>
 
 // Registrar os repositórios e helpers
 builder.Services.AddTransient<IClientRepository, ClientRepository>();
-builder.Services.AddTransient<IVehicleRepository, VehicleRepository>();
+builder.Services.AddTransient<IMailHelper, MailHelper>();
 builder.Services.AddTransient<IMechanicRepository, MechanicRepository>();
-builder.Services.AddTransient<IRepairRepository, RepairRepository>();
-builder.Services.AddTransient<IBillingRepository, BillingRepository>();
 builder.Services.AddTransient<IUserHelper, UserHelper>();
+builder.Services.AddTransient<IServiceRepository, ServiceRepository>();
 
-
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+// Configurar autenticação por cookie
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/Account/Login";
+        options.AccessDeniedPath = "/Account/AccessDenied";
+    });
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();

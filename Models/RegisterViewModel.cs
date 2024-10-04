@@ -1,11 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Garage88.Data.Entities
+namespace Garage88.Models
 {
-    public class Client : IEntity
+    public class RegisterViewModel
     {
-        public int Id { get; set; }
-
         [Required]
         [Display(Name = "First Name")]
         public string FirstName { get; set; }
@@ -14,25 +12,18 @@ namespace Garage88.Data.Entities
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
-        [Display(Name = "Tax Identification Number / NIF")]
-        public string Nif { get; set; }
-
+        [MaxLength(100, ErrorMessage = "The field {0} can only contain {1} characters.")]
         public string Address { get; set; }
-
-        [Required]
-        [DataType(DataType.EmailAddress)]
-        public string Email { get; set; }
 
         [RegularExpression("^[0-9]*$", ErrorMessage = "{0} must be numeric")]
         [Display(Name = "Phone Number")]
         [MaxLength(20)]
         public string PhoneNumber { get; set; }
 
-        public User User { get; set; }
-
-        public ICollection<Vehicle> Vehicles { get; set; }
-
-        [Display(Name = "Full Name")]
-        public string FullName => $"{FirstName} {LastName}";
+        [Display(Name = "Email")]
+        [Required(ErrorMessage = "The field {0} is mandatory.")]
+        [MaxLength(100, ErrorMessage = "The {0} field can not have more than {1} characters.")]
+        [EmailAddress]
+        public string UserName { get; set; }
     }
 }

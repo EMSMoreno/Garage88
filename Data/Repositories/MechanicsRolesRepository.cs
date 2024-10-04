@@ -15,7 +15,7 @@ namespace Garage88.Data.Repositories
             _context = context;
         }
 
-        public async Task AddSpecialtyAsync(SpecialtyViewModel model)
+        public async Task AddSpecialtyAsync(SpecialityViewModel model)
         {
             var role = await this.GetRoleWithSpecialtiesAsync(model.RoleId);
 
