@@ -15,8 +15,8 @@ namespace Garage88.Data.Entities
         [Display(Name = "Permissions")]
         public string PermissionsName { get; set; }
 
-        public ICollection<Speciality> Specialties { get; set; }
+        public ICollection<Speciality> Specialities { get; set; }
 
-        public int NumberOfSpecialties => Specialties == null ? 0 : Specialties.Count;
+        public int NumberOfSpecialities => Specialities == null ? 0 : Specialities.Count;
     }
 }

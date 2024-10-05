@@ -13,7 +13,7 @@ namespace Garage88.Data
 
         public DbSet<Mechanic> Mechanics { get; set; }
         public DbSet<Role> MechanicsRoles { get; set; }
-        public DbSet<Speciality> Specialties { get; set; }
+        public DbSet<Speciality> Specialities { get; set; }
         public DbSet<Client> Clients { get; set; }
         public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<Brand> Brands { get; set; }

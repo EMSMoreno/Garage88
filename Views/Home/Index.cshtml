@@ -1,0 +1,497 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+}
+
+<style>
+    .carousel-item{
+        height:32rem;
+        position:relative;
+        background: #000;
+        color:white;
+    }
+
+    .container{
+        position:absolute;
+        bottom:0;
+        left:0;
+        right:0;
+        padding-bottom:50px;
+    }
+
+    li:hover{
+        background-color:#f7b801;
+    }
+
+    li{
+        background-color:#f4f3ee
+    }
+
+    span.carousel-control-next-icon{
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23f4f3ee' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath d='M2.75 0l-1.5 1.5L3.75 4l-2.5 2.5L2.75 8l4-4-4-4z'/%3e%3c/svg%3e");
+    }
+
+    span.carousel-control-prev-icon {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23f4f3ee' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath d='M5.25 0l-4 4 4 4 1.5-1.5L4.25 4l2.5-2.5L5.25 0z'/%3e%3c/svg%3e");
+    }
+       span.carousel-control-next-icon:hover{
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23f7b801' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath d='M2.75 0l-1.5 1.5L3.75 4l-2.5 2.5L2.75 8l4-4-4-4z'/%3e%3c/svg%3e");
+    }
+
+    span.carousel-control-prev-icon:hover {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='%23f7b801' width='8' height='8' viewBox='0 0 8 8'%3e%3cpath d='M5.25 0l-4 4 4 4 1.5-1.5L4.25 4l2.5-2.5L5.25 0z'/%3e%3c/svg%3e");
+    }
+
+    .overlay-image{
+        position:absolute;
+        bottom:0;
+        left:0;
+        right:0;
+        top:0;
+        background-position:center;
+        background-size:cover;
+        opacity:0.5;
+    }
+
+    .outsideBox{
+
+        justify-content: space-evenly;
+        max-width: 1200px;
+        margin-right: auto;
+        margin-left: auto;
+    }
+
+    .box{
+        border:solid 1px #e0e1dd;
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+        margin:20px;
+        text-align: center;
+        max-width: 200px;
+        background-color:white;
+        box-shadow: 0 14px 26px rgba(0,0,0,0.04);
+        z-index:1;
+    }
+
+    .box::before{
+        content:"";
+        width:100%;
+        height:100%;
+        position:absolute;
+        top:0;
+        left:0;
+        background:linear-gradient(to left top, #f7b801,#fffc00);
+        opacity:0;
+        visibility:hidden;
+        transition:all 0.5s;
+        z-index: -1;
+    }
+
+    .box:hover img{
+        transform:scale(1.2);
+        transition:linear 0.3s;
+    }
+
+    .box:hover a{
+        color:black;
+    }
+
+    .box:hover::before{
+        opacity:1;
+        visibility:visible;
+    }
+
+    hr{
+        color:transparent;
+        box-shadow:1px 1px 5px -1px rgb(0 0 0 / 20%), 0 6px 20px 0 rgb(0 0 0 / 19%);
+        max-width:1000px;
+    }
+
+    button{
+        all:unset;
+        position:relative;
+        cursor:pointer;
+    }
+
+
+     .btnServices div{
+         position: relative;
+         display: inline-block;
+         overflow: hidden;
+         width:auto;
+         height: auto;
+         padding:15px 0;
+         background: #ff4655;
+         transition:ease-in 0.5s;
+     }
+
+
+     .btnServices:hover div{
+         background: #353535;
+     }
+
+     .btnServices div a{
+         position: relative;
+         text-decoration:none;
+         color: #ffffff;
+         font-size:14px;
+         font-weight:bold;
+         padding:20px 80px;
+         letter-spacing: 1px;
+     }
+
+     .btnServices div a:hover{
+         color: #f7b801;
+     }
+
+
+     .btnSchedule div{
+         position: relative;
+         display: inline-block;
+         overflow: hidden;
+         width:auto;
+         height: auto;
+         padding:15px 0;
+         background: #353535;
+         transition:ease-in 0.5s;
+     }
+
+
+     .btnSchedule:hover div{
+         background: #ff4655;
+     }
+
+     .btnSchedule div a{
+         position: relative;
+         text-decoration:none;
+         color: #f7b801;
+         font-size:14px;
+         font-weight:bold;
+         padding:20px 80px;
+         letter-spacing: 1px;
+     }
+
+     .btnSchedule div a:hover{
+         color: #ffffff;
+     }
+
+     .img{
+         left: auto;
+         right: auto;
+         padding: 0px;
+         background: black;
+         margin-left: auto;
+         margin-right: auto;
+         max-width:502px;
+         border: solid 1px darkgrey;
+         box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+
+     }
+
+     .img img{
+          max-width: 500px;
+          justify-content: center;
+          opacity:0.5;
+          filter: grayscale(100%);
+     }
+
+     mark.yellow{
+         color:#f7b801;
+         background:none;
+         font-family:Vampiro One, cursive;
+     }
+</style>
+
+<div class="row">
+    <div class="col-1"></div>
+    <div class="col-10" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); margin-bottom:25px;margin-top:25px; background-color:#f4f3ee;padding:0;">
+
+
+        <div id="myCarousel" class="carousel slide carousel-fade" data-ride="carousel">
+            <ol class="carousel-indicators">
+                <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+                <li data-target="#myCarousel" data-slide-to="1"></li>
+                <li data-target="#myCarousel" data-slide-to="2"></li>
+            </ol>
+
+
+            <div class="carousel-inner">
+                <div class="carousel-item active" data-interval="8000">
+                    <div class="overlay-image" style="background-image:url(./images/siteContent/slide3.jpg);"></div>
+                    <div class="container">
+                        <h1>Honest & Ethical</h1>
+                        <p>We believe that above all, it is important to conduct auto repairs and services with honesty and integrity.</p>
+                    </div>
+                </div>
+                <div class="carousel-item" data-interval="8000">
+                    <div class="overlay-image" style="background-image:url(./images/siteContent/slide2.jpg);"></div>
+                    <div class="container">
+                        <h1>Routine Service</h1>
+                        <p>Our goal is to meet or exceed our customers’ expectations in every aspect of automotive repair and service. We know that just repairing cars is not enough, and we go the extra mile to make doing business with us as convenient as possible.</p>
+                    </div>
+                </div>
+                <div class="carousel-item" data-interval="8000">
+                    <div class="overlay-image" style="background-image:url(./images/siteContent/slide4.jpg);"></div>
+                    <div class="container">
+                        <h1>Tire Rotation</h1>
+                        <p>Rotating tires keeps them from wearing unevenly. That will make your ride smoother and handling safer. And it extends the life of your tires, saving you time and money in the long run.</p>
+                    </div>
+                </div>
+            </div>
+            <a href="#myCarousel" class="carousel-control-prev" role="button" data-slide="prev">
+                <span class="sr-only">
+                    Previous
+                </span>
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            </a>
+            <a href="#myCarousel" class="carousel-control-next" role="button" data-slide="next">
+                <span class="sr-only">
+                    Next
+                </span>
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            </a>
+        </div>
+
+        <div class="row" style="margin-top:50px; margin-bottom:75px;align-items:center;">
+            <div class="col-1"></div>
+            <div class="col-2" style="text-align:end;padding:0">
+                <img src="~/images/logoAutilizar.png" />
+            </div>
+            <div class="col-7" style="justify-content:center">
+                <div class="row" style="align-items: baseline;">
+                    <div class="col-3">
+                        <p style="color:#f7b801;font-family: Vampiro One, cursive; font-size:30px; text-align: end;">Complete </p>
+                    </div>
+                    <div class="col-9" style="padding:0">
+                        <p style="font-size:30px;">AUTO SERVICE FOR YOUR VEHICLE</p>
+                    </div>
+                </div>
+                <div class="row" style="padding-left: 60px;">
+                    <div class="col-12">
+                        <p>
+                            Whether it's time for your next factory recommended maintenance visit,
+                            a routine oil change, new tires, or repair services on your brakes, muffler and exhaust,
+                            suspension, air conditioner, or any other mechanical or electrical component of your car,
+                            Pitstop is in your neighbourhood and ready to serve you.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-2"></div>
+        </div>
+        <hr />
+        <div class="container-sm">
+            <div class="row" style="text-align: center;margin-bottom: 50px;margin-top: 75px;">
+                <div class="col-12">
+                    <h3>OUR SERVICES</h3>
+                </div>
+            </div>
+            <div class="row outsideBox">
+                <div class="col-2 box">
+                    <a asp-action="CarCare">
+                        <div class="row" style="padding-bottom: 30px;">
+                            <div class="col">
+                                <img src="~/images/siteContent/VEHICLE_CTA.png" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                CAR CARE
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-2 box">
+                    <a asp-action="Brakes">
+                        <div class="row" style="padding-bottom: 30px;">
+                            <div class="col">
+                                <img src="~/images/siteContent/BRAKE_CTA.png" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                BRAKES
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-2 box">
+                    <a asp-action="Diagnostics">
+                        <div class="row" style="padding-bottom: 30px;">
+                            <div class="col">
+                                <img src="~/images/siteContent/DIAGNOSTIC_CTA.png" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                DIAGNOSTICS
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-2 box">
+                    <a asp-action="Electrical">
+                        <div class="row" style="padding-bottom: 30px;">
+                            <div class="col">
+                                <img src="~/images/siteContent/ELECTRICAL_CTA.png" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                ELECTRICAL
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-2 box">
+                    <a asp-action="ACService">
+                        <div class="row" style="padding-bottom: 30px;">
+                            <div class="col">
+                                <img src="~/images/siteContent/AC_CTA.png" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                A/C SERVICE
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="row outsideBox">
+                <div class="col-2 box">
+                    <a asp-action="Engine">
+                        <div class="row" style="padding-bottom: 30px;">
+                            <div class="col">
+                                <img src="~/images/siteContent/ENGINE_CTA.png" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                ENGINE & TRANSMISSION
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-2 box">
+                    <a asp-action="Maintenance">
+                        <div class="row" style="padding-bottom: 30px;">
+                            <div class="col">
+                                <img src="~/images/siteContent/MAINTENANCE_CTA.png" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                VEHICLE MAINTENANCE
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-2 box">
+                    <a asp-action="Services">
+                        <div class="row" style="padding-bottom: 30px;">
+                            <div class="col">
+                                <img src="~/images/siteContent/SERVICE_CTA.png" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                SERVICES OFFERED
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-2 box">
+                    <a asp-action="Electronic">
+                        <div class="row" style="padding-bottom: 30px;">
+                            <div class="col">
+                                <img src="~/images/siteContent/SPARK_CTA.png" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                ELECTRONIC
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-2 box">
+                    <a asp-action="Undercar">
+                        <div class="row" style="padding-bottom: 30px;">
+                            <div class="col">
+                                <img src="~/images/siteContent/UNDERCAR_CTA.png" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col">
+                                UNDERCAR SERVICES
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col" style="text-align: center;margin-bottom: 75px;margin-top: 50px;">
+                    <button class="btnServices">
+                        <div>
+                            <span>
+                                <a asp-action="Services">VIEW ALL SERVICES</a>
+                            </span>
+                        </div>
+                    </button>
+
+                </div>
+            </div>
+
+        </div>
+        <hr />
+
+
+        // <div class="container-sm" style="max-width: 1200px;margin-left: auto;margin-right: auto;">
+
+            //     <div class="row" style="margin-top:75px;margin-bottom:50px">
+                //         <div class="col-6">
+                    //             <div class="row" style="text-align:center; padding-top: 25%;">
+                        //                 <h1>IF YOUR CAR HURTS, BRING IT TO<mark class="yellow">Garage88</mark>!</h1><br />
+                        //                 <h4>Delivering the highest quality auto repair is the way we forge relationships with our customers and the way we’ve always done business.</h4>
+                        //
+                    </div>
+                    //             <div class="row" style="padding-top: 25%;justify-content:center;">
+                        //                 <button class="btnSchedule">
+                            //                     <div>
+                                //                         <span>
+                                    //                             <a asp-action="Contact" asp-controller="Home">SCHEDULE APPOINTMENT</a>
+                                    //
+                                </span>
+                                //
+                            </div>
+                            //
+                        </button>
+                        //
+                    </div>
+                    //
+                </div>
+                //         <div class="col-6">
+                    //             <div class="img">
+                        //                 <img src="~/images/garage.jpg" />
+                        //
+                    </div>
+                    //
+                </div>
+                //
+            </div>
+            //
+        </div>
+
+    </div>
+    <div class="col-1"></div>
+</div>

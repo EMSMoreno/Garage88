@@ -34,7 +34,7 @@ namespace Garage88.Helpers
                 CreatedDate = appointment.CreatedDate,
                 Client = appointment.Client,
                 ClientId = appointment.Client.Id,
-                EmployeeId = appointment.Mechanic.Id,
+                MechanicId = appointment.Mechanic.Id,
                 Estimate = appointment.Estimate,
                 EstimateId = appointment.Estimate.Id,
                 Mechanic = appointment.Mechanic,
@@ -122,14 +122,14 @@ namespace Garage88.Helpers
         public async Task<Mechanic> ToMechanic(MechanicViewModel model, User user, bool isNew)
         {
 
-            var role = await _mechanicsRolesRepository.GetRoleWithSpecialtiesAsync(model.RoleId);
+            var role = await _mechanicsRolesRepository.GetRoleWithSpecialitiesAsync(model.RoleId);
 
             if (role == null)
             {
                 return null;
             }
 
-            var speciality = await _mechanicsRolesRepository.GetSpecialtyAsync(model.SpecialtyId);
+            var speciality = await _mechanicsRolesRepository.GetSpecialityAsync(model.SpecialityId);
 
             if (speciality == null)
             {
@@ -143,7 +143,7 @@ namespace Garage88.Helpers
                 LastName = model.LastName,
                 About = model.About,
                 Role = role,
-                Specialty = speciality,
+                Speciality = speciality,
                 User = user,
                 Email = model.Email,
                 Color = model.Color,
@@ -179,9 +179,9 @@ namespace Garage88.Helpers
                 PhoneNumber = mechanic.User.PhoneNumber,
                 User = mechanic.User,
                 RoleId = mechanic.Role.Id,
-                SpecialtyId = mechanic.Specialty.Id,
+                SpecialityId = mechanic.Speciality.Id,
                 Roles = _mechanicsRolesRepository.GetComboRoles(),
-                Specialities = _mechanicsRolesRepository.GetComboSpecialty(isNew ? 0 : mechanic.Role.Id),
+                Specialities = _mechanicsRolesRepository.GetComboSpeciality(isNew ? 0 : mechanic.Role.Id),
                 UserId = mechanic.User.Id,
                 Color = mechanic.Color,
                 PhotoId = mechanic.PhotoId

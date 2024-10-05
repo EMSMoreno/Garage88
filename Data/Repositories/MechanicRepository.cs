@@ -37,14 +37,14 @@ namespace Garage88.Data.Repositories
         {
             return _context.Mechanics.Include(e => e.User)
                                      .Include(e => e.Role)
-                                     .Include(e => e.Specialty);
+                                     .Include(e => e.Speciality);
         }
 
         public async Task<Mechanic> GetByEmailAsync(string email)
         {
             var employee = await _context.Mechanics.Include(e => e.User)
                                                    .Include(e => e.Role)
-                                                   .Include(e => e.Specialty)
+                                                   .Include(e => e.Speciality)
                                                    .Where(e => e.Email == email).FirstOrDefaultAsync();
 
             return employee;
@@ -73,7 +73,7 @@ namespace Garage88.Data.Repositories
         {
             var employee = await _context.Mechanics.Include(e => e.User)
                                                    .Include(e => e.Role)
-                                                   .Include(e => e.Specialty)
+                                                   .Include(e => e.Speciality)
                                                    .Where(m => m.Id == employeeId).FirstOrDefaultAsync();
 
             return employee;
@@ -88,7 +88,7 @@ namespace Garage88.Data.Repositories
         {
             List<Mechanic> list = new List<Mechanic>();
 
-            list = await _context.Mechanics.Include(e => e.User).Include(e => e.Role).Include(e => e.Specialty).Where(e => e.Role.Name == "Technician").ToListAsync();
+            list = await _context.Mechanics.Include(e => e.User).Include(e => e.Role).Include(e => e.Speciality).Where(e => e.Role.Name == "Technician").ToListAsync();
 
             return list;
         }

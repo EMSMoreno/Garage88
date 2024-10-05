@@ -9,7 +9,7 @@ namespace Garage88.Models
         [Required(ErrorMessage = "The field {0} is mandatory.")]
         [Display(Name = "Technician")]
         [Range(1, int.MaxValue, ErrorMessage = "You must select a Technician.")]
-        public int EmployeeId { get; set; }
+        public int MechanicId { get; set; }
 
         public int EstimateId { get; set; }
 

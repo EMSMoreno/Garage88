@@ -1,0 +1,86 @@
+﻿@{
+    ViewData["Title"] = "About Garage88";
+}
+
+<div class="row" style="height:80vh">
+    <div class="col-1"></div>
+    <div class="col-10" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); margin-bottom:25px;margin-top:25px; background-color:#f4f3ee;padding:0;display:flex">
+
+        <!--my-auto-->
+        <div class="col-7 imageBox">
+            <img src="~/images/siteContent/nissan.jpg" />
+        </div>
+        <div class="col-5 content">
+            <h1>About Us</h1>
+            <p>
+                Contrary to popular belief, Lorem Ipsum is not simply random text. It has roots in a piece of classical Latin literature from 45 BC,
+                making it over 2000 years old. Richard McClintock, a Latin professor at Hampden-Sydney College in Virginia, looked up one of the more
+                obscure Latin words, consectetur, from a Lorem Ipsum passage, and going through the cites of the word in classical literature,
+                discovered the undoubtable source. Lorem Ipsum comes from sections 1.10.32 and 1.10.33 of “de Finibus Bonorum et Malorum”
+                (The Extremes of Good and Evil) by Cicero, written in 45 BC. This book is a treatise on the theory of ethics, very popular during
+                the Renaissance. The first line of Lorem Ipsum, “Lorem ipsum dolor sit amet..”, comes from a line in section 1.10.32.
+            </p>
+            <div class="contentImage">
+                <img src="~/images/shop.png" />
+            </div>
+
+        </div>
+
+    </div>
+    <div class="col-1"></div>
+</div>
+
+<style>
+    .imageBox{
+        min-height: 100%;
+        display:flex;
+        filter: drop-shadow(8px 8px 13px rgba(14, 30, 37, 0.50));
+    }
+
+    .imageBox>img{
+        max-width:100%;
+        margin: auto;
+        object-fit: contain;
+        clip-path: polygon(3.5% 100%,3.5% 60%,60% 0,100% 0,100% 40%,40% 100%);
+        filter:grayscale(100%);
+        transition:all 0.4s;
+    }
+
+    .imageBox>img:hover{
+        filter:grayscale(0);
+    }
+
+    .content{
+        text-align: center;
+        padding: 25px;
+
+    }
+
+    .contentImage{
+        filter: drop-shadow(8px 8px 13px rgba(14, 30, 37, 0.50));
+    }
+
+    .content > h1{
+       margin-bottom: 20px;
+       color:#f7b801 ;
+       filter:none;
+    }
+
+    .content > p{
+        line-height:1;
+        margin-bottom: 49px;
+        filter:none;
+    }
+
+    .contentImage > img{
+        max-width: 87%;
+        filter: grayscale(100%);
+        object-fit: contain;
+        clip-path: polygon(0 22%,22% 0,100% 0,100% 0,100% 78%,78% 100%,0 100%);
+        transition:all 0.4s;
+    }
+    .contentImage > img:hover{
+        filter:grayscale(0);
+    }
+
+</style>

@@ -333,7 +333,7 @@ namespace Garage88.Data
 
                 _context.MechanicsRoles.Add(new Role
                 {
-                    Specialties = specialties,
+                    Specialities = specialties,
                     Name = "Technician",
                     PermissionsName = "Technician"
                 });
@@ -343,7 +343,7 @@ namespace Garage88.Data
                 receptionistSpecialties.Add(new Speciality { Name = "Generalist" });
                 _context.MechanicsRoles.Add(new Role
                 {
-                    Specialties = receptionistSpecialties,
+                    Specialities = receptionistSpecialties,
                     Name = "Receptionist",
                     PermissionsName = "Receptionist"
                 });
@@ -420,7 +420,7 @@ namespace Garage88.Data
             if (!_context.Mechanics.Any())
             {
                 // Mechanic 1
-                var employeeUser1 = new User
+                var mechanicUser1 = new User
                 {
                     FirstName = "Joaquim",
                     LastName = "Guedes",
@@ -435,20 +435,20 @@ namespace Garage88.Data
                     FirstName = "Joaquim",
                     LastName = "Guedes",
                     About = "Born in Lisbon, Joaquim Guedes started his electrician carrer in Bosch Car Service in Lisbon...",
-                    User = employeeUser1,
+                    User = mechanicUser1,
                     Role = _context.MechanicsRoles.Where(r => r.Name == "Technician").FirstOrDefault(),
-                    Specialty = _context.Specialties.Where(s => s.Name == "Electrician").FirstOrDefault(),
-                    Email = employeeUser1.Email,
+                    Speciality = _context.Specialities.Where(s => s.Name == "Electrician").FirstOrDefault(),
+                    Email = mechanicUser1.Email,
                     Color = "#8F6593"
                 });
 
-                await _userHelper.AddUserAsync(employeeUser1, "123456");
-                await _userHelper.AddUserToRoleAsync(employeeUser1, "Technician");
-                var token = await _userHelper.GenerateEmailConfirmationTokenAsync(employeeUser1);
-                await _userHelper.ConfirmEmailAsync(employeeUser1, token);
+                await _userHelper.AddUserAsync(mechanicUser1, "123456");
+                await _userHelper.AddUserToRoleAsync(mechanicUser1, "Technician");
+                var token = await _userHelper.GenerateEmailConfirmationTokenAsync(mechanicUser1);
+                await _userHelper.ConfirmEmailAsync(mechanicUser1, token);
 
                 // Mechanic 2
-                var employeeUser2 = new User
+                var mechanicUser2 = new User
                 {
                     FirstName = "Inacio",
                     LastName = "Torres",
@@ -463,17 +463,17 @@ namespace Garage88.Data
                     FirstName = "Inacio",
                     LastName = "Torres",
                     About = "Born in Setúbal, Inacio Torres studied mechatronics in ATEC and then joined Garage88, with 4 years of experience..",
-                    User = employeeUser2,
+                    User = mechanicUser2,
                     Role = _context.MechanicsRoles.Where(r => r.Name == "Technician").FirstOrDefault(),
-                    Specialty = _context.Specialties.Where(s => s.Name == "Mechanic").FirstOrDefault(),
-                    Email = employeeUser2.Email,
+                    Speciality = _context.Specialities.Where(s => s.Name == "Mechanic").FirstOrDefault(),
+                    Email = mechanicUser2.Email,
                     Color = "#3066BE"
                 });
 
-                await _userHelper.AddUserAsync(employeeUser2, "123456");
-                await _userHelper.AddUserToRoleAsync(employeeUser2, "Technician");
-                token = await _userHelper.GenerateEmailConfirmationTokenAsync(employeeUser2);
-                await _userHelper.ConfirmEmailAsync(employeeUser2, token);
+                await _userHelper.AddUserAsync(mechanicUser2, "123456");
+                await _userHelper.AddUserToRoleAsync(mechanicUser2, "Technician");
+                token = await _userHelper.GenerateEmailConfirmationTokenAsync(mechanicUser2);
+                await _userHelper.ConfirmEmailAsync(mechanicUser2, token);
 
                 // Mechanic 3
 
@@ -494,7 +494,7 @@ namespace Garage88.Data
                     About = "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. ",
                     User = employeeUser3,
                     Role = _context.MechanicsRoles.Where(r => r.Name == "Receptionist").FirstOrDefault(),
-                    Specialty = _context.Specialties.Where(s => s.Name == "Generalist").FirstOrDefault(),
+                    Speciality = _context.Specialities.Where(s => s.Name == "Generalist").FirstOrDefault(),
                     Email = employeeUser3.Email
                 });
 

@@ -1,0 +1,221 @@
+﻿@model Garage88.Models.AppointmentViewModel
+
+@{
+    Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
+    ViewData["Title"] = "Appointment";
+    ViewData["BreadCrumb"] = "Add Appointment";
+    var minDate = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 9, 0, 0);
+    var maxDate = DateTime.UtcNow.AddYears(1);
+}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var calendarEl = document.getElementById('calendar');
+      var calendar = new FullCalendar.Calendar(calendarEl, {
+
+        themeSystem: 'bootstrap',
+        timeZone: 'UTC',
+        aspectRatio: 1.8,
+        initialView: 'timeGridWeek',
+        hiddenDays: [0],
+        nowIndicator: true,
+          businessHours:[ {
+              daysOfWeek: [1,2,3,4,5],
+              startTime: '09:00',
+              endTime: '18:00'
+          },
+          {
+              daysOfWeek: [6],
+              startTime: '09:00',
+              endTime: '13:00'
+          }
+          ],
+          customButtons: {
+              addAppointment: {
+                  text: 'Add Appointment',
+                  click: function() {
+                  window.location.href = '/Appointment/AddAppointment/';
+                  }
+              }
+          },
+          headerToolbar: {
+              left: 'prev,next today',
+              center: 'title',
+              right: 'dayGridMonth,timeGridWeek,timeGridDay'
+          },
+          slotLabelInterval: "00:30",
+          slotLabelFormat: {
+              hour: 'numeric',
+              minute: '2-digit',
+              omitZeroMinute: false,
+              meridiem: false,
+              hour12: false
+          },
+          slotMinTime: "07:00:00",
+          slotMaxTime: "20:00:00",
+          allDaySlot: false,
+          editable: true,
+          events: @Html.Raw(ViewData["Events"]),
+          eventClick: function(info) {
+              var dialog = document.getElementById("dialog").ej2_instances[0];
+              var eventObj = info.event;
+              let eventStartTime = eventObj.start;
+              let content = eventObj.title + eventObj.extendedProps.description;
+              console.log(content);
+              dialog.content = eventObj.extendedProps.description;
+              dialog.header = eventStartTime.toUTCString();
+              dialog.show();
+          },
+          eventResize : function(info){
+              var eventObj = info.event;
+              console.log(eventObj);
+              var url = '/Appointment/EventResize/' + eventObj.id +"?"+ eventObj.start.toUTCString() +"?"+ eventObj.end.toUTCString();
+              console.log(url);
+              $.ajax({
+                  url: '@Url.Action("EventResize", "Appointment")',
+                  type: 'POST',
+                  dataType: 'json',
+                  data: {eventId:eventObj.id,startTime: eventObj.start.toUTCString(), endTime: eventObj.end.toUTCString()},
+                  success: function (models) {
+                      console.log("Success");
+                  },
+                  error: function(ex) {
+
+                      var dialog = document.getElementById("dialog").ej2_instances[0];
+                      dialog.content = ex.message;
+                      dialog.header = "There was an error updating the event!";
+                      dialog.show();
+                      console.log("failed "+ex.message);
+                  }
+              });
+          },
+          eventDrop: function(info){
+              var eventObj = info.event;
+              console.log(eventObj);
+              var url = '/Appointment/EventResize/' + eventObj.id +"?"+ eventObj.start.toUTCString() +"?"+ eventObj.end.toUTCString();
+              console.log(url);
+              $.ajax({
+                  url: '@Url.Action("EventResize", "Appointment")',
+                  type: 'POST',
+                  dataType: 'json',
+                  data: {eventId:eventObj.id,startTime: eventObj.start.toUTCString(), endTime: eventObj.end.toUTCString()},
+                  success: function (models) {
+                      console.log("Success");
+                  },
+                  error: function(ex) {
+
+                      var dialog = document.getElementById("dialog").ej2_instances[0];
+                      dialog.content = ex.message;
+                      dialog.header = "There was an error updating the event!";
+                      dialog.show();
+                      console.log("failed "+ex.message);
+                  }
+              });
+          },
+          dragScroll: true,
+          dayMaxEvents: true,
+          dateClick: function(info) {
+                let currentView = info.view.type;
+                let date = info.date;
+                if (currentView == "dayGridMonth") {
+                    calendar.changeView("timeGridWeek", date);
+                }
+                if (currentView == "timeGridWeek") {
+                    calendar.changeView("timeGridDay", date);
+                }
+                if (currentView == "timeGridDay") {
+                    calendar.changeView("dayGridMonth", date);
+                }
+            }
+
+      });
+      calendar.render();
+    });
+</script>
+
+<h4 style="text-align:center">Add new Appointment</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="AddAppointment" style="height:100%">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input type="hidden" asp-for="EstimateId" />
+            <input type="hidden" asp-for="ClientId" />
+            <input type="hidden" asp-for="VehicleId" />
+            <input type="hidden" asp-for="CreatedDate" value="@DateTime.Now" />
+            <input type="hidden" asp-for="UpdatedDate" value="@DateTime.Now" />
+            <input type="hidden" asp-for="CreatedBy" value="@User.Identity.Name" />
+            <input type="hidden" asp-for="UpdatedBy" value="@User.Identity.Name" />
+
+
+            <div class="form-group">
+                <label asp-for="MechanicId" class="control-label"></label>
+                <select asp-for="MechanicId" asp-items="Model.Technicians" class="form-control"></select>
+                <span asp-validation-for="MechanicId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Client" class="control-label"></label>
+                <input asp-for="Client" value="@Model.Client.FullName" class="form-control" readonly />
+                <span asp-validation-for="Client" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Vehicle" class="control-label"></label>
+                <input asp-for="Vehicle" value="@Model.Vehicle.PlateNumber" class="form-control" readonly />
+                <span asp-validation-for="Vehicle" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="AppointmentStartDate" class="control-label"></label>
+                @*<input asp-for="AppointmentStartDate" class="form-control" />*@
+                <ejs-datetimepicker name="AppointmentStartDate" ejs-for="@Model.AppointmentStartDate" format="dd/MM/yyyy HH:mm" timeFormat="HH:mm" strictMode="true" min="@minDate" max="@maxDate" id="startDatetimePicker"></ejs-datetimepicker>
+                <span asp-validation-for="AppointmentStartDate" class="text-danger"></span>
+            </div>
+
+
+            <div class="form-group">
+                <label asp-for="AppointmentEndDate" class="control-label"></label>
+                @*<input asp-for="AppointmentEndDate" class="form-control" />*@
+                <ejs-datetimepicker name="AppointmentEndDate" ejs-for="@Model.AppointmentEndDate" format="dd/MM/yyyy HH:mm" timeFormat="HH:mm" strictMode="true" min="@minDate" max="@maxDate" id="endDatetimePicker"></ejs-datetimepicker>
+                <span asp-validation-for="AppointmentEndDate" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Observations" class="control-label"></label>
+                <input asp-for="Observations" class="form-control" />
+                <span asp-validation-for="Observations" class="text-danger"></span>
+            </div>
+
+            <div class="form-group" style="bottom: 1%; position: absolute;">
+                <input type="submit" value="Add Appointment" class="btn btn-primary" style="margin-right: 10px" />
+                <a asp-action="Index" asp-controller="Estimates" class="btn btn-danger">Back to Estimates List</a>
+            </div>
+        </form>
+    </div>
+    <div id='calendar' class="col-md-8">
+    </div>
+</div>
+
+<div id='container' style="height:auto">
+    <ejs-dialog id='dialog' visible="false" isModal="true" width="400px" showCloseIcon="true" allowDragging="true" overlayClick="onOverlayClick" target="#container"></ejs-dialog>
+</div>
+
+<script>
+
+    function onOverlayClick() {
+        var dialog = document.getElementById("dialog").ej2_instances[0];
+        dialog.hide();
+     }
+
+</script>
+
+@section Scripts
+{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+}
+

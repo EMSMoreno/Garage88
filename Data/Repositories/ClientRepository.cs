@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Garage88.Data.Entities;
+using Garage88.Helpers;
+using Garage88.Data.Repositories;
 
 namespace Garage88.Data.Repositories
 {
@@ -34,7 +36,7 @@ namespace Garage88.Data.Repositories
                                      .OrderBy(o => o.FirstName);
         }
 
-        public IEnumerable<SelectListItem> GetComboClients()
+        public IEnumerable<SelectListItem> GetComboClient()
         {
 
             var list = _context.Clients.Select(b => new SelectListItem
@@ -64,30 +66,25 @@ namespace Garage88.Data.Repositories
             return await _context.Clients.Include(v => v.Vehicles).Where(c => c.User.Id == userId).FirstOrDefaultAsync();
         }
 
-        public async Task<Client> GetClientWithUserByIdAsync(int customerId)
+        public async Task<Client> GetClientWithUserByIdAsync(int clientId)
         {
             var customer = await _context.Clients.Include(u => u.User)
                                                    .Include(v => v.Vehicles)
                                                    .ThenInclude(v => v.Brand)
                                                    .ThenInclude(b => b.Models)
-                                                   .FirstOrDefaultAsync(u => u.Id == customerId);
+                                                   .FirstOrDefaultAsync(u => u.Id == clientId);
 
             return customer;
             ;
         }
 
-        public async Task<List<Vehicle>> GetClientVehicleAsync(int customerId)
+        public async Task<List<Vehicle>> GetClientVehicleAsync(int clientId)
         {
-            var customerVehicles = await _context.Vehicles.Where(p => p.ClientId == customerId).ToListAsync();
+            var clientVehicles = await _context.Vehicles.Where(p => p.ClientId == clientId).ToListAsync();
 
-            return customerVehicles;
+            return clientVehicles;
 
 
-        }
-
-        public IEnumerable<SelectListItem> GetComboClient()
-        {
-            throw new NotImplementedException();
         }
     }
 }

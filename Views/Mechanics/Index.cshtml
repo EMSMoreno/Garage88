@@ -1,0 +1,164 @@
+﻿@model IEnumerable<Garage88.Data.Entities.Mechanic>
+
+@{
+    Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
+    ViewData["Title"] = "Mechanics";
+}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" />
+
+<script type="text/javascript">
+
+    function showMechanicDetails(mechanicId) {
+        debugger;
+
+        $.ajax({
+            url: '@Url.Action("MechanicDetails", "Mechanics")',
+                      type: 'POST',
+                      dataType: 'json',
+                      data: {Id: mechanicId},
+                      success: function(mechanicData) {
+                          console.log(mechanicData);
+
+                          var dialog = document.getElementById("dialog").ej2_instances[0];
+                          dialog.header = mechanicData.fullName + " Details";
+
+                          dialog.content = "<b>Full Name: </b>" + mechanicData.fullName + "<br/>" +
+                              "<b>Email: </b>" + mechanicData.email + "<br/>" +
+                              "<b>Address: </b>" + mechanicData.user.address + "<br/>" +
+                              "<b>Phone Number: </b>" + mechanicData.user.phoneNumber + "<br/>" +
+                              "<b>Speciality: </b>" + mechanicData.role.name + " - " + mechanicData.specialty.name + "<br/>" +
+                              "<b>About: </b>" + mechanicData.about + "<br/>";
+
+                          dialog.show();
+                      },
+                      error: function(ex)
+                      {
+                          console.log("failed " + ex.message);
+                      }
+        });
+    }
+
+</script>
+
+<div class="container-fluid" style="max-width:90%">
+    <div>
+        <table class="hover stripe row-border testTable" style="display:inline-table" id="MyTable">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.FullName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Role)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Speciality)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.FullName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Role.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Speciality.Name)
+                        </td>
+                        <td id="@item.Id">
+                            @if (this.User.Identity.IsAuthenticated && !User.IsInRole("Client"))
+                            {
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-info btn-sm"><i class="fas fa-user-pen"></i></a>
+                            }
+
+                            <a onclick="showEmployeeDetails(@item.Id)" class="btn btn-warning btn-sm"><i class="fas fa-list"></i></a>
+
+                            @if (this.User.Identity.IsAuthenticated && !User.IsInRole("Client"))
+                            {
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm pull-right" id="btnDelete"><i class="fas fa-trash"></i></a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div id='container' style="height:auto">
+
+        <ejs-dialog id='dialog' visible="false" isModal="true" width="550px" showCloseIcon="true" allowDragging="false" overlayClick="onOverlayClick" target="#container">
+            <e-dialog-animationsettings effect="Fade" duration="400" delay="0"></e-dialog-animationsettings>
+
+        </ejs-dialog>
+    </div>
+
+    <footer class="footer" style="position:Absolute; bottom:65px;font-size:14px">
+        <table>
+            <tr>
+                <td>
+                    <i class="fas fa-user-pen" style="background: #138496;padding:10px; margin-left:10px; color:white"></i> @Html.Raw(" = Edit ")
+                </td>
+                <td>
+                    <i class="fas fa-list" style="background: #E0A800;padding:10px; margin-left:10px; "></i> @Html.Raw(" = Details ")
+                </td>
+                <td>
+                    <i class="fas fa-trash" style="background: #C82333;padding:10px; margin-left:10px;color:white "></i> @Html.Raw(" = Delete ")
+                </td>
+            </tr>
+        </table>
+    </footer>
+
+</div>
+
+<partial name="_DeleteDialog" />
+
+<script>
+
+
+    function onOverlayClick() {
+            var dialog = document.getElementById("dialog").ej2_instances[0];
+            dialog.hide();
+    };
+
+</script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="//cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#MyTable').DataTable({
+                columnDefs: [{
+                    className: 'dt-center', targets: "_all"
+                }]
+            });
+        });
+
+
+        $(document).ready(function () {
+            let id = 0;
+            $('a[id*=btnDelete]').click(function () {
+                debugger;
+                id = $(this).parent()[0].id;
+                $("#deleteDialog").modal('show');
+                return false;
+            });
+            $("#btnNoDelete").click(function () {
+                $("#deleteDialog").modal('hide');
+                return false;
+            });
+            $("#btnYesDelete").click(function () {
+                window.location.href = '/Employees/Delete/' + id;
+            });
+        });
+    </script>
+}
+

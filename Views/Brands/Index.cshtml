@@ -1,0 +1,110 @@
+﻿@model IEnumerable<Garage88.Data.Entities.Brand>
+
+@{
+    Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
+    ViewData["Title"] = "Brands";
+    ViewData["Action"] = "Index";
+}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" />
+
+<div class="container-fluid" style="max-width:90%">
+    <div>
+        <table class="hover stripe compact row-border testTable" style="display:inline-table" id="MyTable">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Name)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.NumberOfModels)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.NumberOfModels)
+                        </td>
+                        <td id="@item.Id">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-info btn-sm"><i class="fas fa-edit"></i></a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-warning btn-sm"><i class="fas fa-list"></i></a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger pull-right btn-sm" id="btnDelete"><i class="fas fa-trash"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+    <a asp-action="Create" asp-controller="Brands" style="margin-top:50px;width:100%" class="btn btn-primary btn-sm"><i class="fas fa-folder-plus"></i>  Add Brand</a>
+
+
+
+
+    <footer class="footer" style="position:Absolute; bottom:65px;font-size:14px">
+        <table>
+            <tr>
+                <td>
+                    <i class="fas fa-edit" style="background: #138496;padding:10px; margin-left:10px; color:white"></i> @Html.Raw(" = Edit ")
+                </td>
+                <td>
+                    <i class="fas fa-list" style="background: #E0A800;padding:10px; margin-left:10px; "></i> @Html.Raw(" = Details ")
+                </td>
+                <td>
+                    <i class="fas fa-trash" style="background: #C82333;padding:10px; margin-left:10px;color:white "></i> @Html.Raw(" = Delete ")
+                </td>
+            </tr>
+        </table>
+    </footer>
+
+</div>
+
+<partial name="_DeleteDialog" />
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="//cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+            $('#MyTable').DataTable({
+                columnDefs: [{
+                    className: 'dt-center', targets: "_all"
+                }]
+            });
+        });
+
+        $(document).ready(function() {
+
+            let id = 0;
+
+            $("a[id*=btnDelete]").click(function() {
+                debugger;
+                id=$(this).parent()[0].id;
+                $("#deleteDialog").modal("show");
+                return false;
+            });
+
+            $("#btnNoDelete").click(function() {
+                $("#deleteDialog").modal("hide");
+                return false;
+            });
+
+            $("#btnYesDelete").click(function() {
+                window.location.href = "/Brands/Delete/"+id;
+            });
+
+        });
+
+    </script>
+}
+

@@ -1,4 +1,5 @@
 ﻿using Garage88.Data.Entities;
+using Garage88.Helpers;
 using Garage88.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.CodeAnalysis;
@@ -15,16 +16,16 @@ namespace Garage88.Data.Repositories
             _context = context;
         }
 
-        public async Task AddSpecialtyAsync(SpecialityViewModel model)
+        public async Task AddSpecialityAsync(SpecialityViewModel model)
         {
-            var role = await this.GetRoleWithSpecialtiesAsync(model.RoleId);
+            var role = await this.GetRoleWithSpecialitiesAsync(model.RoleId);
 
             if (role == null)
             {
                 return;
             }
 
-            role.Specialties.Add(new Speciality
+            role.Specialities.Add(new Speciality
             {
                 Name = model.Name,
             });
@@ -34,16 +35,16 @@ namespace Garage88.Data.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<int> DeleteSpecialtyAsync(Speciality model)
+        public async Task<int> DeleteSpecialityAsync(Speciality model)
         {
-            var role = await _context.MechanicsRoles.Where(er => er.Specialties.Any(s => s.Id == model.Id)).FirstOrDefaultAsync();
+            var role = await _context.MechanicsRoles.Where(er => er.Specialities.Any(s => s.Id == model.Id)).FirstOrDefaultAsync();
 
             if (role == null)
             {
                 return 0;
             }
 
-            _context.Specialties.Remove(model);
+            _context.Specialities.Remove(model);
 
             await _context.SaveChangesAsync();
 
@@ -67,14 +68,14 @@ namespace Garage88.Data.Repositories
             return list;
         }
 
-        public IEnumerable<SelectListItem> GetComboSpecialty(int roleId)
+        public IEnumerable<SelectListItem> GetComboSpeciality(int roleId)
         {
             var role = _context.MechanicsRoles.Find(roleId);
             var list = new List<SelectListItem>();
 
             if (role != null)
             {
-                list = _context.Specialties.Select(s => new SelectListItem
+                list = _context.Specialities.Select(s => new SelectListItem
                 {
                     Text = s.Name,
                     Value = s.Id.ToString()
@@ -82,21 +83,22 @@ namespace Garage88.Data.Repositories
 
                 list.Insert(0, new SelectListItem
                 {
-                    Text = "[Select a Specialty]",
+                    Text = "[Select a Speciality]",
                     Value = "0"
                 });
             }
+
             return list;
         }
 
         public async Task<Role> GetRoleAsync(Speciality model)
         {
-            return await _context.MechanicsRoles.Where(r => r.Specialties.Any(s => s.Id == model.Id)).FirstOrDefaultAsync();
+            return await _context.MechanicsRoles.Where(r => r.Specialities.Any(s => s.Id == model.Id)).FirstOrDefaultAsync();
         }
 
-        public async Task<int> GetRoleIdWithSpecialtyAsync(int specialtyId)
+        public async Task<int> GetRoleIdWithSpecialityAsync(int specialityId)
         {
-            var role = await _context.MechanicsRoles.Where(r => r.Specialties.Any(s => s.Id == specialtyId)).FirstOrDefaultAsync();
+            var role = await _context.MechanicsRoles.Where(r => r.Specialities.Any(s => s.Id == specialityId)).FirstOrDefaultAsync();
 
             if (role == null)
             {
@@ -108,31 +110,31 @@ namespace Garage88.Data.Repositories
             }
         }
 
-        public IQueryable GetRolesWithSpecialties()
+        public IQueryable GetRolesWithSpecialities()
         {
-            return _context.MechanicsRoles.Include(r => r.Specialties).OrderBy(s => s.Name);
+            return _context.MechanicsRoles.Include(r => r.Specialities).OrderBy(s => s.Name);
         }
 
-        public async Task<Role> GetRoleWithSpecialtiesAsync(int id)
+        public async Task<Role> GetRoleWithSpecialitiesAsync(int id)
         {
-            return await _context.MechanicsRoles.Include(r => r.Specialties).Where(s => s.Id == id).FirstOrDefaultAsync();
+            return await _context.MechanicsRoles.Include(r => r.Specialities).Where(s => s.Id == id).FirstOrDefaultAsync();
         }
 
-        public async Task<Speciality> GetSpecialtyAsync(int id)
+        public async Task<Speciality> GetSpecialityAsync(int id)
         {
-            return await _context.Specialties.FindAsync(id);
+            return await _context.Specialities.FindAsync(id);
         }
 
-        public async Task<int> UpdateSpecialtyAsync(Speciality model)
+        public async Task<int> UpdateSpecialityAsync(Speciality model)
         {
-            var role = await _context.MechanicsRoles.Where(r => r.Specialties.Any(s => s.Id == model.Id)).FirstOrDefaultAsync();
+            var role = await _context.MechanicsRoles.Where(r => r.Specialities.Any(s => s.Id == model.Id)).FirstOrDefaultAsync();
 
             if (role == null)
             {
                 return 0;
             }
 
-            _context.Specialties.Update(model);
+            _context.Specialities.Update(model);
             await _context.SaveChangesAsync();
             return role.Id;
         }

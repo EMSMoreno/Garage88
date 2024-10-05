@@ -1,0 +1,115 @@
+﻿@model Garage88.Data.Entities.Brand
+
+@{
+    Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
+    ViewData["Title"] = "Brands";
+    ViewData["BreadCrumb"] = "Details";
+}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" />
+
+<div>
+    <hr />
+    <h2 style="text-align:center">@Html.DisplayFor(model => model.Name)</h2>
+    <hr />
+</div>
+
+@if (Model.Models == null || Model.Models.Count == 0)
+{
+    <h5 style="text-align:center; padding-bottom:100px">No vehicle models added yet</h5>
+}
+else
+{
+
+    <div class="container-fluid" style="max-width:90%">
+        <div>
+            <table class="hover stripe compact row-border testTable" style="display:inline-table" id="MyTable">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Models.FirstOrDefault().Name)
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Models.OrderBy(m => m.Name))
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td id="@item.Id">
+                                <a asp-action="EditModel" asp-route-id="@item.Id" class="btn btn-info btn-sm"><i class="fas fa-edit"></i></a>
+                                <a asp-action="DeleteModel" asp-route-id="@item.Id" class="btn btn-danger btn-sm pull-right" id="btnDelete"><i class="fas fa-trash"></i></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+}
+
+<div class="container-fluid" style="max-width:90%">
+    <a asp-action="AddModel" asp-route-id="@Model.Id" class="btn btn-info">Add Model</a>
+    <a asp-action="Index" class="btn btn-success">Back to brands List</a>
+
+
+    <footer class="footer" style="position:Absolute; bottom:65px;font-size:14px">
+        <table>
+            <tr>
+                <td>
+                    <i class="fas fa-edit" style="background: #138496;padding:10px; margin-left:10px; color:white"></i> @Html.Raw(" = Edit ")
+                </td>
+                <td>
+                    <i class="fas fa-trash" style="background: #C82333;padding:10px; margin-left:10px;color:white "></i> @Html.Raw(" = Delete ")
+                </td>
+            </tr>
+        </table>
+    </footer>
+
+</div>
+
+<partial name="_DeleteDialog" />
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="//cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+            $('#MyTable').DataTable({
+                columnDefs: [{
+                    className: 'dt-center', targets: "_all"
+                }]
+            });
+        });
+
+        $(document).ready(function() {
+
+            let id = 0;
+
+            $("a[id*=btnDelete]").click(function() {
+                debugger;
+                id=$(this).parent()[0].id;
+                $("#deleteDialog").modal("show");
+                return false;
+            });
+
+            $("#btnNoDelete").click(function() {
+                $("#deleteDialog").modal("hide");
+                return false;
+            });
+
+            $("#btnYesDelete").click(function() {
+                window.location.href = "/Brands/DeleteModel/"+id;
+            });
+
+        });
+
+    </script>
+}

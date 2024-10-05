@@ -1,7 +1,10 @@
-﻿using Garage88.Data.Entities;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Garage88.Data.Entities;
+using Garage88.Models;
+using Garage88.Helpers;
 
 namespace Garage88.Helpers
 {
@@ -18,134 +21,215 @@ namespace Garage88.Helpers
             _signInManager = signInManager;
         }
 
-        public Task<IdentityResult> AddLoginAsync(User user, ExternalLoginInfo info)
+        public async Task<IdentityResult> AddLoginAsync(User user, ExternalLoginInfo info)
         {
-            throw new NotImplementedException();
+            return await _userManager.AddLoginAsync(user, info);
         }
 
-        public Task<IdentityResult> AddUserAsync(User user, string password)
+        public async Task<IdentityResult> AddUserAsync(User user, string password)
         {
-            throw new NotImplementedException();
+            return await _userManager.CreateAsync(user, password);
         }
 
-        public Task<IdentityResult> AddUserToRoleAsync(User user, string roleName)
+        public async Task<IdentityResult> AddUserToRoleAsync(User user, string roleName)
         {
-            throw new NotImplementedException();
+            return await _userManager.AddToRoleAsync(user, roleName);
         }
 
-        public Task<IdentityResult> ChangePasswordAsync(User user, string oldPassword, string newPassword)
+        public async Task<IdentityResult> ChangePasswordAsync(User user, string oldPassword, string newPassword)
         {
-            throw new NotImplementedException();
+            return await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
         }
 
-        public Task<SignInResult> CheckPasswordAsync(User user, string oldPassword)
+        public async Task<SignInResult> CheckPasswordAsync(User user, string oldPassword)
         {
-            throw new NotImplementedException();
+            return await _signInManager.CheckPasswordSignInAsync(user, oldPassword, false);
         }
 
-        public Task CheckRoleAsync(string roleName)
+        public async Task CheckRoleAsync(string roleName)
         {
-            throw new NotImplementedException();
+
+            var roleExists = await _roleManager.RoleExistsAsync(roleName);
+            if (!roleExists)
+            {
+                await _roleManager.CreateAsync(new IdentityRole
+                {
+                    Name = roleName,
+                });
+            }
         }
 
-        public Task<bool> CheckUserInRoleAsync(User user, string roleName)
+        public async Task<bool> CheckUserInRoleAsync(User user, string roleName)
         {
-            throw new NotImplementedException();
+            return await _userManager.IsInRoleAsync(user, roleName);
         }
 
         public AuthenticationProperties ConfigureExternalAuthenticationProperties(string provider, string redirect)
         {
-            throw new NotImplementedException();
+            return _signInManager.ConfigureExternalAuthenticationProperties(provider, redirect);
         }
 
-        public Task<IdentityResult> ConfirmEmailAsync(User user, string token)
+        public async Task<IdentityResult> ConfirmEmailAsync(User user, string token)
         {
-            throw new NotImplementedException();
+            return await _userManager.ConfirmEmailAsync(user, token);
         }
 
-        public Task<IdentityResult> CreateAsync(User user)
+        public async Task<IdentityResult> CreateAsync(User user)
         {
-            throw new NotImplementedException();
+            return await _userManager.CreateAsync(user);
         }
 
-        public Task<SignInResult> ExternalLoginSignInAsync(string loginProvider, string providerKey, bool isPersistent)
+        public async Task<SignInResult> ExternalLoginSignInAsync(string loginProvider, string providerKey, bool isPersistent)
         {
-            throw new NotImplementedException();
+            return await _signInManager.ExternalLoginSignInAsync(loginProvider, providerKey, isPersistent);
         }
 
-        public Task<string> GenerateEmailConfirmationTokenAsync(User user)
+        public async Task<string> GenerateEmailConfirmationTokenAsync(User user)
         {
-            throw new NotImplementedException();
+            return await _userManager.GenerateEmailConfirmationTokenAsync(user);
         }
 
-        public Task<string> GeneratePasswordResetTokenAsync(User user)
+        public async Task<string> GeneratePasswordResetTokenAsync(User user)
         {
-            throw new NotImplementedException();
+            return await _userManager.GeneratePasswordResetTokenAsync(user);
         }
 
         public IEnumerable<SelectListItem> GetComboExistingRoles()
         {
-            throw new NotImplementedException();
+            var list = _roleManager.Roles.Select(r => new SelectListItem
+            {
+                Text = r.Name,
+                Value = r.Id
+            }).OrderBy(l => l.Text).ToList();
+
+            list.Insert(0, new SelectListItem
+            {
+                Text = "[Insert Permission Level]",
+                Value = "0"
+            });
+
+            return list;
         }
 
-        public Task<ExternalLoginInfo> GetExternalLoginInfoAsync()
+        public async Task<ExternalLoginInfo> GetExternalLoginInfoAsync()
         {
-            throw new NotImplementedException();
+            var info = await _signInManager.GetExternalLoginInfoAsync();
+            return info;
         }
 
-        public Task<string> GetRoleIdWithRoleNameAsync(string roleName)
+        public async Task<string> GetRoleIdWithRoleNameAsync(string roleName)
         {
-            throw new NotImplementedException();
+            var role = await _roleManager.FindByNameAsync(roleName);
+
+            return role.Id;
         }
 
-        public Task<string> GetRoleNameByRoleIdAsync(string roleId)
+        public async Task<string> GetRoleNameByRoleIdAsync(string roleId)
         {
-            throw new NotImplementedException();
+            var role = await _roleManager.FindByIdAsync(roleId);
+
+            return await _roleManager.GetRoleNameAsync(role);
         }
 
-        public Task<int> GetTotalUsersAsync()
+        public async Task<int> GetTotalUsersAsync()
         {
-            throw new NotImplementedException();
+            var users = await _userManager.Users.ToListAsync();
+
+            return users.Count;
+
         }
 
-        public Task<User> GetUserByEmailAsync(string email)
+        public async Task<User> GetUserByEmailAsync(string email)
         {
-            throw new NotImplementedException();
+            return await _userManager.FindByEmailAsync(email);
         }
 
-        public Task<User> GetUserByIdAsync(string userId)
+        public async Task<User> GetUserByIdAsync(string userId)
         {
-            throw new NotImplementedException();
+            return await _userManager.FindByIdAsync(userId);
         }
 
-        public Task<bool> HasPasswordAsync(User user)
+        public async Task<APIUserViewModel> GetUserDetailsAsync(string email)
         {
-            throw new NotImplementedException();
+            var user = await GetUserByEmailAsync(email);
+
+            if (user != null)
+            {
+                return new APIUserViewModel
+                {
+                    Address = user.Address,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    PhoneNumber = user.PhoneNumber,
+                    ProfilePicture = user.ProfilePicture
+                };
+            }
+
+            return null;
         }
 
-        public Task LogoutAsync()
+        public async Task<List<UserDataChartModel>> GetUsersChartDataAsync()
         {
-            throw new NotImplementedException();
+
+            List<UserDataChartModel> list = new List<UserDataChartModel>();
+            string[] roles = new string[4] { "Customer", "Technician", "Admin", "Receptionist" };
+            string[] colors = new string[4] { "#181818", "#8758FF", "#5CB8E4", "#F2F2F2" };
+            int identer = 0;
+
+            foreach (string role in roles)
+            {
+                var users = await _userManager.GetUsersInRoleAsync(role);
+                list.Add(new UserDataChartModel
+                {
+                    UserRoleName = role,
+                    Quantity = users.Count(),
+                    Color = colors[identer]
+                });
+                identer++;
+            }
+
+            return list.OrderBy(l => l.UserRoleName).ToList();
         }
 
-        public Task<IdentityResult> ResetPasswordAsync(User user, string token, string password)
+        public async Task<bool> HasPasswordAsync(User user)
         {
-            throw new NotImplementedException();
+            return await _userManager.HasPasswordAsync(user);
         }
 
-        public Task SignInAsync(User user, bool isPersistent)
+        public async Task<SignInResult> LoginAsync(LoginViewModel model)
         {
-            throw new NotImplementedException();
+            return await _signInManager.PasswordSignInAsync(
+                model.UserName,
+                model.Password,
+                model.RememberMe,
+                false);
         }
 
-        public Task<IdentityResult> UpdateExternalAuthenticationTokensAsync(ExternalLoginInfo info)
+        public async Task LogoutAsync()
         {
-            throw new NotImplementedException();
+            await _signInManager.SignOutAsync();
         }
 
-        public Task<IdentityResult> UpdateUserAsync(User user)
+        public async Task<IdentityResult> ResetPasswordAsync(User user, string token, string password)
         {
-            throw new NotImplementedException();
+            return await _userManager.ResetPasswordAsync(user, token, password);
         }
+
+        public async Task SignInAsync(User user, bool isPersistent)
+        {
+            await _signInManager.SignInAsync(user, isPersistent);
+        }
+
+        public async Task<IdentityResult> UpdateExternalAuthenticationTokensAsync(ExternalLoginInfo info)
+        {
+            return await _signInManager.UpdateExternalAuthenticationTokensAsync(info);
+        }
+
+        public async Task<IdentityResult> UpdateUserAsync(User user)
+        {
+            return await _userManager.UpdateAsync(user);
+        }
+
+
     }
 }

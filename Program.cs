@@ -35,16 +35,16 @@ builder.Services.AddAuthentication(options =>
 .AddJwtBearer(cfg =>
 {
     // Configurar parâmetros de validação do token JWT
-    cfg.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidIssuer = builder.Configuration["Tokens:Issuer"],
-        ValidAudience = builder.Configuration["Tokens:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Tokens:Key"])),
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true
-    };
+    //cfg.TokenValidationParameters = new TokenValidationParameters
+    //{
+    //    ValidIssuer = builder.Configuration["Tokens:Issuer"],
+    //    ValidAudience = builder.Configuration["Tokens:Audience"],
+    //    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Tokens:Key"])),
+    //    ValidateIssuer = true,
+    //    ValidateAudience = true,
+    //    ValidateLifetime = true,
+    //    ValidateIssuerSigningKey = true
+    //};
 });
 
 // Registrar ApplicationDbContext com SQL Server

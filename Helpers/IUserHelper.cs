@@ -1,7 +1,8 @@
-﻿using Garage88.Data.Entities;
-using Microsoft.AspNetCore.Authentication;
+﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Garage88.Data.Entities;
+using Garage88.Models;
 
 namespace Garage88.Helpers
 {
@@ -13,7 +14,7 @@ namespace Garage88.Helpers
 
         Task<IdentityResult> UpdateUserAsync(User user);
 
-        //Task<APIUserViewModel> GetUserDetailsAsync(string email);
+        Task<APIUserViewModel> GetUserDetailsAsync(string email);
 
         Task<User> GetUserByIdAsync(string userId);
 
@@ -23,7 +24,7 @@ namespace Garage88.Helpers
 
         Task<IdentityResult> AddUserToRoleAsync(User user, string roleName);
 
-        //Task<SignInResult> LoginAsync(LoginViewModel model);
+        Task<SignInResult> LoginAsync(LoginViewModel model);
 
         Task LogoutAsync();
 
@@ -43,9 +44,12 @@ namespace Garage88.Helpers
 
         Task<string> GetRoleIdWithRoleNameAsync(string roleName);
 
+        Task<List<UserDataChartModel>> GetUsersChartDataAsync();
+
         Task<int> GetTotalUsersAsync();
 
         Task<SignInResult> CheckPasswordAsync(User user, string oldPassword);
+
 
         AuthenticationProperties ConfigureExternalAuthenticationProperties(string provider, string redirect);
 
@@ -62,5 +66,6 @@ namespace Garage88.Helpers
         Task SignInAsync(User user, bool isPersistent);
 
         Task<bool> HasPasswordAsync(User user);
+
     }
 }

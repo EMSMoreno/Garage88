@@ -2,7 +2,7 @@
 
 namespace Garage88.Models
 {
-    public class EditClientViewModel
+    public class EditClientViewModel : ChangeUserViewModel
     {
         public string UserId { get; set; }
 
