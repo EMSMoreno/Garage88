@@ -15,13 +15,13 @@ namespace Garage88.Data.Repositories
             _context = context;
         }
 
-        public async Task<bool> CheckIfClientInBdByEmailAsync(string customerEmail)
+        public async Task<bool> CheckIfClientInBdByEmailAsync(string clientEmail)
         {
             bool inBd = false;
 
-            var customer = await _context.Clients.Where(ctm => ctm.Email == customerEmail).FirstOrDefaultAsync();
+            var client = await _context.Clients.Where(ctm => ctm.Email == clientEmail).FirstOrDefaultAsync();
 
-            if (customer != null)
+            if (client != null)
             {
                 inBd = true;
             }
@@ -68,13 +68,13 @@ namespace Garage88.Data.Repositories
 
         public async Task<Client> GetClientWithUserByIdAsync(int clientId)
         {
-            var customer = await _context.Clients.Include(u => u.User)
+            var client = await _context.Clients.Include(u => u.User)
                                                    .Include(v => v.Vehicles)
                                                    .ThenInclude(v => v.Brand)
                                                    .ThenInclude(b => b.Models)
                                                    .FirstOrDefaultAsync(u => u.Id == clientId);
 
-            return customer;
+            return client;
             ;
         }
 

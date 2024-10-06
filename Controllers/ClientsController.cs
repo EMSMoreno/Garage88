@@ -88,7 +88,7 @@ namespace Garage88.Controllers
                         return View(model);
                     }
 
-                    var result = await _userHelper.AddUserToRoleAsync(user, "Customer");
+                    var result = await _userHelper.AddUserToRoleAsync(user, "Client");
 
                     if (!result.Succeeded)
                     {

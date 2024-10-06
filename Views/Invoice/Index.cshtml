@@ -1,0 +1,102 @@
+﻿@model IEnumerable<Garage88.Data.Entities.Invoice>
+
+@{
+    Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
+    ViewData["Title"] = "Invoices";
+}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" />
+
+
+<div class="container-fluid" style="margin-bottom: 75px; max-width:90% ">
+    <div>
+        <table class="hover stripe row-border testTable" style="display:inline-table" id="MyTable">
+            <thead>
+                <tr>
+                    <th>
+                        Invoice Nº.
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.FirstOrDefault().InvoicDate)
+                    </th>
+                    <th>
+                        Client Name
+                    </th>
+                    <th>
+                        Vehicle
+                    </th>
+                    <th>
+                        Service Done By
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.FirstOrDefault().Value)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr id="rowEdit">
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Id)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.InvoicDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Client.FullName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Vehicle.PlateNumber) (@Html.DisplayFor(modelItem => item.Vehicle.Brand.Name) @Html.DisplayFor(modelItem => item.Vehicle.Model.Name))
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.WorkOrder.ServiceDoneBy.FullName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Value)
+                        </td>
+                        <td id="@item.Id">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-warning btn-sm"><i class="fas fa-list"></i></a>
+                            <a asp-action="Invoice" asp-route-controller="pdf" asp-route-id="@item.Id" asp-route-sendEmail="false" target="_blank" class="btn btn-primary btn-sm"><i class="fas fa-file-pdf"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <footer class="footer" style="position:Absolute; bottom:65px;font-size:14px">
+        <table>
+            <tr>
+                <td>
+                    <i class="fas fa-list" style="background: #E0A800;padding:10px; margin-left:10px; "></i> @Html.Raw(" = Details ")
+                </td>
+                <td>
+                    <i class="fas fa-file-pdf" style="background: #0069D9;padding:10px; margin-left:10px;color:white "></i> @Html.Raw(" = Print Pdf ")
+                </td>
+            </tr>
+        </table>
+    </footer>
+
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="//cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var table = $('#MyTable').DataTable({
+                columnDefs: [
+                    { className: 'dt-center', targets: "_all" },
+                    {orderable: false, targets: 6},
+                    {className: "tableFont", targets: "_all" },
+                ],
+                paging: true,
+                info: false,
+                order: [[ 0, 'desc' ]],
+            });
+        });
+    </script>
+}

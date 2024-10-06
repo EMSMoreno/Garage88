@@ -553,7 +553,7 @@ namespace Garage88.Controllers
             }
 
             ViewBag.JsonModel = JsonConvert.SerializeObject(model);
-            ViewBag.IsCustomer = JsonConvert.SerializeObject(isClient);
+            ViewBag.IsClient = JsonConvert.SerializeObject(isClient);
 
             Random r = new Random();
             string[] images = new string[5] { "/images/siteContent/ponte.jpg", "/images/siteContent/recoverPassword.jpg", "/images/siteContent/teste.jpg",
@@ -665,16 +665,16 @@ namespace Garage88.Controllers
 
                 if (!this.User.IsInRole("Client") && !this.User.IsInRole("Admin"))
                 {
-                    var employee = await _mechanicRepository.GetByEmailAsync(User.Identity.Name);
-                    if (employee == null)
+                    var mechanic = await _mechanicRepository.GetByEmailAsync(User.Identity.Name);
+                    if (mechanic == null)
                     {
                         return new ObjectResult(new { Status = "fail" });
                     }
 
-                    employee.PhotoId = imageId;
+                    mechanic.PhotoId = imageId;
                     try
                     {
-                        await _mechanicRepository.UpdateAsync(employee);
+                        await _mechanicRepository.UpdateAsync(mechanic);
                     }
                     catch (Exception)
                     {

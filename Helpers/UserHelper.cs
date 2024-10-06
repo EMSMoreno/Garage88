@@ -48,7 +48,6 @@ namespace Garage88.Helpers
 
         public async Task CheckRoleAsync(string roleName)
         {
-
             var roleExists = await _roleManager.RoleExistsAsync(roleName);
             if (!roleExists)
             {
@@ -136,7 +135,6 @@ namespace Garage88.Helpers
             var users = await _userManager.Users.ToListAsync();
 
             return users.Count;
-
         }
 
         public async Task<User> GetUserByEmailAsync(string email)
@@ -170,9 +168,8 @@ namespace Garage88.Helpers
 
         public async Task<List<UserDataChartModel>> GetUsersChartDataAsync()
         {
-
             List<UserDataChartModel> list = new List<UserDataChartModel>();
-            string[] roles = new string[4] { "Customer", "Technician", "Admin", "Receptionist" };
+            string[] roles = new string[4] { "Client", "Technician", "Admin", "Receptionist" };
             string[] colors = new string[4] { "#181818", "#8758FF", "#5CB8E4", "#F2F2F2" };
             int identer = 0;
 
@@ -229,7 +226,5 @@ namespace Garage88.Helpers
         {
             return await _userManager.UpdateAsync(user);
         }
-
-
     }
 }

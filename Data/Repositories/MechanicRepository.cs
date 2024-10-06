@@ -16,9 +16,9 @@ namespace Garage88.Data.Repositories
 
         public async Task<Response> CheckIfEmployeeExistsAsync(User user)
         {
-            var employee = await _context.Mechanics.FindAsync(user);
+            var mechanic = await _context.Mechanics.FindAsync(user);
 
-            if (employee == null)
+            if (mechanic == null)
             {
                 return new Response { IsSuccess = false };
             }
@@ -42,12 +42,12 @@ namespace Garage88.Data.Repositories
 
         public async Task<Mechanic> GetByEmailAsync(string email)
         {
-            var employee = await _context.Mechanics.Include(e => e.User)
+            var mechanic = await _context.Mechanics.Include(e => e.User)
                                                    .Include(e => e.Role)
                                                    .Include(e => e.Speciality)
                                                    .Where(e => e.Email == email).FirstOrDefaultAsync();
 
-            return employee;
+            return mechanic;
         }
 
         public IEnumerable<SelectListItem> GetComboTechnicians()
@@ -69,14 +69,14 @@ namespace Garage88.Data.Repositories
             return list;
         }
 
-        public async Task<Mechanic> GetEmployeeByIdAsync(int employeeId)
+        public async Task<Mechanic> GetEmployeeByIdAsync(int mechanicId)
         {
-            var employee = await _context.Mechanics.Include(e => e.User)
+            var mechanic = await _context.Mechanics.Include(e => e.User)
                                                    .Include(e => e.Role)
                                                    .Include(e => e.Speciality)
-                                                   .Where(m => m.Id == employeeId).FirstOrDefaultAsync();
+                                                   .Where(m => m.Id == mechanicId).FirstOrDefaultAsync();
 
-            return employee;
+            return mechanic;
         }
 
         public Task<Mechanic> GetMechanicByIdAsync(int mechanicId)

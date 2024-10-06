@@ -23,7 +23,7 @@
                     <input class="form-control my_file" id="file" name="file" type="file" onchange="changeProfilePicture('file')" />
                 </div>
 
-                @if (this.User.IsInRole("Customer"))
+                @if (this.User.IsInRole("Client"))
                 {
                     <a asp-action="ServiceHistory" class="btn btn-dark sharp" style="width:256px; margin-left:6px;margin-top:20px">My Service History</a>
                     <a asp-action="Vehicles" class="btn btn-primary sharp" style="width:256px; margin-left:6px;margin-top:20px">My Vehicles</a>
@@ -62,7 +62,7 @@
                     <label asp-for="PhoneNumber"></label>
                     <input asp-for="PhoneNumber" class="form-control sharp" readonly />
                 </div>
-                @if (this.User.IsInRole("Customer"))
+                @if (this.User.IsInRole("Client"))
                 {
                     <div class="form-group pad">
                         <label asp-for="Nif"></label>
@@ -94,13 +94,13 @@
 
             debugger;
             var model = @Html.Raw(ViewBag.JsonModel);
-            var isCustomer = @Html.Raw(ViewBag.IsCustomer);
+            var isClient = @Html.Raw(ViewBag.IsClient);
 
-            console.log(isCustomer);
+            console.log(isClient);
 
             var dialog = document.getElementById("dialog").ej2_instances[0];
 
-            if (isCustomer) {
+            if (isClient) {
                 var currentEmail = document.getElementById("email");
                 currentEmail.Value = model.Email;
 
@@ -114,7 +114,7 @@
             var currentPhone = document.getElementById("phone");
             currentPhone.Value = model.PhoneNumber;
 
-            if (!isCustomer) {
+            if (!isClient) {
                 $(".dialogCard").css('min-height', '350px');
             }
 
@@ -125,13 +125,13 @@
 
     function ondlgUpdateClick() {
 
-        var isCustomer = @Html.Raw(ViewBag.IsCustomer);
+        var isClient = @Html.Raw(ViewBag.IsClient);
         var dialogObj = document.getElementById("dialog").ej2_instances[0];
         var isOk = true;
 
         document.getElementById("spanPhone").innerHTML = "";
 
-        if (isCustomer) {
+        if (isClient) {
             document.getElementById("spanNif").innerHTML = "";
             document.getElementById("spanEmail").innerHTML = "";
 
@@ -142,7 +142,7 @@
         var address = document.getElementById("dialog").querySelector('#address').value;
         var phone = document.getElementById("dialog").querySelector('#phone').value;
 
-        if (isCustomer) {
+        if (isClient) {
            var nif = document.getElementById("dialog").querySelector('#nif').value;
 
             if (email === "") {
@@ -175,7 +175,7 @@
 
         let nifNum;
 
-        if (isCustomer) {
+        if (isClient) {
             debugger;
 
             nifNum = parseInt(nif);
@@ -201,7 +201,7 @@
                 url: '@Url.Action("UpdateUser", "Account")',
                 type: 'POST',
                 dataType: 'json',
-                data: { email: email, phoneNumber: phoneNum, nif: nifNum, address: address,isCustomer: true },
+                data: { email: email, phoneNumber: phoneNum, nif: nifNum, address: address,isClient: true },
                 success: function(data) {
                     if (data) {
 
@@ -227,7 +227,7 @@
                 url: '@Url.Action("UpdateUser", "Account")',
                 type: 'POST',
                 dataType: 'json',
-                data: { email: null, phoneNumber: phoneNum, nif: null, address: address,isCustomer: false },
+                data: { email: null, phoneNumber: phoneNum, nif: null, address: address,isClient: false },
                 success: function(data) {
                     if (data) {
                         window.location.reload();
@@ -351,7 +351,7 @@
 
         <e-content-template>
             <form>
-                @if (this.User.IsInRole("Customer"))
+                @if (this.User.IsInRole("Client"))
                 {
                     <div class="form-group pad">
                         <span class="text-info">*If the email is changed you will be required to login again.</span>
@@ -370,7 +370,7 @@
                     <label asp-for="PhoneNumber"></label><br />
                     <span asp-validation-for="PhoneNumber" class="text-danger" id="spanPhone"></span>
                 </div>
-                @if (this.User.IsInRole("Customer"))
+                @if (this.User.IsInRole("Client"))
                 {
                     <div class="form-group pad">
                         <input asp-for="Nif" class="form-control sharp" id="nif" />

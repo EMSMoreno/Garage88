@@ -70,7 +70,6 @@ namespace Garage88.Helpers
             }
 
             return list;
-
         }
 
         public Role toRole(RoleViewModel model, bool isNew)
@@ -104,7 +103,6 @@ namespace Garage88.Helpers
                 Discount = model.Discount,
                 Price = model.Price
             };
-
         }
 
         public ServiceViewModel ToServiceViewModel(Service service)
@@ -121,7 +119,6 @@ namespace Garage88.Helpers
 
         public async Task<Mechanic> ToMechanic(MechanicViewModel model, User user, bool isNew)
         {
-
             var role = await _mechanicsRolesRepository.GetRoleWithSpecialitiesAsync(model.RoleId);
 
             if (role == null)

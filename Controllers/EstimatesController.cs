@@ -480,15 +480,15 @@ namespace Garage88.Controllers
 
         [HttpPost]
         [Route("Estimates/RemoveTemps")]
-        public async Task<bool> RemoveTemps(int vehicleId, int customerId)
+        public async Task<bool> RemoveTemps(int vehicleId, int clientId)
         {
 
-            if (vehicleId == 0 || customerId == 0)
+            if (vehicleId == 0 || clientId == 0)
             {
                 return false;
             }
 
-            var result = await _estimateRepository.DeleteEstimateDetailTempsAsync(vehicleId, customerId);
+            var result = await _estimateRepository.DeleteEstimateDetailTempsAsync(vehicleId, clientId);
 
             if (result > 0)
                 return true;

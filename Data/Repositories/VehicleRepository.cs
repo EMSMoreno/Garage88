@@ -31,12 +31,12 @@ namespace Garage88.Data.Repositories
 
         public IEnumerable<SelectListItem> GetComboVehicles(int clientId)
         {
-            var customer = _context.Clients.Find(clientId);
+            var client = _context.Clients.Find(clientId);
             var list = new List<SelectListItem>();
 
-            if (customer != null)
+            if (client != null)
             {
-                list = _context.Vehicles.Where(v => v.ClientId == customer.Id).Select(l => new SelectListItem
+                list = _context.Vehicles.Where(v => v.ClientId == client.Id).Select(l => new SelectListItem
                 {
                     Text = $"{l.PlateNumber}:{l.Brand.Name} - {l.Model.Name}",
                     Value = l.Id.ToString()

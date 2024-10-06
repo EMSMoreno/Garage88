@@ -49,8 +49,8 @@ namespace Garage88.Controllers
         {
             if (ModelState.IsValid)
             {
-                var message = $"<p> New customer contact request <br/><br/><b>Name: <b/>{model.Name}<br/><b>Phone Number: </b>{model.PhoneNumber}<br/>" +
-                    $"<b>Email: </b> {model.Email}<br/><b>Plate Number: </b>{model.PlateNumber}<br/><b>Message: </b>{model.Message}<br/><br/>Please refer to this customer as soon as possible. </br>" +
+                var message = $"<p> New client contact request <br/><br/><b>Name: <b/>{model.Name}<br/><b>Phone Number: </b>{model.PhoneNumber}<br/>" +
+                    $"<b>Email: </b> {model.Email}<br/><b>Plate Number: </b>{model.PlateNumber}<br/><b>Message: </b>{model.Message}<br/><br/>Please refer to this client as soon as possible. </br>" +
                     $"Your Pitstop management team.";
 
                 var response = await _mailHelper.SendContactEmailAsync(model.Email, "Contact request", message, model.Name);

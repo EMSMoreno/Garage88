@@ -1,0 +1,185 @@
+﻿@model IEnumerable<Garage88.Data.Entities.Vehicle>
+
+@{
+    Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
+    ViewData["Title"] = "Vehicles";
+}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" />
+
+<script type="text/javascript">
+
+    function showVehicleDetails(vehicleId) {
+        debugger;
+
+        $.ajax({
+                      url: '@Url.Action("VehicleDetails", "Vehicles")',
+                      type: 'POST',
+                      dataType: 'json',
+                      data: {Id: vehicleId},
+                      success: function(vehicleData) {
+
+                          console.log(vehicleData);
+
+                          var dialog = document.getElementById("dialog").ej2_instances[0];
+                          dialog.header = "Vehicle " + vehicleId + " details";
+
+                          dialog.content = "<b>Brand: </b>" + vehicleData.brandName + "<br/>" +
+                              "<b>Model: </b>" + vehicleData.modelName + "<br/>" +
+                              "<b>Construction Date: </b>" + vehicleData.dateOfConstruction + "<br/>" +
+                              "<b>Plate Number: </b>" + vehicleData.plateNumber + "<br/>" +
+                              "<b>VIN: </b>" + vehicleData.vIN + "<br/>" +
+                              "<b>Horsepower: </b>" + vehicleData.horsePower + "<br/>";
+
+                          dialog.show();
+                      },
+                      error: function(ex)
+                      {
+                          console.log("failed " + ex.message);
+                      }
+        });
+    }
+
+</script>
+
+<div class="container-fluid" style="max-width:90%">
+    <div>
+        <table class="hover stripe compact row-border testTable" style="display:inline-table" id="MyTable">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Brand)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Model)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.DateOfConstruction)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.PlateNumber)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.VehicleIdentificationNumber)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Horsepower)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Brand.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Model.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.DateOfConstruction)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PlateNumber)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.VehicleIdentificationNumber)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Horsepower)
+                        </td>
+                        <td id="@item.Id">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-info btn-sm"><i class="fas fa-edit"></i></a>
+                            <a class="btn btn-warning btn-sm" onclick="showVehicleDetails(@item.Id)"><i class="fas fa-list"></i></a>
+                            @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Admin"))
+                            {
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm pull-right" id="btnDelete"><i class="fas fa-trash"></i></a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+
+    <div id='container' style="height:auto">
+
+        <ejs-dialog id='dialog' visible="false" isModal="true" width="400px" showCloseIcon="true" allowDragging="false" overlayClick="onOverlayClick" target="#container">
+            <e-dialog-animationsettings effect="Fade" duration="400" delay="0"></e-dialog-animationsettings>
+
+        </ejs-dialog>
+    </div>
+
+    <footer class="footer" style="position:Absolute; bottom:65px;font-size:14px">
+        <table>
+            <tr>
+                <td>
+                    <i class="fas fa-edit" style="background: #31D2F2;padding:10px; margin-left:10px;color:white"></i> @Html.Raw(" = Edit ")
+                </td>
+                <td>
+                    <i class="fas fa-list" style="background: #E0A800;padding:10px; margin-left:10px; "></i> @Html.Raw(" = Details ")
+                </td>
+                @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Admin"))
+                {
+                    <td>
+                        <i class="fas fa-trash" style="background: #C82333;padding:10px; margin-left:10px;color:white "></i> @Html.Raw(" = Delete ")
+                    </td>
+                }
+            </tr>
+        </table>
+    </footer>
+
+    <partial name="_DeleteDialog" />
+
+</div>
+
+<script>
+    function onOverlayClick() {
+            var dialog = document.getElementById("dialog").ej2_instances[0];
+            dialog.hide();
+    };
+</script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="//cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+            $('#MyTable').DataTable({
+                columnDefs: [
+                    {className: 'dt-center', targets: "_all"},
+                    {className: "tableFont", targets: "_all" },
+                ]
+            });
+        });
+
+        $(document).ready(function() {
+
+            let id = 0;
+
+            $("a[id*=btnDelete]").click(function() {
+                debugger;
+                id=$(this).parent()[0].id;
+                $("#deleteDialog").modal("show");
+                return false;
+            });
+
+            $("#btnNoDelete").click(function() {
+                $("#deleteDialog").modal("hide");
+                return false;
+            });
+
+            $("#btnYesDelete").click(function() {
+                window.location.href = "/Vehicles/Delete/"+id;
+            });
+
+        });
+
+    </script>
+}

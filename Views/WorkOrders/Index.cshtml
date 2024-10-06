@@ -1,0 +1,440 @@
+﻿@using Garage88.Helpers
+@using Microsoft.JSInterop
+@model IEnumerable<Garage88.Data.Entities.WorkOrder>
+@inject IJSRuntime JS
+
+@{
+    Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
+    ViewData["Title"] = "Work Orders";
+    var okButton = new ButtonModel() { content = "Done!", cssClass = "e-flat" };
+}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" />
+
+<div class="container-fluid" style="margin-bottom: 75px; max-width:90%">
+    <div>
+        <table class="hover stripe row-border testTable" style="display:inline-table" id="MyTable">
+            <thead>
+                <tr>
+                    <th>
+                        Order Nº.
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.FirstOrDefault().OrderDateStart)
+                    </th>
+                    <th>
+                        Client Name
+                    </th>
+                    <th>
+                        Vehicle
+                    </th>
+                    <th>
+                        Technician Name
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.FirstOrDefault().Status)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.FirstOrDefault().OrderDateEnd)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+
+                    <tr id="rowEdit" onload="checkAwaitsReceiptStatus(@item.Id)">
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Id)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.OrderDateStart)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Appointment.Client.FullName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Appointment.Vehicle.PlateNumber) (@Html.DisplayFor(modelItem => item.Appointment.Vehicle.Brand.Name) @Html.DisplayFor(modelItem => item.Appointment.Vehicle.Model.Name))
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Appointment.Mechanic.FullName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Status)
+                        </td>
+                        <td>
+                            @if (item.OrderDateEnd.Date == Convert.ToDateTime("0001-01-01"))
+                            {
+                                @Html.Raw("-")
+                            }
+                            else
+                            {
+                                @Html.DisplayFor(modelItem => item.OrderDateEnd)
+                            }
+                        </td>
+                        <td id="@item.Id">
+
+                            @if (item.Status == "Opened")
+                            {
+                                @if (this.User.Identity.IsAuthenticated && !User.IsInRole("Technician"))
+                                {
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-info btn-sm"><i class="fas fa-edit"></i></a>
+                                }
+                            }
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-warning btn-sm"><i class="fas fa-list"></i></a>
+                            @if (this.User.Identity.IsAuthenticated && User.IsInRole("Technician") || this.User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                            {
+                                if (item.IsFinished != true)
+                                {
+                                    <a class="btn btn-success btn-sm" onclick="onDeclareDoneBtnClick(@item.Id)"><i class="fas fa-check"></i></a>
+                                }
+                            }
+                            @if (this.User.Identity.IsAuthenticated && User.IsInRole("Receptionist") || this.User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                            {
+                                if (item.IsFinished == true && item.Status == "Done")
+                                {
+                                    <a class="btn btn-primary btn-sm" id="btnPrintInvoice"><i class="fas fa-thumbs-up"></i></a>
+                                }
+                            }
+                            @if (this.User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                            {
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger pull-right btn-sm" id="btnDelete"><i class="fas fa-trash"></i></a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <partial name="_DeleteDialog" />
+
+    <!-- Modal -->
+    <div class="modal fade" id="wantsEmail" tabindex="-1" role="dialog" aria-labelledby="wantsEmail" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">Send invoice by email?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Do you wish to send the pdf file to the customer email?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" id="noSendEmail">No</button>
+                    <button type="button" class="btn btn-primary" id="yesSendEmail">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal end -->
+</div>
+
+<footer class="footer" style="position:Absolute; bottom:65px;font-size:14px;left: 18%;">
+    <table>
+        <tr>
+            <td style="margin-right:10px;">
+                <i class="fas fa-edit" style="background: #31D2F2;padding:10px; color:white;"></i> @Html.Raw(" = Edit Work Order Services ")
+            </td>
+            <td>
+                <i class="fas fa-list" style="background: #E0A800;padding:10px; margin-left:10px; "></i> @Html.Raw(" = Details ")
+            </td>
+            @if (this.User.Identity.IsAuthenticated && !User.IsInRole("Receptionist"))
+            {
+                <td>
+                    <i class="fas fa-check" style="background: #157347;padding:10px; margin-left:10px; color:white;"></i> @Html.Raw(" = Declare Work Order Done ")
+                </td>
+            }
+            @if (this.User.Identity.IsAuthenticated && !User.IsInRole("Technician"))
+            {
+                <td>
+                    <i class="fas fa-thumbs-up" style="background: #0B5ED7;padding:10px; margin-left:10px; color:white; "></i> @Html.Raw(" = Print Invoice ")
+                </td>
+            }
+            @if (this.User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+            {
+                <td>
+                    <i class="fas fa-trash" style="background: #C82333;padding:10px; margin-left:10px; color:white "></i> @Html.Raw(" = Delete Estimate ")
+                </td>
+            }
+        </tr>
+    </table>
+</footer>
+
+<script type="text/javascript">
+
+    var workOrderId;
+
+    function onDeclareDoneBtnClick(id) {
+        workOrderId = id;
+        var dialog = document.getElementById("dialog").ej2_instances[0];
+            dialog.header = "Declare Work order nº"+id+" done?";
+            dialog.show();
+    };
+
+
+    function ondlgButtonClick() {
+
+        var mechanicId = document.getElementById("mechanicId").value;
+        var parsedId = parseInt(mechanicId);
+        if (isNaN(parsedId) == true) {
+            document.getElementById("spanMessage").style.color = "red";
+            document.getElementById("spanMessage").innerHTML = "Please insert a valid mechanic Id.";
+        }
+        else {
+                $.ajax({
+                    url: '@Url.Action("CheckValidMechanicId", "WorkOrders")',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {mechanicId:parsedId},
+                    success: function (mechanic) {
+
+                        if (mechanic != null) {
+
+                            var seconds = 5;
+
+                            var observations = document.getElementById("observationsInput").value;
+                            document.getElementById("observationsInput").readOnly = true;
+
+                            var timeout = setTimeout(function(){
+                            window.location.href = '/WorkOrders/DeclareDone/'+workOrderId+"?observations="+observations+"&mechanicId="+mechanicId;
+                            },5000);
+
+                            setInterval(() => {
+
+                                seconds = seconds - 1;
+
+                                document.getElementById("timeLeft").innerHTML= 'Success! This window will close in: <span style="color: red;">'+seconds+'</span> seconds';
+
+                            }, 1000);
+                        }
+
+                    },
+                    error: function(ex) {
+                        document.getElementById("spanMessage").style.color = "red";
+                        document.getElementById("spanMessage").innerHTML = "Failed to retrive mechanic data."+ex;
+                    }
+                });
+                return false;
+        }
+    };
+
+    function ondlgInputChange() {
+
+        var mechanicId = document.getElementById("mechanicId").value;
+        var parsedId = parseInt(mechanicId);
+        if (isNaN(parsedId) == true) {
+            document.getElementById("spanMessage").style.color = "red";
+            document.getElementById("spanMessage").innerHTML = "Please insert a valid mechanic Id.";
+        }
+        else {
+                $.ajax({
+                    url: '@Url.Action("CheckValidMechanicId", "WorkOrders")',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: {mechanicId:parsedId},
+                    success: function (mechanic) {
+
+                        if (mechanic != null) {
+                            document.getElementById("spanMessage").style.color = "Green";
+                            document.getElementById("spanMessage").innerHTML = mechanic.fullName;
+                        }
+                        else {
+                            document.getElementById("spanMessage").style.color = "red";
+                            document.getElementById("spanMessage").innerHTML = "Please insert a valid mechanic number.";
+                        }
+                    },
+                    error: function(ex) {
+                        document.getElementById("spanMessage").style.color = "red";
+                        document.getElementById("spanMessage").innerHTML = "Failed to retrive mechanic data."+ex;
+                    }
+                });
+                return false;
+        }
+    };
+
+    function onOverlayClick() {
+         var dialog = document.getElementById("dialog").ej2_instances[0];
+         dialog.hide();
+    };
+
+    function checkAwaitsReceiptStatus(Id) {
+
+        $.ajax({
+            url: '@Url.Action("GetWorkOrder", "WorkOrders")',
+            type: 'POST',
+            dataType: 'json',
+            data: { workOrderId: Id},
+            success: function(order) {
+                console.log(order);
+                debugger;
+                if (order.awaitsReceipt == true) {
+                    document.getElementById("rowEdit").style.backgroundColor = "red";
+                };
+            },
+            error: function(ex) {
+                console.log("error");
+            },
+        });
+
+    }
+
+</script>
+
+<div id='container' style="height:auto">
+    <ejs-dialog id='dialog' visible="false" isModal="true" width="580px" height="440px" showCloseIcon="true" allowDragging="false" overlayClick="onOverlayClick" target="#container">
+        <e-content-template>
+            <div class="dialog-content">
+                <div style="display:inline-grid">
+                    <label class="control-label" style="text-align:left">Mechanic Id</label>
+                    <input class="e-input" type='number' id="mechanicId" onchange="ondlgInputChange()" style="width:100px" />
+                    <span id="spanMessage" style="font-weight:bold"></span>
+                </div>
+
+                <div style="margin-top:20px">
+                    <label class="control-label" style="text-align:left">Observations</label>
+                    <textarea class="e-input" id="observationsInput" rows="5"> </textarea>
+                    <div id="timeLeft" style="font-weight:bold; text-align:center; color:navy;margin-top:10px"></div>
+                </div>
+            </div>
+        </e-content-template>
+
+        <e-dialog-animationsettings effect="Fade" duration="400" delay="0"></e-dialog-animationsettings>
+        <e-dialog-buttons>
+            <e-dialog-dialogbutton buttonModel="@okButton" click="ondlgButtonClick"></e-dialog-dialogbutton>
+        </e-dialog-buttons>
+    </ejs-dialog>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="//cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            var table = $('#MyTable').DataTable({
+                columnDefs: [
+                    { className: 'dt-center', targets: "_all" },
+                    {orderable: false, targets: 6},
+                    {className: "tableFont", targets: "_all" },
+
+                ],
+                paging: true,
+                info: false,
+                order: [[ 0, 'desc' ]],
+                createdRow: function (row, data, index) {
+                    if (data[5] == 'Done') {
+                        $(row).css("background-color", "#f6bd60");
+                    }
+                    if (data[5] == 'Opened') {
+                        $(row).css("background-color", "#f7ede2");
+                    }
+                },
+
+            });
+        });
+
+        $(document).ready(function () {
+            let id = 0;
+            $('a[id*=btnDelete]').click(function () {
+                debugger;
+                id = $(this).parent()[0].id;
+                $("#deleteDialog").modal('show');
+                return false;
+            });
+            $("#btnNoDelete").click(function () {
+                $("#deleteDialog").modal('hide');
+                return false;
+            });
+            $("#btnYesDelete").click(function () {
+                window.location.href = '/WorkOrders/Delete/' + id;
+            });
+        });
+
+
+        $(document).ready(function() {
+            debugger;
+
+            let id = 0;
+
+            $('a[id*=btnPrintInvoice]').click(function() {
+                debugger;
+                id = $(this).parent()[0].id;
+                $("#wantsEmail").modal('show');
+                return false;
+            });
+
+            $("#noSendEmail").click(function() {
+
+                $.ajax({
+                    url: '@Url.Action("PrintInvoice", "WorkOrders")',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { id: id },
+                    success: function(result) {
+
+                        debugger;
+
+                        if (result != 0) {
+
+                            let invoiceUrl = "/pdf/Invoice/" + result + "?sendEmail=false";
+                            console.log(invoiceUrl);
+
+                            window.open(invoiceUrl, '_blank');
+
+                            window.location.reload();
+                        }
+                        else {
+
+                            window.location.reload();
+                        }
+                    },
+                    error: function(ex) {
+                        console.log("error");
+                    },
+                });
+            });
+
+            $("#yesSendEmail").click(function() {
+
+                $.ajax({
+                    url: '@Url.Action("PrintInvoice", "WorkOrders")',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { id: id },
+                    success: function(result) {
+
+                        debugger;
+
+                        if (result != 0) {
+
+                            let invoiceUrl = "/pdf/Invoice/" + result + "?sendEmail=true";
+                            console.log(invoiceUrl);
+
+                            window.open(invoiceUrl, '_blank');
+
+                            window.location.reload();
+                        }
+                        else {
+
+                            window.location.reload();
+                        }
+                    },
+                    error: function(ex) {
+                        console.log("error");
+                    },
+                });
+            });
+
+        });
+
+
+    </script>
+
+}

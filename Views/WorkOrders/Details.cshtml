@@ -1,0 +1,241 @@
+﻿@model Garage88.Data.Entities.WorkOrder
+
+@{
+    Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
+    ViewData["Title"] = "Work Orders";
+    ViewData["BreadCrumb"] = "Details";
+}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" />
+
+<div class="container" style="margin-top:50px">
+    <div class="row text-center">
+
+        <div class="col-md-5 bg-gray-light border border-dark">
+            <div class="row">
+                <div class="col-md-12 border font-weight-bold">
+                    Client
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 border font-weight-bold">
+                    Full Name
+                </div>
+                <div class="col-md-8 border">
+                    @Html.DisplayFor(model => model.Appointment.Client.FullName)
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 border font-weight-bold">
+                    Vehicle
+                </div>
+                <div class="col-md-8 border">
+                    @Html.DisplayFor(model => model.Appointment.Vehicle.Brand.Name)  @Html.DisplayFor(model => model.Appointment.Vehicle.Model.Name) (@Html.DisplayFor(model => model.Appointment.Vehicle.PlateNumber))
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 border font-weight-bold">
+                    Phone Number
+                </div>
+                <div class="col-md-8 border">
+                    @Html.DisplayFor(model => model.Appointment.Client.PhoneNumber)
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 border font-weight-bold">
+                    Address
+                </div>
+                <div class="col-md-8 border">
+                    @Html.DisplayFor(model => model.Appointment.Client.Address)
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-2"></div>
+
+        <div class="col-md-5 bg-gray-light border border-dark">
+
+            <div class="row">
+                <div class="col-md-12 border font-weight-bold">
+                    Work Order Details
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 border font-weight-bold">
+                    Work Order Nº
+                </div>
+                <div class="col-md-8 border">
+                    @Html.DisplayFor(model => model.Id)
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 border font-weight-bold">
+                    @Html.DisplayNameFor(model => model.OrderDateStart)
+                </div>
+                <div class="col-md-8 border">
+                    @Html.DisplayFor(model => model.OrderDateStart)
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 border font-weight-bold">
+                    @Html.DisplayNameFor(model => model.OrderDateEnd)
+                </div>
+                <div class="col-md-8 border">
+                    @if (Model.OrderDateEnd.Date == Convert.ToDateTime("0001-01-01"))
+                    {
+                        @Html.Raw("-")
+                    }
+                    else
+                    {
+                        @Html.DisplayFor(model => model.OrderDateEnd)
+                    }
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 border font-weight-bold">
+                    Service Done By
+                </div>
+                <div class="col-md-8 border">
+                    @if (Model.IsFinished == true)
+                    {
+                        @Html.DisplayFor(model => model.ServiceDoneBy.FullName)
+                    }
+                    else
+                    {
+                        @Html.Raw("-")
+                    }
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+</div>
+
+<div class="container" style="margin-top:50px">
+    <div class="row text-center">
+        <div class="col-md-12 bg-gray-light border border-dark">
+            <div class="form-group" style="display:block">
+                <label class="control-label" style="text-align:center">Fault Description</label>
+                <textarea class="form-control" rows="3" readonly>@Model.Appointment.Estimate.FaultDescription</textarea>
+            </div>
+        </div>
+    </div>
+</div>
+@*row-border*@
+<div class="container" style="margin-top:50px">
+    <div class="row text-center">
+        <div class="col-md-12 bg-gray-light border border-dark">
+            <label class="control-label" style="text-align:center">Services in Work Order</label>
+            <table class="hover stripe compact borderStyle" style="display:inline-table;" id="MyTable">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Appointment.Estimate.Services.FirstOrDefault().Service.Name)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Appointment.Estimate.Services.FirstOrDefault().Service.Price)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Appointment.Estimate.Services.FirstOrDefault().Service.Discount)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Appointment.Estimate.Services.FirstOrDefault().Service.PriceWithDiscount)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Appointment.Estimate.Services.FirstOrDefault().Quantity)
+                        </th>
+                        <th>
+                            Service Total
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Appointment.Estimate.Services)
+                    {
+                        @if (item.Service != null)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Service.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Service.Price)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Service.Discount)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Service.PriceWithDiscount)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Quantity)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ValueWithDiscount)
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+            <table class="stripe cell-border" style="display:inline-table; margin-bottom:20px" id="MyTable2">
+                <thead>
+                    <tr>
+                        <th style="padding-right: 89px;">
+                            Total
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding-right: 75px;">@Html.DisplayFor(model => model.Appointment.Estimate.ValueWithDiscount)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="margin-top:20px; margin-bottom:10px">
+    <a asp-action="Index" class="btn btn-primary">Back to Work Orders</a>
+    <a asp-action="WorkOrder" asp-controller="pdf" asp-route-id="@Model.Appointment.Id" target="_blank" style="float:right; margin-right:10px" class="btn btn-danger btn-sm"><i class="fas fa-file-pdf"></i> Download </a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="//cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+            $('#MyTable').DataTable({
+                columnDefs: [
+                    {className: 'dt-center', targets: "_all"},
+                ],
+                paging: false,
+                searching: false,
+                info: false,
+                ordering: false,
+            });
+
+            $('#MyTable2').DataTable({
+                columnDefs: [
+                    {className: 'dt-right', targets: "_all"},
+                ],
+                paging: false,
+                searching: false,
+                info: false,
+                ordering: false,
+            });
+
+        });
+    </script>
+}

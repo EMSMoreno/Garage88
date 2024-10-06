@@ -14,19 +14,22 @@ namespace Garage88.Helpers
             _blobClient = storageAccount.CreateCloudBlobClient();
         }
 
-        public Task<Guid> UploadBlobAsync(IFormFile file, string containerName)
+        public async Task<Guid> UploadBlobAsync(IFormFile file, string containerName)
         {
-            throw new NotImplementedException();
+            Stream stream = file.OpenReadStream();
+            return await UploadStreamAsync(stream, containerName);
         }
 
-        public Task<Guid> UploadBlobAsync(byte[] file, string containerName)
+        public async Task<Guid> UploadBlobAsync(byte[] file, string containerName)
         {
-            throw new NotImplementedException();
+            MemoryStream stream = new MemoryStream(file);
+            return await UploadStreamAsync(stream, containerName);
         }
 
-        public Task<Guid> UploadBlobAsync(string image, string containerName)
+        public async Task<Guid> UploadBlobAsync(string image, string containerName)
         {
-            throw new NotImplementedException();
+            Stream stream = File.OpenRead(image);
+            return await UploadStreamAsync(stream, containerName);
         }
 
         private async Task<Guid> UploadStreamAsync(Stream stream, string containerName)

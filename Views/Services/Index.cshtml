@@ -1,0 +1,167 @@
+﻿@model IEnumerable<Garage88.Data.Entities.Service>
+
+@{
+    Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
+    ViewData["Title"] = "Services";
+}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" />
+
+<script type="text/javascript">
+
+    function serviceDetails(serviceId) {
+        debugger;
+
+        $.ajax({
+                      url: '@Url.Action("ServiceDetails", "Services")',
+                      type: 'POST',
+                      dataType: 'json',
+                      data: {Id: serviceId},
+                      success: function(serviceData) {
+                          console.log(serviceData);
+
+                          var dialog = document.getElementById("dialog").ej2_instances[0];
+                          dialog.header = serviceData.name + " Details";
+
+                          dialog.content = "<b>Name: </b>" + serviceData.name + "<br/>" +
+                              "<b>Description: </b>" + serviceData.description +  "<br/>" +
+                              "<b>Price: </b>" + serviceData.price + " € <br/>" +
+                              "<b>Discount: </b>" + serviceData.discount + " % <br/>" +
+                              "<b>Price with Discount: </b>" + serviceData.priceWithDiscount + " € <br/>";
+
+                          dialog.show();
+                      },
+                      error: function(ex)
+                      {
+                          console.log("failed " + ex.message);
+                      }
+        });
+    };
+
+</script>
+
+<div class="container-fluid" style="max-width:90%">
+    <div>
+        <table class="hover stripe compact row-border testTable" style="display:inline-table" id="MyTable">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Name)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Price)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Discount)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.PriceWithDiscount)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Price)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Discount)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.PriceWithDiscount)
+                        </td>
+                        <td id="@item.Id">
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-info btn-sm"><i class="fas fa-edit"></i></a>
+
+                            <a onclick="serviceDetails(@item.Id)" class="btn btn-warning btn-sm"><i class="fas fa-list"></i></a>
+
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm pull-right" id="btnDelete"><i class="fas fa-trash"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+    </div>
+
+    <div id='container' style="height:auto">
+
+        <ejs-dialog id='dialog' visible="false" isModal="true" width="400px" showCloseIcon="true" allowDragging="false" overlayClick="onOverlayClick" target="#container">
+            <e-dialog-animationsettings effect="Fade" duration="400" delay="0"></e-dialog-animationsettings>
+
+        </ejs-dialog>
+    </div>
+
+    <footer class="footer" style="position:Absolute; bottom:65px;font-size:14px">
+        <table>
+            <tr>
+                <td>
+                    <i class="fas fa-edit" style="background: #138496;padding:10px; margin-left:10px; color:white"></i> @Html.Raw(" = Edit ")
+                </td>
+                <td>
+                    <i class="fas fa-list" style="background: #E0A800;padding:10px; margin-left:10px; "></i> @Html.Raw(" = Details ")
+                </td>
+                <td>
+                    <i class="fas fa-trash" style="background: #C82333;padding:10px; margin-left:10px;color:white "></i> @Html.Raw(" = Delete ")
+                </td>
+            </tr>
+        </table>
+    </footer>
+</div>
+
+<partial name="_DeleteDialog" />
+
+<script>
+
+
+    function onOverlayClick() {
+            var dialog = document.getElementById("dialog").ej2_instances[0];
+            dialog.hide();
+    };
+
+</script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="//cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+            $('#MyTable').DataTable({
+                columnDefs: [{
+                    className: 'dt-center', targets: "_all"
+                }]
+            });
+        });
+
+        $(document).ready(function() {
+
+            let id = 0;
+
+            $("a[id*=btnDelete]").click(function() {
+                debugger;
+                id=$(this).parent()[0].id;
+                $("#deleteDialog").modal("show");
+                return false;
+            });
+
+            $("#btnNoDelete").click(function() {
+                $("#deleteDialog").modal("hide");
+                return false;
+            });
+
+            $("#btnYesDelete").click(function() {
+                window.location.href = "/Services/Delete/"+id;
+            });
+        });
+    </script>
+}
+
