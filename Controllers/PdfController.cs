@@ -108,6 +108,8 @@ namespace Garage88.Controllers
 
         public async Task<IActionResult> Estimate(int? id, bool sendEmail)
         {
+
+
             if (id == null)
             {
                 return NotFound();
@@ -174,7 +176,6 @@ namespace Garage88.Controllers
                 }
 
                 return File(pdfBytes, "application/pdf");
-
             }
         }
 

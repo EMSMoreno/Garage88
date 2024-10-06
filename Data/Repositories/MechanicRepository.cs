@@ -14,7 +14,7 @@ namespace Garage88.Data.Repositories
             _context = context;
         }
 
-        public async Task<Response> CheckIfEmployeeExistsAsync(User user)
+        public async Task<Response> CheckIfMechanicExistsAsync(User user)
         {
             var mechanic = await _context.Mechanics.FindAsync(user);
 
@@ -26,11 +26,6 @@ namespace Garage88.Data.Repositories
             {
                 return new Response { IsSuccess = true };
             }
-        }
-
-        public Task<Response> CheckIfMechanicExistsAsync(User user)
-        {
-            throw new NotImplementedException();
         }
 
         public IQueryable GetAllWithUsers()
@@ -69,7 +64,7 @@ namespace Garage88.Data.Repositories
             return list;
         }
 
-        public async Task<Mechanic> GetEmployeeByIdAsync(int mechanicId)
+        public async Task<Mechanic> GetMechanicByIdAsync(int mechanicId)
         {
             var mechanic = await _context.Mechanics.Include(e => e.User)
                                                    .Include(e => e.Role)
@@ -79,23 +74,13 @@ namespace Garage88.Data.Repositories
             return mechanic;
         }
 
-        public Task<Mechanic> GetMechanicByIdAsync(int mechanicId)
+        public async Task<List<Mechanic>> GetTechniciansMechanicsAsync()
         {
-            throw new NotImplementedException();
-        }
-
-        public async Task<List<Mechanic>> GetTechniciansEmployeesAsync()
-        {
-            List<Mechanic> list = new List<Mechanic>();
+           List<Mechanic> list = new List<Mechanic>();
 
             list = await _context.Mechanics.Include(e => e.User).Include(e => e.Role).Include(e => e.Speciality).Where(e => e.Role.Name == "Technician").ToListAsync();
 
             return list;
-        }
-
-        public Task<List<Mechanic>> GetTechniciansMechanicsAsync()
-        {
-            throw new NotImplementedException();
         }
     }
 }
