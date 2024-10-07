@@ -33,10 +33,6 @@ namespace Garage88.Helpers
                 CreatedDate = appointment.CreatedDate,
                 Client = appointment.Client,
                 ClientId = appointment.Client.Id,
-<<<<<<< HEAD
-                MechanicId = appointment.Mechanic.Id,
-=======
->>>>>>> Dev/wwwroot~
                 Estimate = appointment.Estimate,
                 EstimateId = appointment.Estimate.Id,
                 Mechanic = appointment.Mechanic,
