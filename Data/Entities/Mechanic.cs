@@ -23,7 +23,7 @@ namespace Garage88.Data.Entities
         public string Email { get; set; }
 
         [Required(ErrorMessage = "Must insert the {0}.")]
-        public Speciality Specialty { get; set; }
+        public Speciality Speciality { get; set; }
 
         [Required(ErrorMessage = "Must insert the {0}.")]
         public Role Role { get; set; }

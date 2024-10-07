@@ -33,10 +33,6 @@ namespace Garage88.Helpers
                 CreatedDate = appointment.CreatedDate,
                 Client = appointment.Client,
                 ClientId = appointment.Client.Id,
-<<<<<<< Updated upstream
-                EmployeeId = appointment.Mechanic.Id,
-=======
->>>>>>> Stashed changes
                 Estimate = appointment.Estimate,
                 EstimateId = appointment.Estimate.Id,
                 Mechanic = appointment.Mechanic,
