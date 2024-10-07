@@ -24,7 +24,6 @@ namespace Garage88.Helpers
 
         public AppointmentViewModel ToAppointmentViewModel(Appointment appointment, bool isNew)
         {
-
             var model = new AppointmentViewModel
             {
                 AppointmentEndDate = appointment.AppointmentEndDate,
@@ -34,10 +33,14 @@ namespace Garage88.Helpers
                 CreatedDate = appointment.CreatedDate,
                 Client = appointment.Client,
                 ClientId = appointment.Client.Id,
+<<<<<<< HEAD
                 MechanicId = appointment.Mechanic.Id,
+=======
+>>>>>>> Dev/wwwroot~
                 Estimate = appointment.Estimate,
                 EstimateId = appointment.Estimate.Id,
                 Mechanic = appointment.Mechanic,
+                MechanicId = appointment.Mechanic.Id,
                 Observations = appointment.Observations,
                 UpdatedBy = appointment.UpdatedBy,
                 UpdatedDate = appointment.UpdatedDate,
