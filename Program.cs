@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Vereyon.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,16 +48,26 @@ builder.Services.AddAuthentication(options =>
     //};
 });
 
-// Registrar ApplicationDbContext com SQL Server
+// Chamar o ApplicationDbContext com o SQL Server
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Registrar os repositórios e helpers
+// Chamar os repositórios e os helpers
+builder.Services.AddTransient<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddTransient<IBrandRepository, BrandRepository>();
 builder.Services.AddTransient<IClientRepository, ClientRepository>();
+builder.Services.AddTransient<IEstimateRepository, EstimateRepository>();
+//builder.Services.AddTransient<IGenericRepository, GenericRepository>();
 builder.Services.AddTransient<IMailHelper, MailHelper>();
 builder.Services.AddTransient<IMechanicRepository, MechanicRepository>();
-builder.Services.AddTransient<IUserHelper, UserHelper>();
+builder.Services.AddTransient<IMechanicsRolesRepository, MechanicsRolesRepository>();
 builder.Services.AddTransient<IServiceRepository, ServiceRepository>();
+builder.Services.AddTransient<IVehicleRepository, VehicleRepository>();
+builder.Services.AddTransient<IWorkOrderRepository, WorkOrderRepository>();
+
+builder.Services.AddTransient<IUserHelper, UserHelper>();
+builder.Services.AddTransient<IConverterHelper, ConverterHelper>();
+
 
 // Configurar autenticação por cookie
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -65,6 +76,9 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LoginPath = "/Account/Login";
         options.AccessDeniedPath = "/Account/AccessDenied";
     });
+
+// Registar Serviços do Vereyon.Web
+builder.Services.AddFlashMessage();
 
 var app = builder.Build();
 

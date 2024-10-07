@@ -1,9 +1,9 @@
 ﻿@model IEnumerable<Garage88.Data.Entities.Client>
 
 @{
-    Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
+    // Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
+    Layout = "_Layout";
     ViewData["Title"] = "Clients";
-
 }
 
 <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" />
@@ -75,6 +75,7 @@
             </tr>
         </table>
     </footer>
+
 </div>
 
 @section Scripts {
@@ -105,7 +106,7 @@
                 return false;
             });
             $("#btnYesDelete").click(function () {
-                window.location.href = '/Clients/Delete/' + id;
+                window.location.href = '/Customers/Delete/' + id;
             });
         });
     </script>

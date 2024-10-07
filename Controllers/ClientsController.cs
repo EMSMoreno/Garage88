@@ -8,7 +8,7 @@ using Garage88.Data.Entities;
 
 namespace Garage88.Controllers
 {
-    [Authorize(Roles = "Admin, Receptionist")]
+    //[Authorize(Roles = "Admin, Receptionist")]
     public class ClientsController : Controller
     {
         private readonly IClientRepository _clientRepository;
@@ -18,14 +18,12 @@ namespace Garage88.Controllers
         private readonly IBrandRepository _brandRepository;
         private readonly IFlashMessage _flashMessage;
 
-        public ClientsController(
-            IClientRepository clientRepository
-            , IUserHelper userHelper
-            , IMailHelper mailHelper
-            , IVehicleRepository vehicleRepository
-            , IBrandRepository brandRepository
-            , IFlashMessage flashMessage
-        )
+        public ClientsController(IClientRepository clientRepository,
+                                 IUserHelper userHelper,
+                                 IMailHelper mailHelper,
+                                 IVehicleRepository vehicleRepository,
+                                 IBrandRepository brandRepository,
+                                 IFlashMessage flashMessage)
         {
             _clientRepository = clientRepository;
             _userHelper = userHelper;
