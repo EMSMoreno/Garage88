@@ -15,6 +15,6 @@ namespace Garage88.Data.Repositories
 
         Task<List<SalesChartDataModel>> GetYearSalesByMonthAsync(int year);
 
-        Task<List<Invoice>> GetUserInvoicesAsync(int customerId);
+        Task<List<Invoice>> GetUserInvoicesAsync(int clientId);
     }
 }

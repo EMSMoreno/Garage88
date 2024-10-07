@@ -1,0 +1,160 @@
+﻿@model Garage88.Models.MechanicViewModel
+
+@{
+    Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
+    ViewData["Title"] = "Mechanics";
+    ViewData["BreadCrumb"] = "Create";
+}
+
+<h4 style="text-align:center">Add new Mechanic</h4>
+<hr />
+<div class="row" style="margin-top:50px;">
+    <div class="col-md-12">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <input type="hidden" asp-for="MechanicId" />
+            <input type="hidden" asp-for="User" />
+            <input type="hidden" asp-for="UserId" />
+
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label asp-for="FirstName" class="control-label"></label>
+                        <input asp-for="FirstName" class="form-control" />
+                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label asp-for="LastName" class="control-label"></label>
+                        <input asp-for="LastName" class="form-control" />
+                        <span asp-validation-for="LastName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label asp-for="PhoneNumber" class="control-label"></label>
+                        <input asp-for="PhoneNumber" class="form-control" />
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label asp-for="Email" class="control-label"></label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-1"></div>
+            </div>
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-10">
+                    <div class="form-group">
+                        <label asp-for="Address" class="control-label"></label>
+                        <input asp-for="Address" class="form-control" />
+                        <span asp-validation-for="Address" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label asp-for="RoleId" class="control-label"></label>
+                        <select asp-for="RoleId" asp-items="Model.Roles" class="form-control"></select>
+                        <span asp-validation-for="RoleId" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label asp-for="SpecialityId" class="control-label"></label>
+                        <select asp-for="SpecialityId" asp-items="Model.Specialities" class="form-control"></select>
+                        <span asp-validation-for="SpecialityId" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <label asp-for="Color" class="control-label"></label> <br />
+                        <ejs-colorpicker id="element" ejs-for="Color"></ejs-colorpicker>
+                        <span asp-validation-for="Color" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-3"></div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-10">
+                    <div class="form-group">
+                        <label asp-for="About" class="control-label"></label>
+                        <input asp-for="About" class="form-control" />
+                        <span asp-validation-for="About" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+
+            <style>
+                .wrap {
+                    margin: 0 auto;
+                    width: 300px;
+                    text-align: Left;
+                }
+            </style>
+
+            <div class="row" style="margin-top:20px;">
+                <div class="col-md-1"></div>
+                <div class="col-md-10">
+                    <div class="form-group">
+                        <input type="submit" value="Create" style="width:100%" class="btn btn-primary" />
+                    </div>
+                </div>
+                <div class="col-md-1"></div>
+            </div>
+
+
+        </form>
+    </div>
+</div>
+
+@section Scripts
+{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#RoleId").change(function () {
+                $("#SpecialityId").empty();
+                $.ajax({
+                    url: '@Url.Action("GetSpecialitiesAsync", "Mechanics")',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { roleId: $("#RoleId").val() },
+                    success: function (models) {
+                        debugger;
+                        $("#SpecialtyId").append('<option value="0">[Select a Speciality]</option>');
+                        $.each(models, function (i, speciality) {
+                            $("#SpecialtyId").append('<option value="'
+                                + speciality.id + '">'
+                                + speciality.name + '</option>'
+                            );
+                        });
+
+                    },
+                    error: function (ex) {
+                        alert('Failed to retrieve specialities.' + ex);
+                    }
+                });
+                return false;
+            })
+        });
+    </script>
+}

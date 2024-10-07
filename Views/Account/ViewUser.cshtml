@@ -1,0 +1,591 @@
+﻿@using Garage88.Helpers
+@using System.Text.RegularExpressions
+@model Garage88.Models.ChangeUserViewModel
+
+@{
+    ViewData["Title"] = "ViewUser";
+    var updateButton = new ButtonModel() { content = "Update", cssClass = "e-flat" };
+    var changeButton = new ButtonModel() { content = "Update", cssClass = "e-flat" };
+}
+
+<div class="row" style="height:80vh">
+    <div class="col-1"></div>
+    <div class="col-10" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); margin-bottom:25px;margin-top:25px; background-color:#f4f3ee;padding:0;">
+
+        <div class="row" style="min-height: 100%;">
+
+            <div class="col-4 card">
+                <div style="margin-top:10px;">
+                    <h6>User Profile</h6>
+                </div>
+
+                <div class="form-group imageStyle" id="profilePictureBackground" style="background:Url('/images/blankProfilePicture.png');margin:auto;margin-top:20px;margin-bottom:0px;border-radius:0;">
+                    <input class="form-control my_file" id="file" name="file" type="file" onchange="changeProfilePicture('file')" />
+                </div>
+
+                @if (this.User.IsInRole("Client"))
+                {
+                    <a asp-action="ServiceHistory" class="btn btn-dark sharp" style="width:256px; margin-left:6px;margin-top:20px">My Service History</a>
+                    <a asp-action="Vehicles" class="btn btn-primary sharp" style="width:256px; margin-left:6px;margin-top:20px">My Vehicles</a>
+                }
+
+                <a style="width:256px; margin-left:6px;margin-top:20px" class="btn btn-success sharp" onclick="editUser()">Edit Profile</a>
+
+                @if (Model.HasPassword != false)
+                {
+                    <a style="width:256px; margin-left:6px; margin-bottom:20px;margin-top:20px" class="btn btn-danger sharp" onclick="changePassword()">Change Password</a>
+                }
+
+
+            </div>
+
+            <div class="col-4" style="margin-top: 5%;">
+
+                <div asp-validation-summary="ModelOnly"></div>
+
+                <div class="form-group pad">
+                    <label asp-for="FullName"></label>
+                    <input asp-for="FullName" class="form-control sharp" readonly />
+                </div>
+
+                <div class="form-group pad">
+                    <label asp-for="Address"></label>
+                    <input asp-for="Address" class="form-control sharp" readonly />
+                </div>
+
+                <div class="form-group pad">
+                    <label asp-for="Email"></label>
+                    <input asp-for="Email" class="form-control sharp" readonly />
+                </div>
+
+                <div class="form-group pad">
+                    <label asp-for="PhoneNumber"></label>
+                    <input asp-for="PhoneNumber" class="form-control sharp" readonly />
+                </div>
+                @if (this.User.IsInRole("Client"))
+                {
+                    <div class="form-group pad">
+                        <label asp-for="Nif"></label>
+                        <input asp-for="Nif" class="form-control sharp" readonly />
+                    </div>
+                }
+            </div>
+
+
+            <div class="col" style="filter: drop-shadow(-6px 5px 4px rgba(14, 30, 37, 0.32));">
+                <img src="@ViewBag.Image" style="width:100%" />
+            </div>
+        </div>
+
+    </div>
+    <div class="col-1"></div>
+</div>
+
+<script type="text/javascript">
+
+    function onThisOverlayClick() {
+          debugger;
+          var dialog = document.getElementById("dialog").ej2_instances[0];
+          dialog.hide();
+
+    };
+
+    function editUser(){
+
+            debugger;
+            var model = @Html.Raw(ViewBag.JsonModel);
+            var isClient = @Html.Raw(ViewBag.IsClient);
+
+            console.log(isClient);
+
+            var dialog = document.getElementById("dialog").ej2_instances[0];
+
+            if (isClient) {
+                var currentEmail = document.getElementById("email");
+                currentEmail.Value = model.Email;
+
+                var currentNif = document.getElementById("nif");
+                currentNif.Value = model.Nif;
+            }
+
+            var currentAddress = document.getElementById("address");
+            currentAddress.Value = model.Address;
+
+            var currentPhone = document.getElementById("phone");
+            currentPhone.Value = model.PhoneNumber;
+
+            if (!isClient) {
+                $(".dialogCard").css('min-height', '350px');
+            }
+
+
+            dialog.show();
+    };
+
+
+    function ondlgUpdateClick() {
+
+        var isClient = @Html.Raw(ViewBag.IsClient);
+        var dialogObj = document.getElementById("dialog").ej2_instances[0];
+        var isOk = true;
+
+        document.getElementById("spanPhone").innerHTML = "";
+
+        if (isClient) {
+            document.getElementById("spanNif").innerHTML = "";
+            document.getElementById("spanEmail").innerHTML = "";
+
+            var oldEmail = document.getElementById("dialog").querySelector('#email').Value;
+            var email = document.getElementById("dialog").querySelector('#email').value;
+        }
+
+        var address = document.getElementById("dialog").querySelector('#address').value;
+        var phone = document.getElementById("dialog").querySelector('#phone').value;
+
+        if (isClient) {
+           var nif = document.getElementById("dialog").querySelector('#nif').value;
+
+            if (email === "") {
+            document.getElementById("spanEmail").innerHTML = "Please insert an email.";
+                isOk = false;
+            }
+
+            var checkedEmail = isEmail(email);
+
+            if (!checkedEmail) {
+                document.getElementById("spanEmail").innerHTML = "The email is not valid.";
+                isOk = false;
+            }
+        }
+
+
+        let phoneNum = parseInt(phone);
+
+        if (isNaN(phone) && phone !== "") {
+            document.getElementById("spanPhone").innerHTML = "Only numbers are allowed.";
+            isOk = false;
+        }
+
+        let phoneLenght = phoneNum.toString().length;
+
+        if (phoneLenght > 14) {
+            document.getElementById("spanPhone").innerHTML = "Phone number can only have 14 characters max.";
+            isOk = false;
+        }
+
+        let nifNum;
+
+        if (isClient) {
+            debugger;
+
+            nifNum = parseInt(nif);
+
+            if (nif !== "" && isNaN(nif)) {
+                document.getElementById("spanNif").innerHTML = "Only numbers are allowed.";
+                isOk = false;
+            }
+
+            let nifLenght = nifNum.toString().length;
+
+            if (nifLenght > 9) {
+                document.getElementById("spanNif").innerHTML = "Nif can only have 9 characters max.";
+               isOk = false;
+            }
+
+
+            if (!isOk) {
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("UpdateUser", "Account")',
+                type: 'POST',
+                dataType: 'json',
+                data: { email: email, phoneNumber: phoneNum, nif: nifNum, address: address,isClient: true },
+                success: function(data) {
+                    if (data) {
+
+                        if (oldEmail == email) {
+                            window.location.reload();
+                        }
+                        else {
+                            window.location.href = '@Url.Action("Logout", "Account")';
+                        }
+                    }
+                    else {
+                        document.getElementById("notValidated").innerHTML = "There was an error updating your data!";
+                    }
+                },
+                error: function(ex) {
+
+                    console.log(ex);
+                }
+            });
+        }
+        else {
+            $.ajax({
+                url: '@Url.Action("UpdateUser", "Account")',
+                type: 'POST',
+                dataType: 'json',
+                data: { email: null, phoneNumber: phoneNum, nif: null, address: address,isClient: false },
+                success: function(data) {
+                    if (data) {
+                        window.location.reload();
+                    }
+                    else {
+                        document.getElementById("notValidated").innerHTML = "There was an error updating your data!";
+                    }
+                },
+                error: function(ex) {
+
+                    console.log(ex);
+                }
+            });
+        }
+
+    };
+
+    function isEmail(emailAdress){
+        let regex = /^\w+([\.-]?\w+)*@@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+
+        if (emailAdress.match(regex)) {
+            return true;
+        }
+        else
+        return false;
+    };
+
+    function changePassword() {
+
+        var dialog = document.getElementById("passwordDialog").ej2_instances[0];
+        dialog.show();
+
+    };
+
+
+    function ondlgChangeClick() {
+        debugger;
+        let isValid = true;
+
+        document.getElementById("spanOldPassword").innerHTML = "";
+        document.getElementById("spanNewPassword").innerHTML = "";
+        document.getElementById("spanRepeatPassword").innerHTML = "";
+        document.getElementById("passwordValidated").innerHTML = "";
+        document.getElementById("passwordNotValidated").innerHTML = "";
+
+        var oldPassword = document.getElementById("passwordDialog").querySelector('#oldPassword').value;
+        var newPassword = document.getElementById("passwordDialog").querySelector('#newPassword').value;
+        var repeatedPassword = document.getElementById("passwordDialog").querySelector('#repeatPassword').value;
+
+        if (oldPassword === "") {
+            document.getElementById("spanOldPassword").innerHTML = "Insert the Old Password field.";
+            isValid = false;
+        }
+
+        if (newPassword === "") {
+            document.getElementById("spanNewPassword").innerHTML = "Insert the New Password field.";
+            isValid = false;
+        }
+
+        if (repeatedPassword === "") {
+            document.getElementById("spanRepeatPassword").innerHTML = "Insert the Repeat Password field.";
+            isValid = false;
+        }
+
+        if (newPassword.length < 6) {
+            document.getElementById("spanNewPassword").innerHTML = "New password must have more than 6 characters.";
+            isValid = false;
+        }
+
+        if (isValid) {
+
+            $.ajax({
+                url: '@Url.Action("ChangePassword", "Account")',
+                type: 'POST',
+                dataType: 'json',
+                data: { oldPassword: oldPassword, newPassword: newPassword, repeatedPassword: repeatedPassword },
+                success: function(data) {
+                    console.log(data);
+                    debugger;
+                    if (data.isSuccess == true) {
+
+                        document.getElementById("passwordValidated").innerHTML = data.message;
+                        document.getElementById("oldPassword").value = "";
+                        document.getElementById("newPassword").value = "";
+                        document.getElementById("repeatPassword").value = "";
+
+                    }
+                    else {
+                         document.getElementById("passwordNotValidated").innerHTML = data.message;
+                    }
+                },
+                error: function(ex) {
+
+                    console.log(ex);
+                }
+            });
+
+
+
+
+        }
+        else {
+            return;
+        }
+
+    };
+
+    function onPasswordOverlayClick() {
+        var dialog = document.getElementById("passwordDialog").ej2_instances[0];
+        dialog.hide();
+    };
+
+
+</script>
+
+<div id='container'>
+
+    <ejs-dialog id='dialog' class="dialogCard" visible="false" isModal="true" width="450px" showCloseIcon="true" allowDragging="true" overlayClick="onThisOverlayClick" target="#container" header="Edit User">
+
+        <e-dialog-animationsettings effect="Fade" duration="400" delay="0"></e-dialog-animationsettings>
+
+        <e-content-template>
+            <form>
+                @if (this.User.IsInRole("Client"))
+                {
+                    <div class="form-group pad">
+                        <span class="text-info">*If the email is changed you will be required to login again.</span>
+                        <input asp-for="Email" class="form-control sharp" id="email" />
+                        <label asp-for="Email"></label><br />
+                        <span asp-validation-for="Email" class="text-danger" id="spanEmail"></span>
+                    </div>
+                }
+                <div class="form-group pad">
+                    <input asp-for="Address" class="form-control sharp" id="address" />
+                    <label asp-for="Address"></label><br />
+                    <span asp-validation-for="Address" class="text-danger" id="spanAddress"></span>
+                </div>
+                <div class="form-group pad">
+                    <input asp-for="PhoneNumber" class="form-control sharp" id="phone" />
+                    <label asp-for="PhoneNumber"></label><br />
+                    <span asp-validation-for="PhoneNumber" class="text-danger" id="spanPhone"></span>
+                </div>
+                @if (this.User.IsInRole("Client"))
+                {
+                    <div class="form-group pad">
+                        <input asp-for="Nif" class="form-control sharp" id="nif" />
+                        <label asp-for="Nif"></label><br />
+                        <span asp-validation-for="Nif" class="text-danger" id="spanNif"></span>
+                    </div>
+                }
+                <div>
+                    <span class="text-danger" id="notValidated"></span>
+                </div>
+            </form>
+        </e-content-template>
+
+        <e-dialog-buttons>
+
+            <e-dialog-dialogbutton buttonModel="@updateButton" click="ondlgUpdateClick"></e-dialog-dialogbutton>
+
+        </e-dialog-buttons>
+
+    </ejs-dialog>
+
+
+    <ejs-dialog id='passwordDialog' visible="false" isModal="true" width="450px" showCloseIcon="true" allowDragging="true" overlayClick="onPasswordOverlayClick" target="#container" header="Change Password">
+        <e-dialog-animationsettings effect="Fade" duration="400" delay="0"></e-dialog-animationsettings>
+        <e-content-template>
+            <form>
+
+                <div class="form-group pad">
+                    <div class="row">
+                        <div class="col-10">
+                            <input type="password" class="form-control sharp" id="oldPassword" />
+                        </div>
+                        <div class="col fontawesome" style="margin:auto" id="showOld">
+                            <i class="fa-solid fa-eye-slash"></i>
+                        </div>
+                    </div>
+                    <label>Old Password</label><br />
+                    <span class="text-danger" id="spanOldPassword"></span>
+                </div>
+                <div class="form-group pad">
+                    <div class="row">
+                        <div class="col-10">
+                            <input type="password" class="form-control sharp" id="newPassword" />
+                        </div>
+                        <div class="col fontawesome" style="margin:auto" id="showNew">
+                            <i class="fa-solid fa-eye-slash"></i>
+                        </div>
+                    </div>
+                    <label>New Password</label><br />
+                    <span class="text-danger" id="spanNewPassword"></span>
+                </div>
+                <div class="form-group pad">
+                    <div class="row">
+                        <div class="col-10">
+                            <input type="password" class="form-control sharp" id="repeatPassword" />
+                        </div>
+                        <div class="col fontawesome" style="margin:auto" id="showRepeat">
+                            <i class="fa-solid fa-eye-slash"></i>
+                        </div>
+                    </div>
+                    <label>Repeat Password</label><br />
+                    <span class="text-danger" id="spanRepeatPassword"></span>
+                </div>
+                <div>
+                    <span class="text-success" id="passwordValidated"></span>
+                    <span class="text-danger" id="passwordNotValidated"></span>
+                </div>
+
+            </form>
+        </e-content-template>
+
+        <e-dialog-buttons>
+            <e-dialog-dialogbutton buttonModel="@changeButton" click="ondlgChangeClick"></e-dialog-dialogbutton>
+        </e-dialog-buttons>
+    </ejs-dialog>
+
+
+
+</div>
+
+<style>
+
+    .dialogCard{
+        min-height:600px;
+    }
+
+    .fontawesome{
+        font-size:18px;
+        color:grey;
+        cursor:pointer;
+    }
+
+    .fontawesome:hover .fa-eye-slash:before{
+        content:"\f06e";
+        color:steelblue;
+        opacity:0.4;
+    }
+
+    .form-group{
+        max-width: 400px;
+        margin: auto;
+    }
+
+    a.sharp {
+         border-radius: 0;
+         box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+
+    }
+
+    input.sharp{
+        border-radius:0;
+        box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+    }
+
+    .card{
+        background-color:white;
+        max-width:300px;
+        box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+        margin-left: 15px;
+        min-height: 96.5%;
+    }
+
+    .my_file{
+    position:absolute;
+    bottom:0px;
+    outline:none;
+    color: transparent;
+    width: 100%;
+    height:100%;
+    padding: 15px 100px;
+    cursor: pointer;
+    transition: 1s;
+    background: rgba(0,0,0,0.5);
+    opacity:0.1;
+    border-radius:0;
+    }
+    .my_file::-webkit-file-upload-button{
+        visibility: hidden;
+    }
+    .my_file::before {
+        content: 'Update';
+        font-size: 14px;
+        font-family:Arial;
+        font-weight:bold;
+        color:mintcream;
+        display:block;
+    }
+    .my_file:hover{
+        opacity:1;
+    }
+
+    .imageStyle {
+         height: 256px;
+         width: 256px;
+         position: relative;
+         border: 5px solid #ffd800;
+         /*border-radius: 50%;*/
+         overflow: hidden;
+         box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+    }
+
+    .pad{
+        padding: 15px;
+    }
+
+
+    img{
+        clip-path: polygon(0 0,80% 0,100% 20%,100% 100%,30% 90%,0 100%,10% 50%);
+        filter:grayscale(100%);
+        transition:all 0.4s;
+    }
+
+    img:hover{
+        filter:grayscale(0);
+    }
+
+</style>
+
+@section Scripts
+{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script type="text/Javascript">
+        window.onload = getBackgroundProfilePicture();
+    </script>
+
+    <script>
+        $(document).ready(function() {
+
+            $("#showOld").on('mouseenter', function() {
+                    document.getElementById("oldPassword").type = 'text';
+            });
+            $("#showOld").on('mouseleave', function() {
+               document.getElementById("oldPassword").type = 'password';
+            });
+
+            $("#showNew").on('mouseenter', function() {
+                    document.getElementById("newPassword").type = 'text';
+            });
+            $("#showNew").on('mouseleave', function() {
+               document.getElementById("newPassword").type = 'password';
+            });
+
+            $("#showRepeat").on('mouseenter', function() {
+                    document.getElementById("repeatPassword").type = 'text';
+            });
+            $("#showRepeat").on('mouseleave', function() {
+               document.getElementById("repeatPassword").type = 'password';
+            });
+
+        });
+    </script>
+
+
+
+
+}

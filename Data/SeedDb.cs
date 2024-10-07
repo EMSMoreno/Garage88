@@ -42,13 +42,13 @@ namespace Garage88.Data
             {
                 var workOrder = await _context.WorkOrders.FirstOrDefaultAsync();
                 var mechanic = await _userHelper.GetUserByEmailAsync("eduardo.sousa.moreno@formandos.cinel.pt");
-                var customer = await _context.Clients.Where(c => c.Email == "eduardo.sousa.moreno@sapo.pt").FirstOrDefaultAsync();
+                var client = await _context.Clients.Where(c => c.Email == "eduardo.sousa.moreno@sapo.pt").FirstOrDefaultAsync();
                 var receptionist = await _userHelper.GetUserByEmailAsync("eduardo_projeto_mecanicos@sapo.pt");
                 var estimate = await _context.Estimates.FirstOrDefaultAsync();
                 var vehicle = await _context.Vehicles.Where(v => v.PlateNumber == "AA-TO-01").FirstOrDefaultAsync();
 
                 workOrder.Status = "Closed";
-                workOrder.Observations = "It is highly recommended for the customer to align direction next time he comes to the shop";
+                workOrder.Observations = "It is highly recommended for the client to align direction next time he comes to the shop";
                 workOrder.ServiceDoneBy = mechanic;
                 workOrder.IsFinished = true;
 
@@ -56,7 +56,7 @@ namespace Garage88.Data
 
                 _context.Invoices.Add(new Invoice
                 {
-                    Client = customer,
+                    Client = client,
                     CreatedBy = receptionist,
                     Estimate = estimate,
                     InvoicDate = DateTime.UtcNow.AddDays(-3),
@@ -104,7 +104,7 @@ namespace Garage88.Data
         {
             if (!_context.Appointments.Any())
             {
-                var customer = await _context.Clients.Where(c => c.Email == "eduardo.sousa.moreno@sapo.pt").FirstOrDefaultAsync();
+                var client = await _context.Clients.Where(c => c.Email == "eduardo.sousa.moreno@sapo.pt").FirstOrDefaultAsync();
                 var vehicle = await _context.Vehicles.Where(v => v.PlateNumber == "AA-TO-01").FirstOrDefaultAsync();
                 var estimate = await _context.Estimates.FirstOrDefaultAsync();
                 var mechanic = await _context.Mechanics.Where(m => m.Email == "eduardo.sousa.moreno@formandos.cinel.pt").FirstOrDefaultAsync();
@@ -118,7 +118,7 @@ namespace Garage88.Data
                     AsAttended = false,
                     CreatedBy = receptionist,
                     CreatedDate = DateTime.UtcNow.AddDays(-5),
-                    Client = customer,
+                    Client = client,
                     Estimate = estimate,
                     Mechanic = mechanic,
                     Vehicle = vehicle,
@@ -142,17 +142,17 @@ namespace Garage88.Data
 
                 var brand = await _context.Brands.Where(b => b.Name == "Mazda").FirstOrDefaultAsync();
                 var model = await _context.Models.Where(m => m.Name == "MX-5 Miata").FirstOrDefaultAsync();
-                var customer = await _context.Clients.Where(c => c.Email == "eduardo.sousa.moreno@sapo.pt").FirstOrDefaultAsync();
+                var client = await _context.Clients.Where(c => c.Email == "eduardo.sousa.moreno@sapo.pt").FirstOrDefaultAsync();
 
                 _context.Vehicles.Add(new Vehicle
                 {
                     Brand = brand,
                     Model = model,
-                    Client = customer,
+                    Client = client,
                     DateOfConstruction = DateTime.Now.AddYears(-5),
                     PlateNumber = "AA-TO-01",
                     Horsepower = 90,
-                    ClientId = customer.Id,
+                    ClientId = client.Id,
                 });
 
 
@@ -166,13 +166,13 @@ namespace Garage88.Data
             if (!_context.Estimates.Any())
             {
 
-                var customer = await _context.Clients.Where(c => c.Email == "eduardo.sousa.moreno@sapo.pt").FirstOrDefaultAsync();
+                var client = await _context.Clients.Where(c => c.Email == "eduardo.sousa.moreno@sapo.pt").FirstOrDefaultAsync();
                 var vehicle = await _context.Vehicles.Where(v => v.PlateNumber == "AA-TO-01").FirstOrDefaultAsync();
 
                 var estimate = new Estimate
                 {
                     CreatedBy = await _userHelper.GetUserByEmailAsync("eduardo.sousa.moreno@formandos.cinel.pt"),
-                    Client = customer,
+                    Client = client,
                     EstimateDate = DateTime.Now.AddDays(-5),
                     FaultDescription = "Blowed up Tyre, needs to replace front tyres.",
                     HasAppointment = false,
@@ -188,7 +188,7 @@ namespace Garage88.Data
 
                 var estimateDetail1 = new EstimateDetail
                 {
-                    ClientId = customer.Id,
+                    ClientId = client.Id,
                     EstimateId = estimateResult.Id,
                     Service = service,
                     Quantity = 2,
@@ -200,7 +200,7 @@ namespace Garage88.Data
 
                 var estimateDetail2 = new EstimateDetail
                 {
-                    ClientId = customer.Id,
+                    ClientId = client.Id,
                     EstimateId = estimateResult.Id,
                     Service = service,
                     Quantity = 2,
@@ -222,7 +222,7 @@ namespace Garage88.Data
             if (!_context.Clients.Any())
             {
                 // Client 1
-                var customerUser1 = new User
+                var clientUser1 = new User
                 {
                     FirstName = "Eduardo",
                     LastName = "Moreno",
@@ -236,21 +236,21 @@ namespace Garage88.Data
                 {
                     FirstName = "Eduardo",
                     LastName = "Moreno",
-                    User = customerUser1,
-                    Email = customerUser1.Email,
+                    User = clientUser1,
+                    Email = clientUser1.Email,
                     Nif = "235241660",
-                    Address = customerUser1.Address,
-                    PhoneNumber = customerUser1.PhoneNumber
+                    Address = clientUser1.Address,
+                    PhoneNumber = clientUser1.PhoneNumber
                 });
 
-                await _userHelper.AddUserAsync(customerUser1, "123456");
-                await _userHelper.AddUserToRoleAsync(customerUser1, "Client");
-                var token = await _userHelper.GenerateEmailConfirmationTokenAsync(customerUser1);
-                await _userHelper.ConfirmEmailAsync(customerUser1, token);
+                await _userHelper.AddUserAsync(clientUser1, "123456");
+                await _userHelper.AddUserToRoleAsync(clientUser1, "Client");
+                var token = await _userHelper.GenerateEmailConfirmationTokenAsync(clientUser1);
+                await _userHelper.ConfirmEmailAsync(clientUser1, token);
 
                 // Client 2
 
-                var customerUser2 = new User
+                var clientUser2 = new User
                 {
                     FirstName = "Henrique",
                     LastName = "Martins",
@@ -264,17 +264,17 @@ namespace Garage88.Data
                 {
                     FirstName = "Henrique",
                     LastName = "Martins",
-                    User = customerUser2,
-                    Email = customerUser2.Email,
+                    User = clientUser2,
+                    Email = clientUser2.Email,
                     Nif = "256243800",
-                    Address = customerUser2.Address,
-                    PhoneNumber = customerUser2.PhoneNumber
+                    Address = clientUser2.Address,
+                    PhoneNumber = clientUser2.PhoneNumber
                 });
 
-                await _userHelper.AddUserAsync(customerUser2, "123456");
-                await _userHelper.AddUserToRoleAsync(customerUser2, "Client");
-                token = await _userHelper.GenerateEmailConfirmationTokenAsync(customerUser2);
-                await _userHelper.ConfirmEmailAsync(customerUser2, token);
+                await _userHelper.AddUserAsync(clientUser2, "123456");
+                await _userHelper.AddUserToRoleAsync(clientUser2, "Client");
+                token = await _userHelper.GenerateEmailConfirmationTokenAsync(clientUser2);
+                await _userHelper.ConfirmEmailAsync(clientUser2, token);
 
                 await _context.SaveChangesAsync();
             }
@@ -333,7 +333,7 @@ namespace Garage88.Data
 
                 _context.MechanicsRoles.Add(new Role
                 {
-                    Specialties = specialties,
+                    Specialities = specialties,
                     Name = "Technician",
                     PermissionsName = "Technician"
                 });
@@ -343,7 +343,7 @@ namespace Garage88.Data
                 receptionistSpecialties.Add(new Speciality { Name = "Generalist" });
                 _context.MechanicsRoles.Add(new Role
                 {
-                    Specialties = receptionistSpecialties,
+                    Specialities = receptionistSpecialties,
                     Name = "Receptionist",
                     PermissionsName = "Receptionist"
                 });
@@ -420,7 +420,7 @@ namespace Garage88.Data
             if (!_context.Mechanics.Any())
             {
                 // Mechanic 1
-                var employeeUser1 = new User
+                var mechanicUser1 = new User
                 {
                     FirstName = "Joaquim",
                     LastName = "Guedes",
@@ -435,20 +435,20 @@ namespace Garage88.Data
                     FirstName = "Joaquim",
                     LastName = "Guedes",
                     About = "Born in Lisbon, Joaquim Guedes started his electrician carrer in Bosch Car Service in Lisbon...",
-                    User = employeeUser1,
+                    User = mechanicUser1,
                     Role = _context.MechanicsRoles.Where(r => r.Name == "Technician").FirstOrDefault(),
-                    Specialty = _context.Specialties.Where(s => s.Name == "Electrician").FirstOrDefault(),
-                    Email = employeeUser1.Email,
+                    Speciality = _context.Specialities.Where(s => s.Name == "Electrician").FirstOrDefault(),
+                    Email = mechanicUser1.Email,
                     Color = "#8F6593"
                 });
 
-                await _userHelper.AddUserAsync(employeeUser1, "123456");
-                await _userHelper.AddUserToRoleAsync(employeeUser1, "Technician");
-                var token = await _userHelper.GenerateEmailConfirmationTokenAsync(employeeUser1);
-                await _userHelper.ConfirmEmailAsync(employeeUser1, token);
+                await _userHelper.AddUserAsync(mechanicUser1, "123456");
+                await _userHelper.AddUserToRoleAsync(mechanicUser1, "Technician");
+                var token = await _userHelper.GenerateEmailConfirmationTokenAsync(mechanicUser1);
+                await _userHelper.ConfirmEmailAsync(mechanicUser1, token);
 
                 // Mechanic 2
-                var employeeUser2 = new User
+                var mechanicUser2 = new User
                 {
                     FirstName = "Inacio",
                     LastName = "Torres",
@@ -463,21 +463,21 @@ namespace Garage88.Data
                     FirstName = "Inacio",
                     LastName = "Torres",
                     About = "Born in Setúbal, Inacio Torres studied mechatronics in ATEC and then joined Garage88, with 4 years of experience..",
-                    User = employeeUser2,
+                    User = mechanicUser2,
                     Role = _context.MechanicsRoles.Where(r => r.Name == "Technician").FirstOrDefault(),
-                    Specialty = _context.Specialties.Where(s => s.Name == "Mechanic").FirstOrDefault(),
-                    Email = employeeUser2.Email,
+                    Speciality = _context.Specialities.Where(s => s.Name == "Mechanic").FirstOrDefault(),
+                    Email = mechanicUser2.Email,
                     Color = "#3066BE"
                 });
 
-                await _userHelper.AddUserAsync(employeeUser2, "123456");
-                await _userHelper.AddUserToRoleAsync(employeeUser2, "Technician");
-                token = await _userHelper.GenerateEmailConfirmationTokenAsync(employeeUser2);
-                await _userHelper.ConfirmEmailAsync(employeeUser2, token);
+                await _userHelper.AddUserAsync(mechanicUser2, "123456");
+                await _userHelper.AddUserToRoleAsync(mechanicUser2, "Technician");
+                token = await _userHelper.GenerateEmailConfirmationTokenAsync(mechanicUser2);
+                await _userHelper.ConfirmEmailAsync(mechanicUser2, token);
 
                 // Mechanic 3
 
-                var employeeUser3 = new User
+                var mechanicUser3 = new User
                 {
                     FirstName = "Pedro",
                     LastName = "Rato",
@@ -492,16 +492,16 @@ namespace Garage88.Data
                     FirstName = "Pedro",
                     LastName = "Rato",
                     About = "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. ",
-                    User = employeeUser3,
+                    User = mechanicUser3,
                     Role = _context.MechanicsRoles.Where(r => r.Name == "Receptionist").FirstOrDefault(),
-                    Specialty = _context.Specialties.Where(s => s.Name == "Generalist").FirstOrDefault(),
-                    Email = employeeUser3.Email
+                    Speciality = _context.Specialities.Where(s => s.Name == "Generalist").FirstOrDefault(),
+                    Email = mechanicUser3.Email
                 });
 
-                await _userHelper.AddUserAsync(employeeUser3, "123456");
-                await _userHelper.AddUserToRoleAsync(employeeUser3, "Receptionist");
-                token = await _userHelper.GenerateEmailConfirmationTokenAsync(employeeUser3);
-                await _userHelper.ConfirmEmailAsync(employeeUser3, token);
+                await _userHelper.AddUserAsync(mechanicUser3, "123456");
+                await _userHelper.AddUserToRoleAsync(mechanicUser3, "Receptionist");
+                token = await _userHelper.GenerateEmailConfirmationTokenAsync(mechanicUser3);
+                await _userHelper.ConfirmEmailAsync(mechanicUser3, token);
 
                 await _context.SaveChangesAsync();
 

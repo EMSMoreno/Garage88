@@ -1,22 +1,168 @@
+/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+.carousel-inner > .item > img, .carousel-inner > .item > a > img {
+    height: 65vh;
+    min-height: 350px;
+    width: 100%;
+    margin: 0 auto;
+    background: no-repeat center center scroll;
+    background-size: cover;
+}
+
+#myHeader {
+    height: 50px;
+    background-color: #353535;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #f4f3ee;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.overallShadow {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+
+a:link, a:visited, a:hover, a:active {
+    text-decoration: none;
+}
+
+a:hover {
+    color: #f7b801;
+}
+
+.aColor {
+    color: #f4f3ee;
+}
+
+a.navbar-brand {
+    white-space: normal;
+    text-align: center;
+    word-break: break-all;
+}
+
+/* Provide sufficient contrast against white background */
+a {
+    color: #0366d6;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+    color: #fff;
+    background-color: #1b6ec2;
+    border-color: #1861ac;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+.border-top {
+    border-top: 1px solid #e5e5e5;
 }
 
+.border-bottom {
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+    box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+    font-size: 1rem;
+    line-height: inherit;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    overflow-x: hidden;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px;
+}
+
+/*Categories images*/
+
+
+.imageContainer {
+    max-height: 450px;
+    overflow: hidden;
+    box-shadow: rgb(0 0 0 / 10%) 0px 10px 15px -3px, rgb(0 0 0 / 5%) 0px 4px 6px -2px;
+    background-color: black;
+}
+
+    .imageContainer > img {
+        width: 100%;
+        opacity: 0.7;
+    }
+
+
+.servicesTitle {
+    position: absolute;
+    width: 35%;
+    text-align: center;
+    left: 150px;
+    top: 150px;
+}
+
+    .servicesTitle > p {
+        font-size: 3.5rem;
+        color: #f7b801;
+        text-shadow: 3px 2px 5px rgb(32 0 0 / 64%);
+    }
+
+.serviceContent {
+    padding: 80px;
+}
+
+/*Login Styles*/
+
+.persBack {
+    background: url(/images/siteContent/login_picture_3.jpg);
+    background-size: 100%;
+    background-position: center;
+    filter: grayscale(0.5);
+}
+
+.formStyle {
+    color: white;
+    background-color: rgba(255,255,255,0.3);
+    background-clip: border-box;
+    padding: 10px;
+}
+
+.extLogins {
+    max-width: 100%;
+    align-items: center;
+    margin: auto;
+    padding: 0;
 }

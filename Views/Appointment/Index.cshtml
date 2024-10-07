@@ -1,0 +1,281 @@
+﻿@using Garage88.Helpers
+
+@{
+    ViewData["Title"] = "Appointments";
+    ViewData["Action"] = "Index";
+
+    Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
+    var editButton = new ButtonModel() { content = "Edit", cssClass = "e-flat" };
+    var asAttendedButton = new ButtonModel() { content = "Print Work Order", cssClass = "e-flat" };
+    var cancelButton = new ButtonModel() { content = "Cancel", cssClass = "e-flat" };
+    var yesButton = new ButtonModel() { content = "Yes", cssClass = "e-flat" };
+    var noButton = new ButtonModel() { content = "No", cssClass = "e-flat" };
+}
+
+<script>
+    let eventClickedId;
+    let asAttendedStatus;
+
+      document.addEventListener('DOMContentLoaded', function() {
+        debugger;
+        var calendarEl = document.getElementById('calendar');
+          var calendar = new FullCalendar.Calendar(calendarEl, {
+
+              themeSystem: 'bootstrap',
+              timeZone: 'UTC',
+              aspectRatio: 1.8,
+              height: 750,
+              initialView: 'timeGridWeek',
+              hiddenDays: [0],
+              nowIndicator: true,
+              businessHours: [{
+                  daysOfWeek: [1, 2, 3, 4, 5],
+                  startTime: '09:00',
+                  endTime: '18:00'
+              },
+              {
+                  daysOfWeek: [6],
+                  startTime: '09:00',
+                  endTime: '13:00'
+              }
+              ],
+              customButtons: {
+                  InformClients: {
+                      text: 'Inform',
+                      hint: "Send an email to clients about their appointments for tommorow.",
+                      click: function() {
+                          window.location.href = "/Mailbox/InformClientAppointment";
+
+                      }
+                  }
+              },
+              headerToolbar: {
+                  left: 'prev,next today InformClients',
+                  center: 'title',
+                  right: 'dayGridMonth,timeGridWeek,timeGridDay'
+              },
+              slotLabelInterval: "00:30",
+              slotLabelFormat: {
+                  hour: 'numeric',
+                  minute: '2-digit',
+                  omitZeroMinute: false,
+                  meridiem: false,
+                  hour12: false
+              },
+              slotMinTime: "07:00:00",
+              slotMaxTime: "20:00:00",
+              allDaySlot: false,
+              editable: true,
+              events: @Html.Raw(ViewData["Events"]),
+              eventClick: function(info) {
+                  var dialog = document.getElementById("dialog").ej2_instances[0];
+                  var eventObj = info.event;
+                  let eventStartTime = eventObj.start;
+                  let content = eventObj.title + eventObj.extendedProps.description;
+                  eventClickedId = eventObj.id;
+                  asAttendedStatus = eventObj.extendedProps.asAttended;
+                  console.log(content);
+                  dialog.content = eventObj.extendedProps.description;
+                  dialog.header = eventStartTime.toUTCString();
+                  dialog.show();
+              },
+              eventResize: function(info) {
+                  var eventObj = info.event;
+                  console.log(eventObj);
+                  var url = '/Appointment/EventResize/' + eventObj.id + "?" + eventObj.start.toUTCString() + "?" + eventObj.end.toUTCString();
+                  console.log(url);
+                  $.ajax({
+                      url: '@Url.Action("EventResize", "Appointment")',
+                      type: 'POST',
+                      dataType: 'json',
+                      data: { eventId: eventObj.id, startTime: eventObj.start.toUTCString(), endTime: eventObj.end.toUTCString() },
+                      success: function(models) {
+                          console.log("Success");
+                      },
+                      error: function(ex) {
+
+                          var dialog = document.getElementById("errorDialog").ej2_instances[0];
+                          dialog.content = "You are not allowed to perform this action!";
+                          dialog.show();
+                          console.log("failed " + ex.message);
+                      }
+                  });
+              },
+              eventDrop: function(info) {
+                  var eventObj = info.event;
+                  console.log(eventObj);
+                  var url = '/Appointment/EventResize/' + eventObj.id + "?" + eventObj.start.toUTCString() + "?" + eventObj.end.toUTCString();
+                  console.log(url);
+                  $.ajax({
+                      url: '@Url.Action("EventResize", "Appointment")',
+                      type: 'POST',
+                      dataType: 'json',
+                      data: { eventId: eventObj.id, startTime: eventObj.start.toUTCString(), endTime: eventObj.end.toUTCString() },
+                      success: function(models) {
+                          console.log("Success");
+                      },
+                      error: function(ex) {
+
+                          var dialog = document.getElementById("errorDialog").ej2_instances[0];
+                          dialog.content = "You are not allowed to perform this action!";
+                          dialog.show();
+                          console.log("failed " + ex.message);
+                      }
+                  });
+              },
+              dragScroll: true,
+              dayMaxEvents: true,
+              dateClick: function(info) {
+                  let currentView = info.view.type;
+                  let date = info.date;
+                  if (currentView == "dayGridMonth") {
+                      calendar.changeView("timeGridWeek", date);
+                  }
+                  if (currentView == "timeGridWeek") {
+                      calendar.changeView("timeGridDay", date);
+                  }
+                  if (currentView == "timeGridDay") {
+                      calendar.changeView("dayGridMonth", date);
+                  }
+              },
+              eventConstraint:"businessHours",
+
+        });
+        calendar.render();
+      });
+
+      function ondlgButtonClick() {
+             window.location.href = '/Appointment/Edit/'+eventClickedId;
+      };
+
+      function ondlgAttendedClick() {
+
+          if (asAttendedStatus == false) {
+              //window.location.href = '/WorkOrders/Create/' + eventClickedId;
+              debugger;
+              $.ajax({
+                    url: '@Url.Action("Create", "WorkOrders")',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { id: eventClickedId },
+                    success: function(result) {
+                        debugger;
+                        if (result != 0) {
+
+                            let workOrderUrl = "/pdf/WorkOrder/" + result;
+                            console.log(workOrderUrl);
+
+                            window.open(workOrderUrl, '_blank');
+
+                            window.location.reload();
+                        }
+                        else {
+
+                            window.location.reload();
+                        }
+                    },
+                    error: function(ex) {
+                        console.log("error"+ex);
+                    },
+              });
+          }
+          else {
+              var innerDialog = document.getElementById("innerDialog").ej2_instances[0];
+              innerDialog.show();
+          };
+      };
+
+      function ondlgCancelClick() {
+          var innerDialogCancel = document.getElementById("cancelConfirmation").ej2_instances[0];
+          innerDialogCancel.show();
+      }
+
+      function ondlgYesButtonClick() {
+
+          window.location.href = "/Appointment/Cancel/" + eventClickedId;
+
+      }
+
+      function ondlgNoButtonClick() {
+            var innerDialogCancel = document.getElementById("cancelConfirmation").ej2_instances[0];
+            var dialog = document.getElementById("dialog").ej2_instances[0];
+            dialog.hide();
+            innerDialogCancel.hide();
+      }
+
+</script>
+
+<div class="container-fluid" style="max-height:500px">
+    <div id='calendar'>
+    </div>
+</div>
+
+<div id='container' style="height:auto">
+
+    <ejs-dialog id='dialog' visible="false" isModal="true" width="400px" showCloseIcon="true" allowDragging="true" overlayClick="onOverlayClick" target="#container">
+        <e-dialog-animationsettings effect="Fade" duration="400" delay="0"></e-dialog-animationsettings>
+
+        <e-dialog-buttons>
+            @if (this.User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+            {
+                <e-dialog-dialogbutton buttonModel="@cancelButton" click="ondlgCancelClick"></e-dialog-dialogbutton>
+            }
+            <e-dialog-dialogbutton buttonModel="@editButton" click="ondlgButtonClick"></e-dialog-dialogbutton>
+            @if (this.User.Identity.IsAuthenticated && !User.IsInRole("Technician"))
+            {
+                <e-dialog-dialogbutton buttonModel="@asAttendedButton" click="ondlgAttendedClick"></e-dialog-dialogbutton>
+            }
+        </e-dialog-buttons>
+
+    </ejs-dialog>
+
+    <!-- Begin Inner Dialogs -->
+    <ejs-dialog id='innerDialog' allowDragging="true" visible="false" showCloseIcon="true" header="Work Order in Place" closeOnEscape="true" content="This appointment already has a work order in place." target="#dialog" height="150px" width="200px">
+        <e-dialog-animationsettings effect="Fade"></e-dialog-animationsettings>
+        <e-dialog-position X="80" Y="80"> </e-dialog-position>
+    </ejs-dialog>
+
+    <ejs-dialog id='notAllowedDate' allowDragging="true" visible="false" showCloseIcon="true" header="Action not possible" closeOnEscape="true" content="You can only inform appointments for tommorow!." target="#dialog" height="150px" width="200px">
+        <e-dialog-animationsettings effect="Fade"></e-dialog-animationsettings>
+        <e-dialog-position X="80" Y="80"> </e-dialog-position>
+    </ejs-dialog>
+
+    <ejs-dialog id='cancelConfirmation' allowDragging="true" visible="false" showCloseIcon="true" header="Cancel Appointment" closeOnEscape="true" content="Are you sure do you want to cancel this appointment?" target="#dialog" height="200px" width="200px">
+        <e-dialog-animationsettings effect="Fade"></e-dialog-animationsettings>
+        <e-dialog-position X="80" Y="80"> </e-dialog-position>
+        <e-dialog-buttons>
+            <e-dialog-dialogbutton buttonModel="@yesButton" click="ondlgYesButtonClick"></e-dialog-dialogbutton>
+            <e-dialog-dialogbutton buttonModel="@noButton" click="ondlgNoButtonClick"></e-dialog-dialogbutton>
+        </e-dialog-buttons>
+    </ejs-dialog>
+    <!-- End Inner Dialogs -->
+    <!--Error Dialog-->
+    <ejs-dialog id='errorDialog' visible="false" isModal="true" width="500px" showCloseIcon="true" allowDragging="true" overlayClick="onOverlayClick" target="#container" header="Not Allowed">
+        <e-dialog-animationsettings effect="Fade" duration="400" delay="0"></e-dialog-animationsettings>
+
+    </ejs-dialog>
+    <!--Error Dialog-->
+</div>
+
+<script>
+    function onOverlayClick() {
+            var dialog = document.getElementById("dialog").ej2_instances[0];
+            var innerDialog = document.getElementById("innerDialog").ej2_instances[0];
+            var innerDialogCancel = document.getElementById("cancelConfirmation").ej2_instances[0];
+            var innerDialogDate = document.getElementById("notAllowedDate").ej2_instances[0];
+            var errorDialog = document.getElementById("errorDialog").ej2_instances[0];
+
+            dialog.hide();
+            innerDialog.hide();
+            innerDialogCancel.hide();
+            innerDialogDate.hide();
+            errorDialog.hide();
+    };
+
+</script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,56 @@
+﻿@model Garage88.Models.ExternalLoginViewModel
+
+@{
+    ViewData["Title"] = "ExternalLoginConfirmation";
+    Layout = "~/Views/Shared/_PasswordLayout.cshtml";
+}
+
+<section class="vh-100 persBack">
+
+    <div class="container py-5 h-100">
+
+        <div class="row d-flex align-items-center justify-content-center h-100">
+
+            <div class="col-md-12 col-lg-5 col-xl-5 offset-xl-1 formStyle">
+
+                <div style="text-align:center">
+                    <h3 style="color:#f7b801 ">Register and associate your @ViewData["ProviderDisplayName"] account.</h3><br />
+                    <h6>Please add additional information to make your account better!</h6><br />
+                    <p class="text-success">You have successfully authenticated to your @ViewData["ProviderDisplayName"] account </p>
+                </div>
+
+                <div>
+                    <form asp-controller="Account" asp-action="ExternalLoginConfirmation" method="post" asp-route-returnurl="@ViewData["ReturnUrl"]">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-outline mb-4">
+                            <span asp-validation-for="Email" class="text-warning"></span>
+                            <input asp-for="Email" class="form-control sharp form-control-lg" readonly />
+                            <label asp-for="Email"></label>
+                        </div>
+
+                        <div class="form-outline mb-4">
+                            <span asp-validation-for="FirstName" class="text-warning"></span>
+                            <input asp-for="FirstName" class="form-control sharp form-control-lg" />
+                            <label asp-for="FirstName"></label>
+                        </div>
+
+                        <div class="form-outline mb-4">
+                            <span asp-validation-for="LastName" class="text-warning"></span>
+                            <input asp-for="LastName" class="form-control sharp form-control-lg" />
+                            <label asp-for="LastName"></label>
+                        </div>
+
+                        <button type="submit" class="btn sharp btn-primary btn-lg btn-block over">Log in</button>
+
+                    </form>
+                </div>
+
+
+                <div>
+                    <a class="btn btn-warning btn-lg btn-block social over sharp " style="margin-top:10px" asp-area="" asp-action="Index" asp-controller="Home"><i class="fas fa-home"></i> Back to Homepage</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>

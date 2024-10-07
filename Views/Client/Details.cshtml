@@ -1,0 +1,191 @@
+﻿@model Garage88.Data.Entities.Client
+
+@{
+    Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
+    ViewData["Title"] = "Clients";
+    ViewData["BreadCrumb"] = "Client Details";
+}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" />
+
+<div class="container-fluid" style="max-width:90%">
+
+    <div>
+        <hr />
+        <h4 style="text-align:center ">Client @Html.DisplayFor(model => model.FullName) </h4>
+        <hr />
+    </div>
+
+    <div class="row" style="justify-content:center">
+        <div class="col-md-8">
+            <dl class="row">
+                <dt class="col-sm-6" style="text-align:end">
+                    @Html.DisplayNameFor(model => model.FullName)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.FullName)
+                </dd>
+                <dt class="col-sm-6" style="text-align:end">
+                    @Html.DisplayNameFor(model => model.Address)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.Address)
+                </dd>
+                <dt class="col-sm-6" style="text-align:end">
+                    @Html.DisplayNameFor(model => model.PhoneNumber)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.PhoneNumber)
+                </dd>
+                <dt class="col-sm-6" style="text-align:end">
+                    @Html.DisplayNameFor(model => model.Nif)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.Nif)
+                </dd>
+                <dt class="col-sm-6" style="text-align:end">
+                    @Html.DisplayNameFor(model => model.Email)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.Email)
+                </dd>
+                <dt class="col-sm-6" style="text-align:end">
+                    @Html.DisplayNameFor(model => model.Vehicles)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.Vehicles.Count)
+                </dd>
+            </dl>
+        </div>
+
+    </div>
+    <hr />
+
+    @if (Model.Vehicles.Count > 0)
+    {
+        <h4 style="text-align:center">@Model.FullName vehicles</h4>
+        <hr />
+
+        <div class="container-fluid">
+
+            <div>
+                <table class="hover stripe compact row-border testTable" style="display:inline-table" id="MyTable">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Vehicles.FirstOrDefault().PlateNumber)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Vehicles.FirstOrDefault().Brand)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Vehicles.FirstOrDefault().Model)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Vehicles.FirstOrDefault().DateOfConstruction)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Vehicles.FirstOrDefault().Horsepower)
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Vehicles)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.PlateNumber)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Brand.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Model.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.DateOfConstruction)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Horsepower)
+                                </td>
+                                <td id="@item.Id">
+                                    <a asp-action="Edit" asp-controller="Vehicles" asp-route-id="@item.Id" class="btn btn-info btn-sm"><i class="fas fa-edit"></i> </a>
+                                    @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Admin"))
+                                    {
+                                        <a asp-action="Delete" asp-controller="Vehicles" asp-route-id="@item.Id" class="btn btn-danger btn-sm pull-right" id="btnDelete"><i class="fas fa-trash"></i></a>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <h4 style="text-align:center">No vehicles added to @Model.FullName yet.</h4>
+        <hr />
+    }
+
+    <div class="container-fluid" style="margin-top:50px">
+        <a asp-action="Edit" asp-route-id="@Model.Id" style="width:100%;border-radius:0" class="btn btn-warning"><i class="fas fa-user-pen"></i> Edit</a> <br />
+        <a asp-action="Index" class="btn btn-success" style="width:100%;border-radius:0;margin-top:10px"><i class="fas fa-arrow-circle-left"></i> Back to List</a>
+    </div>
+
+    <partial name="_DeleteDialog" />
+
+    <footer class="footer" style="position:Absolute; bottom:65px;font-size:14px">
+        <table>
+            <tr>
+                <td>
+                    <i class="fas fa-edit" style="background: #31D2F2;padding:10px; margin-left:10px;color:white"></i> @Html.Raw(" = Edit ")
+                </td>
+                @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Admin"))
+                {
+                    <td>
+                        <i class="fas fa-trash" style="background: #C82333;padding:10px; margin-left:10px;color:white "></i> @Html.Raw(" = Delete ")
+                    </td>
+                }
+            </tr>
+        </table>
+    </footer>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="//cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#MyTable').DataTable({
+                columnDefs: [
+                    {className: 'dt-center', targets: "_all"},
+                    {className: "tableFont", targets: "_all" },
+                ],
+                searching: false,
+                paging: false,
+                info: false,
+            });
+        });
+
+        $(document).ready(function () {
+            let id = 0;
+            $('a[id*=btnDelete]').click(function () {
+                debugger;
+                id = $(this).parent()[0].id;
+                $("#deleteDialog").modal('show');
+                return false;
+            });
+            $("#btnNoDelete").click(function () {
+                $("#deleteDialog").modal('hide');
+                return false;
+            });
+            $("#btnYesDelete").click(function () {
+                window.location.href = '/Vehicles/Delete/' + id;
+            });
+        });
+    </script>
+}

@@ -1,5 +1,4 @@
-﻿using Garage88.Data.Entities;
-using Garage88.Data.Repositories;
+﻿using Garage88.Data.Repositories;
 using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MimeKit;
@@ -13,11 +12,11 @@ namespace Garage88.Helpers
         private readonly IMechanicRepository _mechanicRepository;
         private readonly ILogger<MailHelper> _logger; // Logger for error tracking
 
-        public MailHelper(IConfiguration configuration, IClientRepository clientRepository, IMechanicRepository employeeRepository, ILogger<MailHelper> logger)
+        public MailHelper(IConfiguration configuration, IClientRepository clientRepository, IMechanicRepository mechanicRepository, ILogger<MailHelper> logger)
         {
             _configuration = configuration;
             _clientRepository = clientRepository;
-            _mechanicRepository = employeeRepository;
+            _mechanicRepository = mechanicRepository;
             _logger = logger;
         }
 
@@ -43,11 +42,11 @@ namespace Garage88.Helpers
 
                     if (clients != null && clients.Any())
                     {
-                        foreach (var customer in clients)
+                        foreach (var client in clients)
                         {
-                            if (!string.IsNullOrEmpty(customer.Email)) // Ensure email is valid
+                            if (!string.IsNullOrEmpty(client.Email)) // Ensure email is valid
                             {
-                                var response = await SendEmail(customer.Email, subject, body, string.IsNullOrEmpty(path) ? null : path);
+                                var response = await SendEmail(client.Email, subject, body, string.IsNullOrEmpty(path) ? null : path);
 
                                 if (!response.IsSuccess)
                                 {
@@ -59,7 +58,7 @@ namespace Garage88.Helpers
                         return new Response { IsSuccess = true };
                     }
 
-                    return new Response { IsSuccess = false, Message = "No customers found." };
+                    return new Response { IsSuccess = false, Message = "No clients found." };
                 }
 
                 if (to == 2) // Mechanics

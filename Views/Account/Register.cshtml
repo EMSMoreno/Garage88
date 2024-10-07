@@ -1,0 +1,113 @@
+﻿@model Garage88.Models.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Register";
+    Layout = "~/Views/Shared/_PasswordLayout.cshtml";
+}
+
+<style>
+    img {
+        filter: grayscale(50%);
+    }
+
+    .card {
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+    }
+
+</style>
+
+<section class="vh-100" style="background-color: #eee;">
+    <div class="container h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-lg-12 col-xl-11">
+                <div class="card text-black" style="border-radius: 25px;">
+                    <div class="card-body p-md-5">
+                        <div class="row justify-content-center">
+                            <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
+
+                                <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign up</p>
+
+                                <form class="mx-1 mx-md-4" method="post">
+                                    <div asp-validation-summary="ModelOnly"></div>
+                                    <div class="d-flex flex-row align-items-center mb-4">
+                                        <div class="form-outline flex-fill mb-0">
+                                            <span asp-validation-for="FirstName" class="text-warning"></span>
+                                            <input asp-for="FirstName" class="form-control sharp" />
+                                            <label asp-for="FirstName" class="form-label">First Name</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex flex-row align-items-center mb-4">
+                                        <div class="form-outline flex-fill mb-0">
+                                            <span asp-validation-for="LastName" class="text-warning"></span>
+                                            <input asp-for="LastName" class="form-control sharp" />
+                                            <label asp-for="LastName" class="form-label">Last Name</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex flex-row align-items-center mb-4">
+                                        <div class="form-outline flex-fill mb-0">
+                                            <span asp-validation-for="UserName" class="text-warning"></span>
+                                            <input asp-for="UserName" class="form-control sharp" />
+                                            <label asp-for="UserName" class="form-label"></label>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="d-flex flex-row align-items-center mb-4">
+                                        <div class="form-outline flex-fill mb-0">
+                                            <span asp-validation-for="Address" class="text-warning"></span>
+                                            <input asp-for="Address" class="form-control sharp" />
+                                            <label asp-for="Address" class="form-label"></label>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex flex-row align-items-center mb-4">
+                                        <div class="form-outline flex-fill mb-0">
+                                            <span asp-validation-for="PhoneNumber" class="text-warning"></span>
+                                            <input asp-for="PhoneNumber" class="form-control sharp" />
+                                            <label asp-for="PhoneNumber" class="form-label"></label>
+                                        </div>
+                                    </div>
+
+
+
+                                    <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
+
+                                        <a asp-action="Login" asp-controller="Account" class="btn sharp btn-dark" style="margin-right:10px;">Back to Login Page</a>
+                                        <input type="submit" value="Register" class="btn sharp btn-primary" />
+
+                                    </div>
+
+                                </form>
+
+                            </div>
+                            <div class="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2">
+
+                                <img src="/images/siteContent/register_picture.jpg"
+                                     class="img-fluid imgBorder" alt="Sample image">
+
+                            </div>
+
+                        </div>
+                        <div class="row justify-content-center" style="text-align:center">
+                            <div class="text-success">
+                                <p>
+                                    @ViewBag.Message
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts
+{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+

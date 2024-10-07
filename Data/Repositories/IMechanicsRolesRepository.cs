@@ -1,30 +1,32 @@
 ﻿using Garage88.Data.Entities;
+using Garage88.Helpers;
 using Garage88.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.CodeAnalysis;
 
 namespace Garage88.Data.Repositories
 {
     public interface IMechanicsRolesRepository : IGenericRepository<Role>
     {
-        IQueryable GetRolesWithSpecialties();
+        IQueryable GetRolesWithSpecialities();
 
-        Task<Role> GetRoleWithSpecialtiesAsync(int id);
+        Task<Role> GetRoleWithSpecialitiesAsync(int id);
 
-        Task<Speciality> GetSpecialtyAsync(int id);
+        Task<Speciality> GetSpecialityAsync(int id);
 
-        Task AddSpecialtyAsync(SpecialityViewModel model);
+        Task AddSpecialityAsync(SpecialityViewModel model);
 
-        Task<int> UpdateSpecialtyAsync(Speciality model);
+        Task<int> UpdateSpecialityAsync(Speciality model);
 
-        Task<int> DeleteSpecialtyAsync(Speciality model);
+        Task<int> DeleteSpecialityAsync(Speciality model);
 
         IEnumerable<SelectListItem> GetComboRoles();
 
-        IEnumerable<SelectListItem> GetComboSpecialty(int roleId);
+        IEnumerable<SelectListItem> GetComboSpeciality(int roleId);
 
         Task<Role> GetRoleAsync(Speciality model);
 
-        Task<int> GetRoleIdWithSpecialtyAsync(int specialtyId);
+        Task<int> GetRoleIdWithSpecialityAsync(int specialtyId);
 
     }
 }

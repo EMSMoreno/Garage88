@@ -1,0 +1,156 @@
+﻿@using Garage88.Helpers
+@model IEnumerable<Garage88.Data.Entities.Estimate>
+
+@{
+    Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
+    ViewData["Title"] = "Estimates";
+    var NewClientButtonYes = new ButtonModel() { content = "Yes", cssClass = "e-flat" };
+    var NewClientButtonNo = new ButtonModel() { content = "No", cssClass = "e-flat" };
+}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" />
+
+<div class="container-fluid" style="margin-bottom: 75px; max-width:90% ">
+    <div>
+        <table class="hover stripe row-border testTable" style="display:inline-table" id="MyTable">
+            <thead>
+                <tr>
+                    <th>
+                        Estimate Nº.
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.EstimateDate)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Vehicle.PlateNumber)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Client.FullName)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Quantity)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Value)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Id)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.EstimateDate)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Vehicle.PlateNumber)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Client.FullName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Quantity)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.ValueWithDiscount)
+                        </td>
+                        <td id="@item.Id">
+                            <a asp-action="Edit" asp-route-id="@item.Id" asp-route-isNew="true" class="btn btn-info btn-sm"><i class="fas fa-edit"></i></a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-warning btn-sm"><i class="fas fa-list"></i></a>
+
+                            @if (this.User.Identity.IsAuthenticated && !User.IsInRole("Technician"))
+                            {
+                                @if (item.HasAppointment == false)
+                                {
+                                    <a asp-controller="Appointment" asp-action="AddAppointment" asp-route-id="@item.Id" class="btn btn-dark btn-sm"><i class="fas fa-calendar-check"></i></a>
+                                }
+
+                            }
+                            @if (this.User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                            {
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm pull-right" id="btnDelete"><i class="fas fa-trash"></i></a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <a class="btn btn-primary btn-sm" style="width:100%;margin-top:20px" onclick="onAddEstimateButtonClick()"><i class="fas fa-file-alt"></i>  Add Estimate</a>
+
+    <partial name="_DeleteDialog" />
+
+</div>
+
+<div id='container' style="height:auto">
+    <ejs-dialog id='dialog' visible="false" isModal="true" width="300px" showCloseIcon="true" allowDragging="true" overlayClick="onOverlayClick" target="#container">
+
+        <e-dialog-animationsettings effect="Fade" duration="400" delay="0"></e-dialog-animationsettings>
+        <e-dialog-buttons>
+            <e-dialog-dialogbutton buttonModel="@NewClientButtonYes" click="ondlgYesButtonClick"></e-dialog-dialogbutton>
+            <e-dialog-dialogbutton buttonModel="@NewClientButtonNo" click="ondlgNoButtonClick"></e-dialog-dialogbutton>
+        </e-dialog-buttons>
+    </ejs-dialog>
+</div>
+
+<footer class="footer" style="position:Absolute; bottom:65px; left:18%">
+    <table>
+        <tr>
+            <td style="margin-right:10px;">
+                <i class="fas fa-edit" style="background: #31D2F2;padding:10px; color:white;"></i> @Html.Raw(" = Edit ")
+            </td>
+            <td>
+                <i class="fas fa-list" style="background: #E0A800;padding:10px; margin-left:10px; "></i> @Html.Raw(" = Details ")
+            </td>
+            <td>
+                <i class="fas fa-calendar-check" style="background: #23272B;padding:10px; margin-left:10px ;color:white "></i> @Html.Raw(" = Add Appointment ")
+            </td>
+            @if (this.User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+            {
+                <td>
+                    <i class="fas fa-trash" style="background: #C82333;padding:10px; margin-left:10px; color:white "></i> @Html.Raw(" = Delete Estimate ")
+                </td>
+            }
+        </tr>
+    </table>
+</footer>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="//cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#MyTable').DataTable({
+                columnDefs: [
+                    {className: 'dt-center', targets: "_all"},
+                    { orderable: false, targets: 6 },
+                    {className: "tableFont", targets: "_all" }
+                ],
+                order: [[ 0, 'desc' ]],
+            });
+        });
+
+        $(document).ready(function () {
+            let id = 0;
+            $('a[id*=btnDelete]').click(function () {
+                debugger;
+                id = $(this).parent()[0].id;
+                $("#deleteDialog").modal('show');
+                return false;
+            });
+            $("#btnNoDelete").click(function () {
+                $("#deleteDialog").modal('hide');
+                return false;
+            });
+            $("#btnYesDelete").click(function () {
+                window.location.href = '/Estimates/Delete/' + id;
+            });
+        });
+    </script>
+}

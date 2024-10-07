@@ -1,0 +1,25 @@
+﻿
+.borderStyle {
+    border-top: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+    border-right: 1px solid #000000;
+    border-left: 1px solid #000000
+}
+
+.lightRed {
+    background-color: #f0aaaa;
+}
+
+.tableFont {
+    font-size: 14px;
+}
+
+/*Datatables Borders */
+
+.testTable {
+    border: solid 1px black;
+}
+
+.btn {
+    border-radius: 0;
+}

@@ -1,0 +1,209 @@
+﻿@model Garage88.Models.ContactFormViewModel
+
+@{
+    ViewData["Title"] = "Contact";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row" style="height:80vh">
+    <div class="col-1"></div>
+    <div class="col-10" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); margin-bottom:25px;margin-top:25px; background-color:#f4f3ee;padding:0;display:flex">
+
+
+        <div class="col-6 overlay">
+            <div class="text">
+                <h1><mark class="yellow">CONTACT US</mark></h1><br />
+                <h6><mark class="contrast">Address:</mark></h6>
+                <p style="padding-top: 10px;">Rua Jau, Nº16 1300-358 Lisboa</p><br />
+                <h6><mark class="contrast">Hours:</mark></h6><br />
+                <p>M-F: 9:00H - 18:00H</p><br />
+                <p>Sat: 9:00H - 13:00H</p><br />
+                <p>Sun: Closed</p>
+            </div>
+            <div class="text" style="position: absolute;left: 25%;top: 16.2%;">
+                <h6><mark class="contrast">Phone Number:</mark></h6>
+                <p>216589564</p>
+                <h6><mark class="contrast">Email:</mark> Pitstopautoshoplisbon@gmail.com</h6>
+            </div>
+        </div>
+        <div class="col-6 map-box">
+            <div id="map">
+            </div>
+        </div>
+        <div id="form" class="myForm">
+
+            <form asp-action="Contact">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="form-group">
+                    <input asp-for="Name" placeholder="YOUR NAME*" class="form-control sharp" />
+                </div>
+                <div class="form-group">
+                    <input asp-for="Email" placeholder="EMAIL*" class="form-control sharp" />
+                </div>
+                <div class="form-group" style="display: flex;">
+                    <input asp-for="PhoneNumber" placeholder="PHONE NUMBER*" class="form-control sharp" style="margin-right: 20px; max-width: 50%;" />
+                    <input asp-for="PlateNumber" placeholder="PLATE NUMBER" class="form-control sharp" style=" max-width: 50%;" />
+                </div>
+                <div class="form-group">
+                    <textarea rows="3" asp-for="Message" placeholder="MESSAGE*" class="form-control textarea"></textarea>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="SEND MESSAGE" class="btn sharp customBTN">
+                </div>
+                <div style="font-size:14px">
+                    @if (ViewBag.Message == "Your contact request was sent with success! We will get in touch with you as soon as possible.")
+                    {
+                        @Html.Raw($"<p style='color:green'>{ViewBag.Message}</p>")
+                        ;
+
+
+                    }
+
+                    @if (ViewBag.Message == "There was a problem sending your contact request. Please try again.")
+                    {
+                        @Html.Raw($"<p style='color:red'>{ViewBag.Message}</p>")
+                        ;
+                    }
+                </div>
+
+
+                <div class="spans">
+                    @if (ViewData.ModelState.ErrorCount > 1)
+                    {
+                        <span class="text-danger">There is multiple required fields missing.</span>
+                    }
+                    else
+                    {
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        <span asp-validation-for="Message" class="text-danger"></span>
+                    }
+                </div>
+
+
+            </form>
+        </div>
+
+    </div>
+    <div class="col-1"></div>
+</div>
+
+<script type="text/javascript">
+    let map;
+    const pitstop = { lat: 38.705, lng: -9.183 };
+
+    function initMap() {
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: pitstop,
+        zoom: 14,
+      });
+
+      const marker = new google.maps.Marker({
+          position: pitstop,
+          map: map,
+      });
+
+    }
+
+    window.initMap = initMap;
+
+
+
+</script>
+
+<style>
+    #map {
+        height: 70%;
+        width:90%;
+        margin: auto;
+        top: 50%;
+        transform: translateY(-50%);
+        border: solid 2px black;
+        box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
+    }
+
+    .overlay{
+         position: absolute;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100%;
+         background-color: #353535;
+         opacity: 1;
+         clip-path: polygon(0 0, 100% 0, 60% 50%,50% 50%,40% 60%,20% 70%,0 100%);
+         max-width:100%;
+    }
+
+    .map-box{
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        height: 100%;
+        transform: translateY(-50%);
+        width: 50%;
+    }
+
+    .text{
+        line-height: 1px;
+        margin-left: 5%;
+        margin-top: 5%;
+        letter-spacing: 1px;
+        width: 20%;
+        color:#f4f3ee;
+    }
+
+    p{
+        font-size:14px;
+    }
+
+    mark.yellow{
+        color:#f7b801;
+        background:none;
+    }
+
+    mark.contrast{
+        background:none;
+        color:#ff4655;
+        font-size:16px;
+    }
+
+    input.sharp{
+        border-radius:0;
+        box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+    }
+
+    .textarea{
+        border-radius:0;
+        box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
+        max-height:78px;
+    }
+
+    .myForm{
+        position: absolute;
+        width: 40%;
+        min-height: 50%;
+        top: 50%;
+        left: 6%;
+    }
+
+    .myForm>form{
+        min-height: 300px;
+    }
+
+    .customBTN{
+        background-color:#ff4655;
+        opacity:0.8;
+        transition: all 0.4s;
+    }
+
+    .customBTN:hover{
+        background-color:#f7b801;
+    }
+
+    .spans{
+        font-size:12px;
+    }
+
+</style>

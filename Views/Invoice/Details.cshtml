@@ -1,0 +1,247 @@
+﻿@model Garage88.Data.Entities.Invoice
+
+@{
+    Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
+    ViewData["Title"] = "Invoice";
+    ViewData["BreadCrumb"] = "Details";
+}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" />
+
+<div class="container" style="margin-top:50px">
+    <div class="row text-center">
+
+        <div class="col-md-5 bg-gray-light border border-dark">
+            <div class="row">
+                <div class="col-md-12 border font-weight-bold">
+                    Client
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 border font-weight-bold">
+                    Full Name
+                </div>
+                <div class="col-md-8 border">
+                    @Html.DisplayFor(model => model.Client.FullName)
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 border font-weight-bold">
+                    Vehicle
+                </div>
+                <div class="col-md-8 border">
+                    @Html.DisplayFor(model => model.Vehicle.Brand.Name)  @Html.DisplayFor(model => model.Vehicle.Model.Name) (@Html.DisplayFor(model => model.Vehicle.PlateNumber))
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 border font-weight-bold">
+                    Phone Number
+                </div>
+                <div class="col-md-8 border">
+                    @Html.DisplayFor(model => model.Client.PhoneNumber)
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 border font-weight-bold">
+                    Address
+                </div>
+                <div class="col-md-8 border">
+                    @Html.DisplayFor(model => model.Client.Address)
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 border font-weight-bold">
+                    @Html.DisplayNameFor(model => model.Client.Nif)
+                </div>
+                <div class="col-md-8 border">
+                    @Html.DisplayFor(model => model.Client.Nif)
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-2"></div>
+
+        <div class="col-md-5 bg-gray-light border border-dark">
+
+            <div class="row">
+                <div class="col-md-12 border font-weight-bold">
+                    Invoice Details
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 border font-weight-bold">
+                    Invoice Nº
+                </div>
+                <div class="col-md-8 border">
+                    @Html.DisplayFor(model => model.Id)
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 border font-weight-bold">
+                    @Html.DisplayNameFor(model => model.InvoicDate)
+                </div>
+                <div class="col-md-8 border">
+                    @Html.DisplayFor(model => model.InvoicDate)
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 border font-weight-bold">
+                    Service Done By
+                </div>
+                <div class="col-md-8 border">
+                    @Html.DisplayFor(model => model.WorkOrder.ServiceDoneBy.FullName)
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 border font-weight-bold">
+                    Created By
+                </div>
+                <div class="col-md-8 border">
+                    @Html.DisplayFor(model => model.CreatedBy.FullName)
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<div class="container" style="margin-top:50px">
+    <div class="row text-center">
+        <div class="col-md-12 bg-gray-light border border-dark">
+            <div class="form-group" style="display:block">
+                <label class="control-label" style="text-align:center">Work Order Observations</label>
+                <textarea class="form-control" rows="3" id="textArea" readonly>@Model.WorkOrder.Observations</textarea>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="margin-top:50px">
+    <div class="row text-center">
+        <div class="col-md-12 bg-gray-light border border-dark">
+            <label class="control-label" style="text-align:center">Services in Work Order</label>
+            <table class="hover stripe compact borderStyle" style="display:inline-table;" id="MyTable">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Estimate.Services.FirstOrDefault().Service.Name)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Estimate.Services.FirstOrDefault().Service.Price)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Estimate.Services.FirstOrDefault().Service.Discount)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Estimate.Services.FirstOrDefault().Service.PriceWithDiscount)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Estimate.Services.FirstOrDefault().Quantity)
+                        </th>
+                        <th>
+                            Service Total
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Estimate.Services)
+                    {
+                        @if (item.Service != null)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Service.Name)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Service.Price)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Service.Discount)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Service.PriceWithDiscount)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Quantity)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.ValueWithDiscount)
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+            <table class="stripe cell-border" style="display:inline-table; margin-bottom:20px" id="MyTable2">
+                <thead>
+                    <tr>
+                        <th style="padding-right: 89px;">
+                            Total
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding-right: 75px;">@Html.DisplayFor(model => model.Estimate.ValueWithDiscount)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="margin-top:20px; margin-bottom:10px;padding:0">
+    <a asp-action="Index" style="width:100%;border-radius:0" class="btn btn-primary">Back to Invoices</a>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="//cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+            $('#MyTable').DataTable({
+                columnDefs: [
+                    {className: 'dt-center', targets: "_all"},
+                ],
+                paging: false,
+                searching: false,
+                info: false,
+                ordering: false,
+            });
+
+            $('#MyTable2').DataTable({
+                columnDefs: [
+                    {className: 'dt-right', targets: "_all"},
+                ],
+                paging: false,
+                searching: false,
+                info: false,
+                ordering: false,
+            });
+        });
+
+        function checkTextAreaContent(){
+
+            debugger;
+
+                let textarea = document.getElementById('textArea').value;
+
+                if (textarea == '') {
+                    document.getElementById('textArea').style.textAlign = "Center";
+                    document.getElementById('textArea').innerHTML = "There was no observations to add.";
+                }
+        };
+
+        window.onload = checkTextAreaContent;
+
+    </script>
+}

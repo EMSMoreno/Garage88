@@ -1,0 +1,23 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "font-awesome@6.6.0",
+      "destination": "wwwroot/lib/font-awesome/"
+    },
+    {
+      "library": "fullcalendar@6.1.15",
+      "destination": "wwwroot/lib/fullcalendar/"
+    },
+    {
+      "library": "cropperjs@1.6.2",
+      "destination": "wwwroot/lib/cropperjs/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "cldr-json@43.1.0",
+      "destination": "wwwroot/lib/cldr-json"
+    }
+  ]
+}

@@ -43,9 +43,10 @@ namespace Garage88.Models
         public IEnumerable<SelectListItem> Roles { get; set; }
 
         [Required(ErrorMessage = "Must insert the {0}.")]
-        [Display(Name = "Specialty")]
-        [Range(1, int.MaxValue, ErrorMessage = "You must select a Specialty")]
-        public int SpecialtyId { get; set; }
+        [Display(Name = "speciality")]
+        [Range(1, int.MaxValue, ErrorMessage = "You must select a speciality")]
+
+        public int SpecialityId { get; set; }
 
         public IEnumerable<SelectListItem> Specialities { get; set; }
 

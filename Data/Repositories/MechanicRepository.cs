@@ -14,11 +14,11 @@ namespace Garage88.Data.Repositories
             _context = context;
         }
 
-        public async Task<Response> CheckIfEmployeeExistsAsync(User user)
+        public async Task<Response> CheckIfMechanicExistsAsync(User user)
         {
-            var employee = await _context.Mechanics.FindAsync(user);
+            var mechanic = await _context.Mechanics.FindAsync(user);
 
-            if (employee == null)
+            if (mechanic == null)
             {
                 return new Response { IsSuccess = false };
             }
@@ -28,26 +28,21 @@ namespace Garage88.Data.Repositories
             }
         }
 
-        public Task<Response> CheckIfMechanicExistsAsync(User user)
-        {
-            throw new NotImplementedException();
-        }
-
         public IQueryable GetAllWithUsers()
         {
             return _context.Mechanics.Include(e => e.User)
                                      .Include(e => e.Role)
-                                     .Include(e => e.Specialty);
+                                     .Include(e => e.Speciality);
         }
 
         public async Task<Mechanic> GetByEmailAsync(string email)
         {
-            var employee = await _context.Mechanics.Include(e => e.User)
+            var mechanic = await _context.Mechanics.Include(e => e.User)
                                                    .Include(e => e.Role)
-                                                   .Include(e => e.Specialty)
+                                                   .Include(e => e.Speciality)
                                                    .Where(e => e.Email == email).FirstOrDefaultAsync();
 
-            return employee;
+            return mechanic;
         }
 
         public IEnumerable<SelectListItem> GetComboTechnicians()
@@ -69,33 +64,23 @@ namespace Garage88.Data.Repositories
             return list;
         }
 
-        public async Task<Mechanic> GetEmployeeByIdAsync(int employeeId)
+        public async Task<Mechanic> GetMechanicByIdAsync(int mechanicId)
         {
-            var employee = await _context.Mechanics.Include(e => e.User)
+            var mechanic = await _context.Mechanics.Include(e => e.User)
                                                    .Include(e => e.Role)
-                                                   .Include(e => e.Specialty)
-                                                   .Where(m => m.Id == employeeId).FirstOrDefaultAsync();
+                                                   .Include(e => e.Speciality)
+                                                   .Where(m => m.Id == mechanicId).FirstOrDefaultAsync();
 
-            return employee;
+            return mechanic;
         }
 
-        public Task<Mechanic> GetMechanicByIdAsync(int mechanicId)
+        public async Task<List<Mechanic>> GetTechniciansMechanicsAsync()
         {
-            throw new NotImplementedException();
-        }
+           List<Mechanic> list = new List<Mechanic>();
 
-        public async Task<List<Mechanic>> GetTechniciansEmployeesAsync()
-        {
-            List<Mechanic> list = new List<Mechanic>();
-
-            list = await _context.Mechanics.Include(e => e.User).Include(e => e.Role).Include(e => e.Specialty).Where(e => e.Role.Name == "Technician").ToListAsync();
+            list = await _context.Mechanics.Include(e => e.User).Include(e => e.Role).Include(e => e.Speciality).Where(e => e.Role.Name == "Technician").ToListAsync();
 
             return list;
-        }
-
-        public Task<List<Mechanic>> GetTechniciansMechanicsAsync()
-        {
-            throw new NotImplementedException();
         }
     }
 }

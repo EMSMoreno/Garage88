@@ -7,18 +7,18 @@ namespace Garage88.Data.Repositories
 {
     public interface IVehicleRepository : IGenericRepository<Vehicle>
     {
-        IQueryable GetAllWithCustomers();
+        IQueryable GetAllWithClients();
 
-        IEnumerable<SelectListItem> GetComboVehicles(int customerId);
+        IEnumerable<SelectListItem> GetComboVehicles(int clientId);
 
         Task<Vehicle> GetVehicleDetailsByIdAsync(int id);
 
-        IQueryable GetCustomerVehiclesAsync(int customerId);
+        IQueryable GetClientVehiclesAsync(int clientId);
 
         Task<Vehicle> GetNewlyAddedVehicleAsync(int id);
 
         Task<int> GetAllRegisteredVehiclesNumberAsync();
-        Task AddAsync(Vehicle vehicle);
-        Task<IEnumerable> GetAllAsync();
+
+        Task<List<VehicleChartModel>> GetVehiclesChartDataAsync();
     }
 }

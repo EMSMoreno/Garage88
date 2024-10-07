@@ -39,7 +39,7 @@ namespace Garage88.Data.Repositories
                     end = e.AppointmentEndDate.ToString(),
                     color = e.Mechanic.Color,
                     description = "<b>Vehicle: </b>" + e.Vehicle.PlateNumber + " (" + e.Vehicle.Brand.Name + " " + e.Vehicle.Model.Name + ")"
-                + " <br> <b> Customer:</b> " + e.Client.FirstName + " " + e.Client.LastName
+                + " <br> <b> Client:</b> " + e.Client.FirstName + " " + e.Client.LastName
                 + " <br><b> Technician:</b> " + e.Mechanic.FirstName + " " + e.Mechanic.LastName
                 + "<br><b>Services:</b><br>" + e.AppointmentServicesDetails
                 + "<br><b>Observations:</b><br>" + e.Observations,
