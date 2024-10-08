@@ -26,7 +26,7 @@ namespace Garage88.Helpers
             {
                 new SelectListItem { Text = "[Insert To Destination]", Value = "0" },
                 new SelectListItem { Text = "Clients", Value = "1" },
-                new SelectListItem { Text = "Employees", Value = "2" }
+                new SelectListItem { Text = "Mechanics", Value = "2" }
             };
 
             return options;

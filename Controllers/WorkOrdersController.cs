@@ -9,7 +9,7 @@ using Vereyon.Web;
 
 namespace Garage88.Controllers
 {
-    [Authorize(Roles = "Admin, Technician, Receptionist")]
+    //[Authorize(Roles = "Admin, Technician, Receptionist")]
     public class WorkOrdersController : Controller
     {
         private readonly IWorkOrderRepository _workOrderRepository;

@@ -36,16 +36,16 @@ builder.Services.AddAuthentication(options =>
 .AddJwtBearer(cfg =>
 {
     // Configurar parâmetros de validação do token JWT
-    //cfg.TokenValidationParameters = new TokenValidationParameters
-    //{
-    //    ValidIssuer = builder.Configuration["Tokens:Issuer"],
-    //    ValidAudience = builder.Configuration["Tokens:Audience"],
-    //    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Tokens:Key"])),
-    //    ValidateIssuer = true,
-    //    ValidateAudience = true,
-    //    ValidateLifetime = true,
-    //    ValidateIssuerSigningKey = true
-    //};
+    cfg.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidIssuer = builder.Configuration["Tokens:Issuer"],
+        ValidAudience = builder.Configuration["Tokens:Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Tokens:Key"])),
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true
+    };
 });
 
 // Chamar o ApplicationDbContext com o SQL Server
@@ -57,17 +57,20 @@ builder.Services.AddTransient<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddTransient<IBrandRepository, BrandRepository>();
 builder.Services.AddTransient<IClientRepository, ClientRepository>();
 builder.Services.AddTransient<IEstimateRepository, EstimateRepository>();
-//builder.Services.AddTransient<IGenericRepository, GenericRepository>();
-builder.Services.AddTransient<IMailHelper, MailHelper>();
+builder.Services.AddTransient<IInvoiceRepository, InvoiceRepository>();
 builder.Services.AddTransient<IMechanicRepository, MechanicRepository>();
 builder.Services.AddTransient<IMechanicsRolesRepository, MechanicsRolesRepository>();
 builder.Services.AddTransient<IServiceRepository, ServiceRepository>();
 builder.Services.AddTransient<IVehicleRepository, VehicleRepository>();
 builder.Services.AddTransient<IWorkOrderRepository, WorkOrderRepository>();
 
+// builder.Services.AddTransient<IGenericRepository, GenericRepository>();
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
 builder.Services.AddTransient<IUserHelper, UserHelper>();
+builder.Services.AddTransient<IMailHelper, MailHelper>();
 builder.Services.AddTransient<IConverterHelper, ConverterHelper>();
-//builder.Services.AddTransient<IBlobHelper, BlobHelper>();
+builder.Services.AddTransient<IBlobHelper, BlobHelper>();
 
 // Configurar autenticação por cookie
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -81,6 +84,13 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddFlashMessage();
 
 var app = builder.Build();
+
+// Criar roles ao inicializar a aplicação
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await CreateRoles(services);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -107,3 +117,22 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+// Método para criar os roles
+async Task CreateRoles(IServiceProvider serviceProvider)
+{
+    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    // Definir os roles que precisas
+    var roles = new List<string> { "Admin", "Client", "User" };
+
+    foreach (var role in roles)
+    {
+        // Verifica se o role já existe, caso contrário, cria-o
+        var roleExist = await roleManager.RoleExistsAsync(role);
+        if (!roleExist)
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+}

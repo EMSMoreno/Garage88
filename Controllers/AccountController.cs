@@ -3,8 +3,10 @@ using Garage88.Data.Repositories;
 using Garage88.Helpers;
 using Garage88.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using Newtonsoft.Json;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
@@ -44,7 +46,6 @@ namespace Garage88.Controllers
 
         public IActionResult Login()
         {
-
             if (User.Identity.IsAuthenticated)
             {
 
@@ -58,7 +59,6 @@ namespace Garage88.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-
             if (ModelState.IsValid)
             {
 
@@ -79,7 +79,7 @@ namespace Garage88.Controllers
 
                         if (isClientRole)
                         {
-                            return this.RedirectToAction("Index", "Home");
+                            return this.RedirectToAction("Index", "Clients");
                         }
                         else
                         {
@@ -217,7 +217,6 @@ namespace Garage88.Controllers
             return View();
         }
 
-        [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
@@ -236,58 +235,67 @@ namespace Garage88.Controllers
                         PhoneNumber = model.PhoneNumber,
                     };
 
-
-                    var result = await _userHelper.AddUserAsync(user, "DefaultPassword123");
-
-                    if (!result.Succeeded)
+                    try
                     {
-                        ModelState.AddModelError(string.Empty, "The user couldn't be created.");
+                        var result = await _userHelper.AddUserAsync(user, GenerateRandomPassword());
+
+                        if (!result.Succeeded)
+                        {
+                            ModelState.AddModelError(string.Empty, "The user couldn't be created.");
+                            return View(model);
+                        }
+
+                        var client = new Client
+                        {
+                            FirstName = model.FirstName,
+                            LastName = model.LastName,
+                            Email = model.UserName,
+                            Address = model.Address,
+                            User = user
+                        };
+
+                        await _clientRepository.CreateAsync(client);
+
+                        result = await _userHelper.AddUserToRoleAsync(user, "Client");
+
+                        if (!result.Succeeded)
+                        {
+                            ModelState.AddModelError(string.Empty, "Failed to assign the user as a client.");
+                            return View(model);
+                        }
+
+                        string userToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+                        string tokenLink = Url.Action("ConfirmEmail", "Account", new
+                        {
+                            userId = user.Id,
+                            token = userToken
+                        }, protocol: HttpContext.Request.Scheme);
+
+                        Response response = await _mailHelper.SendEmail(model.UserName, "Email confirmation",
+                            $"<h1>Email Confirmation</h1>" +
+                            $" To allow you to access the website, please click on the following link:</br></br><a href= \"{tokenLink}\">Confirm Email </a>", null);
+
+                        if (response.IsSuccess)
+                        {
+                            ViewBag.Message = $"An email has been sent to {user.Email}, please check your email and follow the instructions.";
+                            return View(model);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        ModelState.AddModelError(string.Empty, "An unexpected error occurred: " + ex.Message);
                         return View(model);
                     }
-
-                    var client = new Client
-                    {
-                        FirstName = model.FirstName,
-                        LastName = model.LastName,
-                        Email = model.UserName,
-                        Address = model.Address,
-                        User = user
-                    };
-
-                    await _clientRepository.CreateAsync(client);
-
-                    result = await _userHelper.AddUserToRoleAsync(user, "Client");
-
-                    if (!result.Succeeded)
-                    {
-                        ModelState.AddModelError(string.Empty, "The user couldn't be created, failed to assign as client");
-                        return View(model);
-                    }
-
-                    string userToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
-                    string tokenLink = Url.Action("ConfirmEmail", "Account", new
-                    {
-                        userId = user.Id,
-                        token = userToken
-                    }, protocol: HttpContext.Request.Scheme);
-
-                    Response response = await _mailHelper.SendEmail(model.UserName, "Email confirmation", $"<h1>Email Confirmation</h1>" +
-                        $" To allow you to access the website, " +
-                        $"please click in the following link:</br></br><a href= \"{tokenLink}\">Confirm Email </a>", null);
-
-                    if (response.IsSuccess)
-                    {
-                        ViewBag.Message = $"An email has been sent to {user.Email}, please check your email and follow the instructions.";
-                        return View(model);
-                    }
-
                 }
-
             }
 
-            ModelState.AddModelError(string.Empty, "The user couldn't be created, probably Email is alredy registered.");
-
             return View(model);
+        }
+
+        private string GenerateRandomPassword()
+        {
+            // Implement password generation logic here
+            return "GeneratedPassword123"; // Example placeholder
         }
 
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
@@ -496,7 +504,7 @@ namespace Garage88.Controllers
 
         }
 
-        [Authorize]
+        //[Authorize]
         public async Task<IActionResult> ViewUser()
         {
             var user = await _userHelper.GetUserByEmailAsync(User.Identity.Name);

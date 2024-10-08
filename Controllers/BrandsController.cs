@@ -7,7 +7,7 @@ using Garage88.Data.Entities;
 
 namespace Garage88.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     public class BrandsController : Controller
     {
         private readonly IBrandRepository _brandRepository;

@@ -8,7 +8,7 @@ using Vereyon.Web;
 
 namespace Garage88.Controllers
 {
-    [Authorize(Roles = "Admin, Receptionist")]
+    //[Authorize(Roles = "Admin, Receptionist")]
     public class EstimatesController : Controller
     {
         private readonly IEstimateRepository _estimateRepository;
@@ -440,7 +440,7 @@ namespace Garage88.Controllers
             return View(estimate);
         }
 
-        [Authorize(Roles = "Admin")]
+        //[Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)

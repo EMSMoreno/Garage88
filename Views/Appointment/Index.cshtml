@@ -4,7 +4,9 @@
     ViewData["Title"] = "Appointments";
     ViewData["Action"] = "Index";
 
-    Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
+    // Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
+    Layout = "_Layout";
+
     var editButton = new ButtonModel() { content = "Edit", cssClass = "e-flat" };
     var asAttendedButton = new ButtonModel() { content = "Print Work Order", cssClass = "e-flat" };
     var cancelButton = new ButtonModel() { content = "Cancel", cssClass = "e-flat" };
