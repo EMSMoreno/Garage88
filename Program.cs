@@ -67,7 +67,7 @@ builder.Services.AddTransient<IWorkOrderRepository, WorkOrderRepository>();
 
 builder.Services.AddTransient<IUserHelper, UserHelper>();
 builder.Services.AddTransient<IConverterHelper, ConverterHelper>();
-
+//builder.Services.AddTransient<IBlobHelper, BlobHelper>();
 
 // Configurar autenticação por cookie
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

@@ -3,90 +3,114 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,height=device-heigth, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0" />
     <title>@ViewData["Title"] - Garage88</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Vampiro+One&display=swap" rel="stylesheet">
     <!-- End Google Fonts -->
     <!-- Font Awesome -->
     <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css">
+
     <!-- Croppie -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.css" />
+
     <!-- Syncfusion ASP.NET Core controls styles -->
     <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/20.2.43/fluent.css" />
-    <script src="https://cdn.syncfusion.com/ej2/20.2.43/dist/ej2.min.js"></script>
+
     <!-- Syncfusion ASP.NET Core Script Manager -->
     <ejs-scripts></ejs-scripts>
-    <!-- Bootstrap -->
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <!--Croppie-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js"></script>
-    <!--Google Maps-->
-    <script async
-            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAPildPyuwamnN1w0OTg7aJr6z0m0dtP0U&callback=initMap">
-    </script>
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="~/css/custom.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+
     <!-- JQuery -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <!-- Custom JS & CSS -->
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js"></script>
+    <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAPildPyuwamnN1w0OTg7aJr6z0m0dtP0U&callback=initMap"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-    <link rel="stylesheet" href="~/css/custom.css" />
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
 </head>
 
-<body class="d-flex flex-column min-vh-100" style="font-family:josefin sans,sans-serif;max-width:100%;">
+<body class="d-flex flex-column min-vh-100" style="font-family: 'Josefin Sans', sans-serif; max-width: 100%;">
     <header>
         <div class="row" id="myHeader">
-
-            <div class="col-3">
-                <div class="media">
-                    <a href="https://www.facebook.com/garage88/" target="_blank" class="mediaBtn facebook"><i class="fab fa-facebook"></i></a>
-                    <a href="https://www.instagram.com/garage88/" target="_blank" class="mediaBtn instagram"><i class="fab fa-instagram"></i></a>
+            <div class="col-2">
+                <div class="media d-flex align-items-center">
+                    <a href="https://www.facebook.com/garage88/" target="_blank" class="mediaBtn facebook">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                    <a href="https://www.instagram.com/garage88/" target="_blank" class="mediaBtn instagram">
+                        <i class="fab fa-instagram"></i>
+                    </a>
                 </div>
             </div>
+
             <div class="col-4"></div>
+
             <div class="col-4">
-                <div class="row" style="justify-content:end">
-
-                    @if (this.User.Identity.IsAuthenticated && User.IsInRole("Client"))
+                <div class="row justify-content-end align-items-center">
+                    @if (this.User.Identity.IsAuthenticated)
                     {
-                        <div class="col-5" style="display: flex; justify-content: end;">
-                            <a asp-area="" asp-controller="Account" asp-action="ViewUser" class="aColor"> @this.User.Identity.Name</a>
+                        <div class="col-auto d-flex align-items-center">
+                            <a asp-area="" asp-controller="Account" asp-action="ViewUser" class="aColor">@this.User.Identity.Name</a>
                         </div>
-                        <div class="col-2" style="display: flex; justify-content: center; max-width:50px;padding:0px;">
-                            |
-                        </div>
-                        <div class="col-5" style="padding:0px; text-align:end; max-width:60px;">
-                            <a asp-area="" asp-controller="Account" asp-action="Logout" class="aColor"> Logout</a>
-                        </div>
+                        <div class="col-auto d-flex align-items-center">|</div>
 
+                        @if (User.IsInRole("Client"))
+                        {
+                            <div class="col-auto d-flex align-items-center">
+                                <a asp-area="" asp-controller="Account" asp-action="Logout" class="aColor">Logout</a>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-auto d-flex align-items-center">
+                                <a asp-area="" asp-controller="DashboardPanel" asp-action="Index" class="aColor">Admin Panel</a>
+                            </div>
+                            <div class="col-auto d-flex align-items-center">|</div>
+                            <div class="col-auto d-flex align-items-center">
+                                <a asp-area="" asp-controller="Account" asp-action="Logout" class="aColor">Logout</a>
+                            </div>
+                        }
                     }
-
-                    @if (this.User.Identity.IsAuthenticated && !User.IsInRole("Client"))
+                    else
                     {
-                        <div class="col-5" style="text-align: end;padding: 0;">
-                            <a asp-area="" asp-controller="Account" asp-action="ViewUser" class="aColor"> @this.User.Identity.Name</a>
+                        <div class="col-auto d-flex align-items-center">
+                            <a class="aColor" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </div>
-                        <div class="col-1" style="max-width:50px;padding: 0px;">|</div>
-                        <div class="col-3" style="padding: 0px; text-align: center;max-width: 100px;">
-                            <a asp-area="" asp-controller="DashboardPanel" asp-action="Index" class="aColor">Admin Panel</a>
+                        <div class="col-auto d-flex align-items-center dropdown">
+                            <a id="dropTitle" class="aColor dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Services</a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" asp-area="" asp-controller="Clients" asp-action="Index">Clients</a>
+                                <a class="dropdown-item" asp-area="" asp-controller="Vehicles" asp-action="Index">Vehicles</a>
+                                <a class="dropdown-item" asp-area="" asp-controller="Mechanics" asp-action="Index">Mechanics</a>
+                                <a class="dropdown-item" asp-area="" asp-controller="WorkOrders" asp-action="Index">Repairs</a>
+                                <a class="dropdown-item" asp-area="" asp-controller="Appointment" asp-action="Index">Schedule/Appointments</a>
+                            </div>
                         </div>
-                        <div class="col-1" style="max-width:50px;padding: 0px;">|</div>
-                        <div class="col-2" style="padding: 0px; max-width: 60px;text-align:center;">
-                            <a asp-area="" asp-controller="Account" asp-action="Logout" class="aColor" style="max-width:100px;">Logout</a>
+                       
+                        <div class="col-auto d-flex align-items-center">
+                            <a class="aColor" asp-area="" asp-controller="About" asp-action="Index">About Us</a>
                         </div>
-                    }
-
-                    @if (!this.User.Identity.IsAuthenticated)
-                    {
-                        <div class="col-9"></div>
-                        <div class="col-3" style="text-align: end;padding: 0px; margin:auto;">
+                        <div class="col-auto d-flex align-items-center">
+                            <a class="aColor" asp-area="" asp-controller="Home" asp-action="Contact">Contact</a>
+                        </div>
+                        <div class="col-auto d-flex align-items-center">
+                            <a class="aColor" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        </div>
+                        <div class="col-auto d-flex align-items-center">
                             <a class="aColor" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
                         </div>
                     }
@@ -96,50 +120,9 @@
         </div>
     </header>
 
-    <div class="container-fluid" style="padding:0;height:50px;display:flex;">
-        <p style="font-family: Vampiro One, cursive; font-size:30px;color:#353535;padding-left: 150px;">Garage88</p>
-        <nav id="menu">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                </li>
-                <li class="nav-item dropdown" id="drop">
-                    <a id="dropTitle" href="#" role="button" data-toggle="dropdown" aria-expanded="false" class="nav-link dropdown-toggle">Services</a>
-                    <div class="dropdown-menu" style="margin-top:15px">
-                        <a class="dropdown-item" asp-area="" asp-controller="Clients" asp-action="Index">Clients</a>
-                        <a class="dropdown-item" asp-area="" asp-controller="Vehicles" asp-action="Index">Vehicles</a>
-                        <a class="dropdown-item" asp-area="" asp-controller="Mechanics" asp-action="Index">Mechanics</a>
-                        <a class="dropdown-item" asp-area="" asp-controller="WorkOrders" asp-action="Index">Repairs</a>
-                        <a class="dropdown-item" asp-area="" asp-controller="Appointment" asp-action="Index">Schedule/Appointments</a>
-                    </div>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-dark" asp-area="" asp-controller="About" asp-action="Index">About</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                </li>
-            </ul>
-            <div class="dropdown" id="drop">
-                <a id="dropTitle" href="#" role="button" data-toggle="dropdown" aria-expanded="false" class="nav-link dropdown-toggle">About</a>
-                <div class="dropdown-menu" style="margin-top:15px">
-                    <a class="dropdown-item" asp-area="" asp-controller="About" asp-action="Index">Garage88</a>
-                    <a class="dropdown-item" asp-area="" asp-controller="About" asp-action="Mechanics">Mechanics</a>
-                </div>
-            </div>
-            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Contact">Contact</a>
-        </nav>
-    </div>
-
     <div class="container-fluid mainContainer" style="padding:0;padding-bottom:10px" id="Container">
         @RenderBody()
     </div>
-
-    @* <footer class="mt-auto">
-        <div class="container">
-            &copy; 2024 - Garage88 - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer> *@
 
     <script>
         $(function () {
@@ -158,9 +141,44 @@
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 
+@* <footer class="mt-auto">
+        <div class="container">
+            &copy; 2024 - Garage88 - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer> *@
+
 </html>
 
 <style>
+
+    /* Estilo para o menu geral */
+    #menu {
+        display: flex;
+        justify-content: space-between; /* Alinhamento dos itens do menu */
+        align-items: center; /* Alinha verticalmente os itens */
+        width: 100%;
+        padding: 0 10px; /* Adiciona padding para espaçamento */
+    }
+
+    /* Itens do menu */
+    .navbar-nav .nav-link {
+        padding: 15px 10px; /* Espaçamento em volta dos itens */
+        position: relative; /* Para o efeito de hover */
+        text-align: center; /* Centraliza o texto */
+    }
+
+    /* Estilos para dropdown */
+    .dropdown .dropdown-menu {
+        display: block;
+        opacity: 0;
+        border-radius: 0;
+        transition: all 1000ms ease;
+    }
+
+    .dropdown:hover .dropdown-menu {
+        display: block;
+        opacity: 1;
+    }
 
     .dropdown-item:hover {
         background-color: #f7b801;
@@ -170,10 +188,6 @@
         display: block;
         opacity: 0;
         border-radius: 0;
-        -moz-transition: all 1000ms ease;
-        -webkit-transition: all 1000ms ease;
-        -o-transition: all 1000ms ease;
-        -ms-transition: all 1000ms ease;
         transition: all 1000ms ease;
     }
 
@@ -196,10 +210,6 @@
         bottom: -8px;
         transition: 0.3s;
     }
-    /*
-        #drop:after > a{
-            color:#f7b801;
-        }*/
 
     #drop:hover::after {
         width: 100%;
@@ -211,10 +221,9 @@
     }
 
     a {
-        /* text-decoration: none;*/
         color: #353535;
+        /* text-decoration: none; */ /* Se não for necessário, mantenha comentado */
     }
-
 
     .nav .navbar-social > a {
         padding: 0;
@@ -234,26 +243,26 @@
         padding-right: 137px;
     }
 
-        #menu > a {
-            padding: 0 10px;
-            position: relative;
-            letter-spacing: 1px;
-        }
+    #menu > a {
+        padding: 0 10px;
+        position: relative;
+        letter-spacing: 1px;
+    }
 
-            #menu > a:after {
-                content: "";
-                position: absolute;
-                background-color: #f7b801;
-                height: 2px;
-                width: 0;
-                left: 0;
-                bottom: -8px;
-                transition: 0.3s;
-            }
+    #menu > a:after {
+        content: "";
+        position: absolute;
+        background-color: #f7b801;
+        height: 2px;
+        width: 0;
+        left: 0;
+        bottom: -8px;
+        transition: 0.3s;
+    }
 
-            #menu > a:hover::after {
-                width: 100%;
-            }
+    #menu > a:hover::after {
+        width: 100%;
+    }
 
     .media {
         justify-content: space-between;
@@ -273,26 +282,26 @@
         position: relative;
     }
 
-        .mediaBtn i {
-            line-height: 25px;
-            font-size: 15px;
-            transition: 0.2s linear;
-        }
+    .mediaBtn i {
+        line-height: 25px;
+        font-size: 15px;
+        transition: 0.2s linear;
+    }
 
-        .mediaBtn:hover i {
-            transform: scale(1.3);
-            color: #f4f3ee;
-        }
+    .mediaBtn:hover i {
+        transform: scale(1.3);
+        color: #f4f3ee;
+    }
 
-        .mediaBtn::before {
-            content: "";
-            position: absolute;
-            width: 140%;
-            height: 140%;
-            transform: rotate(45deg);
-            left: -110%;
-            top: 90%;
-        }
+    .mediaBtn::before {
+        content: "";
+        position: absolute;
+        width: 140%;
+        height: 140%;
+        transform: rotate(45deg);
+        left: -110%;
+        top: 90%;
+    }
 
     .facebook::before {
         background: #3b5998;
@@ -333,5 +342,5 @@
         width: 100%;
         height: 80%;
     }
-
 </style>
+

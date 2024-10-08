@@ -1,23 +1,37 @@
 ﻿@{
     ViewData["Title"] = "Error404";
-    Layout = "~/Views/Shared/_PasswordLayout.cshtml";
+    // Layout = "~/Views/Shared/_PasswordLayout.cshtml";
+    Layout = "_Layout";
 }
+
+<div class="container-fluid persError404">
+
+    <div class="row d-flex align-items-center justify-content-center lettering ">
+        <h2>Error 404</h2>
+        <h4 style="color:white">Oh Oh, It looks like you're lost, mate!</h4>
+        <a href="javascript:history.go(-1)" id="btnBack" class="btn sharp btn-primary btn-lg btn-block backHomepageBtn">
+            <i class="fas fa-hand-point-left"></i>
+            Return Back
+        </a>
+    </div>
+    <img id="bckgroundImage" src="~/images/error404.jpg" />
+</div>
 
 <style>
 
     .persError404 {
-       width: 100%;
-       margin: 0;
-       overflow: hidden;
-       padding: 0 !important;
-       padding-top: 0 !important;
+        width: 100%;
+        margin: 0;
+        overflow: hidden;
+        padding: 0 !important;
+        padding-top: 0 !important;
     }
 
 
-    h2{
-        font-family:'Vampiro One', cursive;
-        color:#f7b801;
-        font-size:60px;
+    h2 {
+        font-family: 'Vampiro One', cursive;
+        color: #f7b801;
+        font-size: 60px;
     }
 
 
@@ -31,38 +45,24 @@
         text-align: center;
         border: solid 5px black;
         background: rgba(0,0,0,0.3);
-        z-index:1;
+        z-index: 1;
     }
 
     .backHomepageBtn {
         background-color: #f7b801;
         margin-top: 150px;
-        filter:saturate(100%);
-        transition:all 0.4s;
+        filter: saturate(100%);
+        transition: all 0.4s;
     }
 
 
-    img{
-       filter:grayscale(1);
-       width:100%;
-       transition:ease 0.8s;
+    img {
+        filter: grayscale(1);
+        width: 100%;
+        transition: ease 0.8s;
     }
 
 </style>
-
-
-<div class="container-fluid persError404">
-
-    <div class="row d-flex align-items-center justify-content-center lettering ">
-        <h2>Error 404</h2>
-        <h4 style="color:white">Ooops, Seems like you're lost.</h4>
-        <a href="javascript:history.go(-1)" id="btnBack" class="btn sharp btn-primary btn-lg btn-block backHomepageBtn">
-            <i class="fas fa-hand-point-left"></i>
-            Return Back
-        </a>
-    </div>
-    <img id="bckgroundImage" src="~/images/error404.jpg" />
-</div>
 
 
 @section Scripts {
