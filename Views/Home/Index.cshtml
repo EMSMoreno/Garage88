@@ -105,7 +105,7 @@
         <div>
             <img src="./images/siteContent/MAINTENANCE_CTA.png" alt="services" class="small-img" />
         </div>
-        <h5>Inspect</h5>
+        <h5>Maintenance</h5>
         <p><a asp-controller="Home" asp-action="Maintenance">Learn More</a></p>
     </div>
 
@@ -113,7 +113,7 @@
         <div>
             <img src="./images/siteContent/SPARK_CTA.png" alt="services" class="small-img" />
         </div>
-        <h5>Using Rare Pieces and Bolts</h5>
+        <h5>Car Care Services</h5>
         <p><a asp-controller="Home" asp-action="CarCare">Learn More</a></p>
     </div>
 
@@ -126,7 +126,7 @@
     </div>
 </div>
 
-<div class="container text-center">
+@* <div class="container text-center">
     <div class="row">
         <div class="col">
             <button class="btnServices">
@@ -139,15 +139,15 @@
             </button>
         </div>
     </div>
-</div> <!-- Botões que fazem de Footer -->
+</div>  *@ <!-- Botões que fazem de Footer -->
 
-<div class="container">
+@* <div class="container">
     <div class="row">
         <div class="col text-center">
             <img class="small-img-logo" src="./images/logoAutilizar.png" alt="Garage88 Logo">
         </div>
     </div>
-</div> <!-- Garage88 Logo -->
+</div>  *@ <!-- Garage88 Logo -->
 
 <style>
     .carousel-item {
@@ -200,53 +200,72 @@
         opacity: 0.5;
     }
 
-    .outsideBox {
-        justify-content: space-evenly;
-        max-width: 1200px;
-        margin-right: auto;
-        margin-left: auto;
+    .containerIcon {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
     }
 
     .box {
-        border: solid 1px #e0e1dd;
-        align-items: center;
-        justify-content: center;
-        padding: 10px;
-        margin: 10px;
+        width: auto;
+        height: auto;
+        padding: 5px;
+        border: 1px solid #ccc;
         text-align: center;
-        max-width: 100px; /* Reduzido */
+        transform-origin: center;
+        margin: 10px;
         background-color: white;
         box-shadow: 0 20px 26px rgba(0, 0, 0, 0.04);
-        z-index: 1;
+        position: relative; /* Para suportar transformações se necessário */
+        transition: transform 0.7s; /* Efeito suave ao passar o mouse */
     }
 
-        .box::before {
-            content: "";
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            background: linear-gradient(to left top, #f7b801, #fffc00);
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.5s;
-            z-index: -1;
+        /* Aplica as transformações para cada box individualmente */
+        .box:nth-child(1) {
+            transform: rotate(-5deg) translateX(-10px);
         }
 
-        .box:hover img {
-            transform: scale(1.2);
-            transition: linear 0.3s;
+        .box:nth-child(2) {
+            transform: rotate(3deg) translateX(15px);
         }
 
-        .box:hover a {
-            color: black;
+        .box:nth-child(3) {
+            transform: rotate(-8deg) translateY(10px);
         }
 
-        .box:hover::before {
-            opacity: 1;
-            visibility: visible;
+        .box:nth-child(4) {
+            transform: rotate(5deg) translateX(-15px);
         }
+
+        .box:nth-child(5) {
+            transform: rotate(-3deg) translateY(-10px);
+        }
+
+        .box:nth-child(6) {
+            transform: rotate(7deg) translateX(5px);
+        }
+
+        .box:nth-child(7) {
+            transform: rotate(4deg) translateX(3px);
+        }
+
+        .box:nth-child(8) {
+            transform: rotate(3deg) translateX(1px);
+        }
+
+    /* Tamanho dos ícones dos serviços prestados */
+    .small-img {
+        width: 50px;
+        height: auto;
+    }
+
+    /* ícones da Garage88 */
+    .small-img-logo {
+        width: 50px;
+        height: auto;
+    }
 
     hr {
         color: transparent;
@@ -345,69 +364,5 @@
 
     .spacing {
         margin-top: 30px;
-    }
-
-
-    /* ícones dos serviços prestados */
-    .containerIcon {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 20px;
-    }
-
-    .box {
-        width: 200px;
-        height: auto;
-        padding: 20px;
-        border: 1px solid #ccc;
-        text-align: center;
-        transform-origin: center;
-    }
-
-        /* Aplica as transformações para cada box individualmente */
-        .box:nth-child(1) {
-            transform: rotate(-5deg) translateX(-10px);
-        }
-
-        .box:nth-child(2) {
-            transform: rotate(3deg) translateX(15px);
-        }
-
-        .box:nth-child(3) {
-            transform: rotate(-8deg) translateY(10px);
-        }
-
-        .box:nth-child(4) {
-            transform: rotate(5deg) translateX(-15px);
-        }
-
-        .box:nth-child(5) {
-            transform: rotate(-3deg) translateY(-10px);
-        }
-
-        .box:nth-child(6) {
-            transform: rotate(7deg) translateX(5px);
-        }
-
-        .box:nth-child(7) {
-            transform: rotate(4deg) translateX(3px);
-        }
-
-        .box:nth-child(8) {
-            transform: rotate(3deg) translateX(1px);
-        }
-
-    /* tamnho dos ícones dos serviços prestados */
-    .small-img {
-        width: 50px;
-        height: auto;
-    }
-
-    /* ícones da Garage88 */
-    .small-img-logo {
-        width: 100px;
-        height: auto;
     }
 </style>

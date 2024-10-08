@@ -9,27 +9,27 @@
     <div class="col-1"></div>
     <div class="col-10" style="box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19); margin-bottom:25px;margin-top:25px; background-color:#f4f3ee;padding:0;display:flex">
 
-
         <div class="col-6 overlay">
             <div class="text">
                 <h1><mark class="yellow">CONTACT US</mark></h1><br />
                 <h6><mark class="contrast">Address:</mark></h6>
-                <p style="padding-top: 10px;">Rua Jau, Nº16 1300-358 Lisboa</p><br />
-                <h6><mark class="contrast">Hours:</mark></h6><br />
-                <p>M-F: 9:00H - 18:00H</p><br />
-                <p>Sat: 9:00H - 13:00H</p><br />
-                <p>Sun: Closed</p>
+                <p style="padding-top: 10px;">Av. de Santa Iria, 12, 1300-312 Lisbon</p><br />
+                <h6><mark class="contrast">Available Hours:</mark></h6><br />
+                <p>Monday - Friday: 9:30H - 19:00H</p><br />
+                <p>Saturday: 9:00H - 13:00H</p><br />
+                <p>Sunday: Closed</p>
             </div>
             <div class="text" style="position: absolute;left: 25%;top: 16.2%;">
                 <h6><mark class="contrast">Phone Number:</mark></h6>
                 <p>216589564</p>
-                <h6><mark class="contrast">Email:</mark> Pitstopautoshoplisbon@gmail.com</h6>
+                <h6><mark class="contrast">Email:</mark> garage88.support@gmail.com</h6>
             </div>
         </div>
         <div class="col-6 map-box">
             <div id="map">
             </div>
         </div>
+
         <div id="form" class="myForm">
 
             <form asp-action="Contact">
@@ -52,7 +52,7 @@
                     <input type="submit" value="SEND MESSAGE" class="btn sharp customBTN">
                 </div>
                 <div style="font-size:14px">
-                    @if (ViewBag.Message == "Your contact request was sent with success! We will get in touch with you as soon as possible.")
+                    @if (ViewBag.Message == "Your contact request was sent successfully! We will get in touch with you as soon as possible.")
                     {
                         @Html.Raw($"<p style='color:green'>{ViewBag.Message}</p>")
                         ;
@@ -66,7 +66,6 @@
                         ;
                     }
                 </div>
-
 
                 <div class="spans">
                     @if (ViewData.ModelState.ErrorCount > 1)
@@ -92,16 +91,16 @@
 
 <script type="text/javascript">
     let map;
-    const pitstop = { lat: 38.705, lng: -9.183 };
+    const garage88 = { lat: 38.705, lng: -9.183 };
 
     function initMap() {
       map = new google.maps.Map(document.getElementById("map"), {
-        center: pitstop,
+            center: garage88,
         zoom: 14,
       });
 
       const marker = new google.maps.Marker({
-          position: pitstop,
+            position: garage88,
           map: map,
       });
 
@@ -109,18 +108,16 @@
 
     window.initMap = initMap;
 
-
-
 </script>
 
 <style>
     #map {
         height: 70%;
-        width:90%;
+        width:80%;
         margin: auto;
         top: 50%;
         transform: translateY(-50%);
-        border: solid 2px black;
+        border: solid 3px black;
         box-shadow: rgba(0, 0, 0, 0.3) 0px 19px 38px, rgba(0, 0, 0, 0.22) 0px 15px 12px;
     }
 
@@ -132,7 +129,6 @@
          height: 100%;
          background-color: #353535;
          opacity: 1;
-         clip-path: polygon(0 0, 100% 0, 60% 50%,50% 50%,40% 60%,20% 70%,0 100%);
          max-width:100%;
     }
 
