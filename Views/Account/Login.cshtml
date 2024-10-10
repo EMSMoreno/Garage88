@@ -5,7 +5,8 @@
 
 @{
     ViewData["Title"] = "Login";
-    Layout = "~/Views/Shared/_PasswordLayout.cshtml";
+    // Layout = "~/Views/Shared/_PasswordLayout.cshtml";
+    Layout = "_Layout";
 }
 
 <section class="vh-100 persBack">
@@ -24,7 +25,6 @@
                         <label asp-for="UserName"></label>
                     </div>
 
-
                     <div class="form-outline mb-4">
                         <span asp-validation-for="Password" class="text-warning"></span>
                         <input asp-for="Password" type="password" class="form-control sharp form-control-lg" />
@@ -37,7 +37,7 @@
                             <input asp-for="RememberMe" type="checkbox" class="form-check-input" />
                             <label asp-for="RememberMe" class="form-check-label">Remember Me?</label>
                         </div>
-                        <a asp-action="RecoverPassword" class="btn btn-link">Forgot your password?</a>
+                        <a asp-action="RecoverPassword" class="btn btn-link" style="color:white">Forgot your password?</a>
                     </div>
 
                     <!-- Submit button -->
@@ -47,7 +47,7 @@
                         <p class="text-center fw-bold mx-3 mb-0" style="color:white">OR</p>
                     </div>
 
-                    <a asp-action="Register" class="btn sharp btn-primary btn-lg btn-block over" style="background-color: #f7b801">
+                    <a asp-action="Register" class="btn sharp btn-primary btn-lg btn-block over" style="background-color: #00e600">
                         <i class="fa-solid fa-user-astronaut me-2"></i>
                         Register New User
                     </a>

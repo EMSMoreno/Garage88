@@ -45,7 +45,8 @@
 
 <body class="d-flex flex-column min-vh-100" style="font-family: 'Josefin Sans', sans-serif; max-width: 100%;">
     <header>
-        <div class="row" id="myHeader">
+        <div class="row" id="myHeader"> @* Social Media  *@
+
             <div class="col-2">
                 <div class="media d-flex align-items-center">
                     <a href="https://www.facebook.com/garage88/" target="_blank" class="mediaBtn facebook">
@@ -54,6 +55,9 @@
                     <a href="https://www.instagram.com/garage88/" target="_blank" class="mediaBtn instagram">
                         <i class="fab fa-instagram"></i>
                     </a>
+                    <a href="https://www.twitter.com/garage88/" target="_blank" class="mediaBtn twitter">
+                        <i class="fab fa-twitter"></i>
+                    </a>
                 </div>
             </div>
 
@@ -61,7 +65,7 @@
 
             <div class="col-4">
                 <div class="row justify-content-end align-items-center">
-                    @if (User.Identity.IsAuthenticated)
+                    @if (User.Identity.IsAuthenticated) @* Is Authenticated, Clients, Mechanics, etc..  *@
                     {
                         <div class="col-auto d-flex align-items-center">
                             <a asp-area="" asp-controller="Account" asp-action="ViewUser" class="aColor">@this.User.Identity.Name</a>
@@ -71,7 +75,7 @@
                             <a asp-area="" asp-controller="Account" asp-action="Logout" class="aColor">Logout</a>
                         </div>
 
-                        @if (User.IsInRole("Admin"))
+                        @if (User.IsInRole("Admin")) @* Admin Menu  *@
                         {
                             <div class="col-auto d-flex align-items-center">
                                 <a asp-area="" asp-controller="DashboardPanel" asp-action="Index" class="aColor">Admin Panel</a>
@@ -81,6 +85,7 @@
                     else
                     {
                         <div class="col-auto d-flex align-items-center">
+                            @* Anonymous, anyone can access *@
                             <a class="aColor" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </div>
                         <div class="col-auto d-flex align-items-center dropdown">
@@ -109,6 +114,7 @@
                     }
                 </div>
             </div>
+
             <div class="col-1"></div>
         </div>
     </header>

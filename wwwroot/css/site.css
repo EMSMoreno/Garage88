@@ -147,7 +147,7 @@ body {
 /*Login Styles*/
 
 .persBack {
-    background: url(/images/siteContent/login_picture_3.jpg);
+    background: url(/images/siteContent/login_picture3.jpg);
     background-size: 100%;
     background-position: center;
     filter: grayscale(0.5);
