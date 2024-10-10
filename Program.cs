@@ -52,6 +52,9 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Registrar o SeedDb
+builder.Services.AddScoped<SeedDb>();
+
 // Chamar os repositórios e os helpers
 builder.Services.AddTransient<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddTransient<IBrandRepository, BrandRepository>();
@@ -85,11 +88,11 @@ builder.Services.AddFlashMessage();
 
 var app = builder.Build();
 
-// Criar roles ao inicializar a aplicação
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    await CreateRoles(services);
+    var seedDb = services.GetRequiredService<SeedDb>();
+    await seedDb.SeedAsync();
 }
 
 // Configure the HTTP request pipeline.

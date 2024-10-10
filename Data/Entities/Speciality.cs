@@ -9,6 +9,6 @@ namespace Garage88.Data.Entities
         [Required]
         [Display(Name = "Specialty")]
         [MaxLength(50, ErrorMessage = "The {0} may only contain {1} characters.")]
-        public string Name { get; set; }
+        public string ? Name { get; set; }
     }
 }

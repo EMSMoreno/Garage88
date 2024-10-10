@@ -21,9 +21,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.5" />
     <PackageReference Include="MimeKit" Version="4.8.0" />
-    <PackageReference Include="Select.HtmlToPdf" Version="24.1.0" />
     <PackageReference Include="Select.HtmlToPdf.NetCore" Version="24.1.0" />
-    <PackageReference Include="Select.Pdf" Version="24.1.0" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
     <PackageReference Include="Syncfusion.EJ2.AspNet.Core" Version="27.1.51" />
     <PackageReference Include="Vereyon.Web.FlashMessage" Version="3.0.0" />

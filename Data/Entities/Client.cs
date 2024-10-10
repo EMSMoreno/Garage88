@@ -8,11 +8,11 @@ namespace Garage88.Data.Entities
 
         [Required]
         [Display(Name = "First Name")]
-        public string? FirstName { get; set; }
+        public string ? FirstName { get; set; }
 
         [Required]
         [Display(Name = "Last Name")]
-        public string? LastName { get; set; }
+        public string ? LastName { get; set; }
 
         [Display(Name = "Tax Identification Number / NIF")]
         public string ? Nif { get; set; }

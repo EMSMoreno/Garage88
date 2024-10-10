@@ -19,8 +19,73 @@ namespace Garage88.Data
 
         public async Task SeedAsync()
         {
-            await _context.Database.EnsureCreatedAsync();
+            // Verify if Data exists
+            if (_context.Clients.Any() || _context.Mechanics.Any() || _context.Vehicles.Any() ||
+                _context.Brands.Any() || _context.Models.Any() || _context.Appointments.Any() ||
+                _context.Specialities.Any() || _context.Services.Any())
+            {
+                Console.WriteLine("Seed not needed, already received data!");
+                return;
+            }
 
+            // Add initial data
+            var speciality = new Speciality { Name = "Change Tires" };
+            var client = new Client
+            {
+                FirstName = "Carmelita",
+                LastName = "Rodrigues",
+                Email = "carmelita@cinel.pt",
+                Nif = "232212242",
+                Address = "Rua de Exemplo, 123",
+                PhoneNumber = "930008999"
+            };
+
+            _context.Specialities.Add(speciality);
+            await _context.SaveChangesAsync();
+
+            var mechanicRole = new Role { Name = "Mechanic" };
+            _context.MechanicsRoles.Add(mechanicRole);
+            await _context.SaveChangesAsync();
+
+            // Now you can reference speciality.Id
+            var mechanic = new Mechanic
+            {
+                FirstName = "Mecânico",
+                LastName = "Zézinho",
+                Email = "zezinho@garage88.pt",
+                About = "Mechanic with 4y of experience.",
+                SpecialityId = speciality.Id,
+                RoleId = mechanicRole.Id
+            };
+
+            var vehicle = new Vehicle { PlateNumber = "AA-01-Z9" };
+            var brand = new Brand { Name = "Mazda" };
+            var model = new Model { Name = "Miata MX-5" };
+            var appointment = new Appointment { Observations = "Appointment 1" };
+            var service = new Service { Name = "Change Tires & Replace Windows" };
+
+            // Add all entities to the context
+            _context.Clients.Add(client);
+            _context.Mechanics.Add(mechanic);
+            _context.Vehicles.Add(vehicle);
+            _context.Brands.Add(brand);
+            _context.Models.Add(model);
+            _context.Appointments.Add(appointment);
+            _context.Services.Add(service);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
+            {
+                Console.WriteLine(ex.InnerException?.Message);
+                throw;
+            }
+
+            Console.WriteLine("Suceessfully Seeding!");
+
+            // Call other Seed methods
             await CheckCreatedRoles();
             await AddUserAsync();
             await AddMechanicsRolesAsync();
@@ -34,6 +99,7 @@ namespace Garage88.Data
             await AddWorkOrderAsync();
             await AddInvoiceAsync();
 
+            //await _context.Database.EnsureCreatedAsync();
         }
 
         private async Task AddInvoiceAsync()
@@ -72,7 +138,6 @@ namespace Garage88.Data
 
         private async Task AddWorkOrderAsync()
         {
-
             if (!_context.WorkOrders.Any())
             {
 
