@@ -180,7 +180,7 @@ namespace Garage88.Helpers
                 Specialities = _mechanicsRolesRepository.GetComboSpeciality(isNew ? 0 : mechanic.Role.Id),
                 UserId = mechanic.User.Id,
                 Color = mechanic.Color,
-                PhotoId = mechanic.PhotoId
+                //PhotoId = mechanic.PhotoId
             };
 
             return model;

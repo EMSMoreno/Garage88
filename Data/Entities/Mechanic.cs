@@ -35,7 +35,7 @@ namespace Garage88.Data.Entities
         public string? About { get; set; }
 
         [Display(Name = "Photo")]
-        public Guid PhotoId { get; set; }
+        public Guid ? PhotoId { get; set; }
 
         public string FullName => $"{FirstName} {LastName}";
 
