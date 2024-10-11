@@ -2,6 +2,8 @@
 using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MimeKit;
+using System.Net.Mail;
+using System.Net;
 
 namespace Garage88.Helpers
 {
@@ -10,7 +12,7 @@ namespace Garage88.Helpers
         private readonly IConfiguration _configuration;
         private readonly IClientRepository _clientRepository;
         private readonly IMechanicRepository _mechanicRepository;
-        private readonly ILogger<MailHelper> _logger; // Logger for error tracking
+        private readonly ILogger<MailHelper> _logger;
 
         public MailHelper(IConfiguration configuration, IClientRepository clientRepository, IMechanicRepository mechanicRepository, ILogger<MailHelper> logger)
         {
@@ -114,7 +116,7 @@ namespace Garage88.Helpers
 
             try
             {
-                using (var client = new SmtpClient())
+                using (var client = new MailKit.Net.Smtp.SmtpClient())
                 {
                     client.Connect(smtp, int.Parse(port), false);
                     client.Authenticate(to, password);
@@ -131,45 +133,41 @@ namespace Garage88.Helpers
             return new Response { IsSuccess = true };
         }
 
-        public async Task<Response> SendEmail(string to, string subject, string body, string attachment)
+        public async Task<Response> SendEmail(string to, string subject, string body, string attachmentPath)
         {
-            var nameFrom = _configuration["Mail:NameFrom"];
-            var from = _configuration["Mail:From"];
-            var smtp = _configuration["Mail:Smtp"];
-            var port = _configuration["Mail:Port"];
-            var password = _configuration["Mail:Password"];
-
-            var message = new MimeMessage();
-            message.From.Add(new MailboxAddress(nameFrom, from));
-            message.To.Add(new MailboxAddress(to, to));
-            message.Subject = subject;
-
-            var bodybuilder = new BodyBuilder { HtmlBody = body };
-
-            if (!string.IsNullOrEmpty(attachment))
-            {
-                bodybuilder.Attachments.Add(attachment);
-            }
-
-            message.Body = bodybuilder.ToMessageBody();
+            Response response = new Response();
 
             try
             {
-                using (var client = new SmtpClient())
+                System.Net.Mail.SmtpClient client = new System.Net.Mail.SmtpClient("smtp.sapo.pt", 587);
+                client.UseDefaultCredentials = false;
+                client.Credentials = new NetworkCredential("garage88.support@sapo.pt", "&w_Rq25@!=A6000S");
+
+                MailMessage mailMessage = new MailMessage();
+                mailMessage.From = new MailAddress("garage88.support@sapo.pt");
+                mailMessage.To.Add(to);
+                mailMessage.Subject = subject;
+                mailMessage.Body = body;
+
+                if (!string.IsNullOrEmpty(attachmentPath))
                 {
-                    client.Connect(smtp, int.Parse(port), false);
-                    client.Authenticate(from, password);
-                    await client.SendAsync(message);
-                    client.Disconnect(true);
+                    Attachment attachment = new Attachment(attachmentPath);
+                    mailMessage.Attachments.Add(attachment);
                 }
+
+                // Envia o e-mail
+                client.Send(mailMessage);
+
+                // Retorna sucesso
+                response.Message = "E-mail sent successfully!";
             }
-            catch (System.Exception ex)
+            catch (SmtpFailedRecipientException ex)
             {
-                _logger.LogError(ex, "Error sending email"); // Log the error
-                return new Response { IsSuccess = false, Message = "An error occurred while sending the email." };
+                response.Message = $"There was an error: {ex.FailedRecipient}";
+                Console.WriteLine($"Error Details: {ex.Message}");
             }
 
-            return new Response { IsSuccess = true };
+            return response;
         }
     }
 }

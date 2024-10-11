@@ -11,7 +11,13 @@ namespace Garage88.Data.Entities
 
         public Mechanic? Mechanic { get; set; }
 
+        //Client FK
+        public int ClientId { get; set; }
+
         public Client? Client { get; set; }
+
+        //Vehicle FK
+        public int VehicleId { get; set; }
 
         public Vehicle? Vehicle { get; set; }
 

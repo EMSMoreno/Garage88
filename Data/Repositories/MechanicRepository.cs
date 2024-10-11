@@ -16,33 +16,23 @@ namespace Garage88.Data.Repositories
 
         public async Task<Response> CheckIfMechanicExistsAsync(User user)
         {
-            var mechanic = await _context.Mechanics.FindAsync(user);
+            var mechanic = await _context.Mechanics.FirstOrDefaultAsync(m => m.User.Id == user.Id);
 
             if (mechanic == null)
             {
                 return new Response { IsSuccess = false };
             }
-            else
-            {
-                return new Response { IsSuccess = true };
-            }
+            return new Response { IsSuccess = true };
         }
 
         public IQueryable GetAllWithUsers()
         {
-            return _context.Mechanics.Include(e => e.User)
-                                     .Include(e => e.Role)
-                                     .Include(e => e.Speciality);
+            return GetMechanicsWithIncludes();
         }
 
         public async Task<Mechanic> GetByEmailAsync(string email)
         {
-            var mechanic = await _context.Mechanics.Include(e => e.User)
-                                                   .Include(e => e.Role)
-                                                   .Include(e => e.Speciality)
-                                                   .Where(e => e.Email == email).FirstOrDefaultAsync();
-
-            return mechanic;
+            return await GetMechanicsWithIncludes().FirstOrDefaultAsync(e => e.Email == email);
         }
 
         public IEnumerable<SelectListItem> GetComboTechnicians()
@@ -66,21 +56,24 @@ namespace Garage88.Data.Repositories
 
         public async Task<Mechanic> GetMechanicByIdAsync(int mechanicId)
         {
-            var mechanic = await _context.Mechanics.Include(e => e.User)
-                                                   .Include(e => e.Role)
-                                                   .Include(e => e.Speciality)
-                                                   .Where(m => m.Id == mechanicId).FirstOrDefaultAsync();
-
-            return mechanic;
+            return await GetMechanicsWithIncludes().FirstOrDefaultAsync(m => m.Id == mechanicId);
         }
 
         public async Task<List<Mechanic>> GetTechniciansMechanicsAsync()
         {
-           List<Mechanic> list = new List<Mechanic>();
-
-            list = await _context.Mechanics.Include(e => e.User).Include(e => e.Role).Include(e => e.Speciality).Where(e => e.Role.Name == "Technician").ToListAsync();
-
-            return list;
+            return await _context.Mechanics.Include(e => e.User)
+                                    .Include(e => e.Role)
+                                    .Include(e => e.Speciality)
+                                    .Where(e => e.Role.Name == "Technician")
+                                    .ToListAsync();
         }
+
+        private IQueryable<Mechanic> GetMechanicsWithIncludes()
+        {
+            return _context.Mechanics.Include(e => e.User)
+                                     .Include(e => e.Role)
+                                     .Include(e => e.Speciality);
+        }
+
     }
 }

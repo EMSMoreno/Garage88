@@ -10,5 +10,10 @@ namespace Garage88.Data.Entities
         [Display(Name = "Model")]
         [MaxLength(50, ErrorMessage = "The {0} may only contain {1} characters.")]
         public string? Name { get; set; }
+
+        //Brand FK
+        public int BrandId { get; set; }
+
+        public Brand Brand { get; set; }
     }
 }

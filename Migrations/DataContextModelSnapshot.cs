@@ -42,7 +42,7 @@ namespace Garage88.Migrations
                     b.Property<bool>("AsAttended")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("ClientId")
+                    b.Property<int>("ClientId")
                         .HasColumnType("int");
 
                     b.Property<string>("CreatedById")
@@ -69,7 +69,7 @@ namespace Garage88.Migrations
                     b.Property<DateTime>("UpdatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("VehicleId")
+                    b.Property<int>("VehicleId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -362,7 +362,7 @@ namespace Garage88.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("BrandId")
+                    b.Property<int>("BrandId")
                         .HasColumnType("int");
 
                     b.Property<string>("Name")
@@ -768,7 +768,8 @@ namespace Garage88.Migrations
                     b.HasOne("Garage88.Data.Entities.Client", "Client")
                         .WithMany()
                         .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.HasOne("Garage88.Data.Entities.User", "CreatedBy")
                         .WithMany()
@@ -793,7 +794,8 @@ namespace Garage88.Migrations
                     b.HasOne("Garage88.Data.Entities.Vehicle", "Vehicle")
                         .WithMany()
                         .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Client");
 
@@ -947,10 +949,13 @@ namespace Garage88.Migrations
 
             modelBuilder.Entity("Garage88.Data.Entities.Model", b =>
                 {
-                    b.HasOne("Garage88.Data.Entities.Brand", null)
+                    b.HasOne("Garage88.Data.Entities.Brand", "Brand")
                         .WithMany("Models")
                         .HasForeignKey("BrandId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Brand");
                 });
 
             modelBuilder.Entity("Garage88.Data.Entities.Speciality", b =>

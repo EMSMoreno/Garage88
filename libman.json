@@ -15,9 +15,12 @@
       "destination": "wwwroot/lib/cropperjs/"
     },
     {
-      "provider": "cdnjs",
       "library": "cldr-json@43.1.0",
       "destination": "wwwroot/lib/cldr-json"
+    },
+    {
+      "library": "bootstrap@5.3.3",
+      "destination": "wwwroot/lib/bootstrap/"
     }
   ]
 }

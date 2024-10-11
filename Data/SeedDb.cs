@@ -3,33 +3,58 @@ using Garage88.Helpers;
 using Garage88.Data;
 using Garage88.Data.Entities;
 using Microsoft.CodeAnalysis;
+using Microsoft.AspNetCore.Identity;
 
 namespace Garage88.Data
 {
     public class SeedDb
     {
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly DataContext _context;
         private readonly IUserHelper _userHelper;
 
-        public SeedDb(DataContext context, IUserHelper userHelper)
+        public SeedDb(DataContext context, IUserHelper userHelper, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
             _userHelper = userHelper;
+            _roleManager = roleManager;
         }
 
         public async Task SeedAsync()
         {
-            // Verify if Data exists
+            // Verify if data exists
             if (_context.Clients.Any() || _context.Mechanics.Any() || _context.Vehicles.Any() ||
                 _context.Brands.Any() || _context.Models.Any() || _context.Appointments.Any() ||
                 _context.Specialities.Any() || _context.Services.Any())
             {
-                Console.WriteLine("Seed not needed, already received data!");
+                Console.WriteLine("Seed not needed, there are already data available!");
                 return;
             }
 
-            // Add initial data
+            // Add especiality
             var speciality = new Speciality { Name = "Change Tires" };
+            var speciality2 = new Speciality { Name = "Engine Repair" };
+            await _context.Specialities.AddRangeAsync(speciality, speciality2);
+            await _context.SaveChangesAsync();
+
+            // Add role
+            var role = new Role { Name = "Mechanic" };
+            await _context.MechanicsRoles.AddAsync(role);
+            await _context.SaveChangesAsync();
+
+            // add mechanics
+            var mechanics = new List<Mechanic>
+            {
+                new Mechanic { FirstName = "Mecânico", LastName = "Zézinho", Email = "zezinho@garage88.pt", About = "Mechanic with 4y of experience.", SpecialityId = speciality.Id, RoleId = role.Id },
+                new Mechanic { FirstName = "Mecânico", LastName = "Maria", Email = "maria@garage88.pt", About = "Mechanic with 5y of experience.", SpecialityId = speciality.Id, RoleId = role.Id },
+                new Mechanic { FirstName = "Mecânico", LastName = "Joaquim", Email = "joaquim@garage88.pt", About = "Mechanic with 6y of experience.", SpecialityId = speciality2.Id, RoleId = role.Id },
+                new Mechanic { FirstName = "Mecânico", LastName = "Ana", Email = "ana@garage88.pt", About = "Mechanic with 7y of experience.", SpecialityId = speciality2.Id, RoleId = role.Id }
+            };
+
+            await _context.Mechanics.AddRangeAsync(mechanics);
+            await _context.SaveChangesAsync();
+
+            // Add client
             var client = new Client
             {
                 FirstName = "Carmelita",
@@ -39,40 +64,55 @@ namespace Garage88.Data
                 Address = "Rua de Exemplo, 123",
                 PhoneNumber = "930008999"
             };
+            _context.Clients.Add(client);
 
-            _context.Specialities.Add(speciality);
+            // Add brand and model
+            var brand = new Brand { Name = "Mazda" };
+            _context.Brands.Add(brand);
             await _context.SaveChangesAsync();
 
+            var model = new Model { Name = "Miata MX-5", BrandId = brand.Id };
+            _context.Models.Add(model);
+
+            // Add vehicle and make association w/client
+            var vehicle = new Vehicle
+            {
+                PlateNumber = "AA-01-Z9",
+                ModelId = model.Id,   // association w/ model
+                ClientId = client.Id  // association w/client
+            };
+            _context.Vehicles.Add(vehicle);
+
+            // Adiciona role e mecânico
             var mechanicRole = new Role { Name = "Mechanic" };
             _context.MechanicsRoles.Add(mechanicRole);
             await _context.SaveChangesAsync();
 
-            // Now you can reference speciality.Id
             var mechanic = new Mechanic
             {
                 FirstName = "Mecânico",
                 LastName = "Zézinho",
                 Email = "zezinho@garage88.pt",
-                About = "Mechanic with 4y of experience.",
-                SpecialityId = speciality.Id,
-                RoleId = mechanicRole.Id
+                About = "Mechanic with 4 years of experience.",
+                SpecialityId = speciality.Id, // association w/speciality
+                RoleId = mechanicRole.Id      // association w/role
             };
-
-            var vehicle = new Vehicle { PlateNumber = "AA-01-Z9" };
-            var brand = new Brand { Name = "Mazda" };
-            var model = new Model { Name = "Miata MX-5" };
-            var appointment = new Appointment { Observations = "Appointment 1" };
-            var service = new Service { Name = "Change Tires & Replace Windows" };
-
-            // Add all entities to the context
-            _context.Clients.Add(client);
             _context.Mechanics.Add(mechanic);
-            _context.Vehicles.Add(vehicle);
-            _context.Brands.Add(brand);
-            _context.Models.Add(model);
-            _context.Appointments.Add(appointment);
+
+            // Add services
+            var service = new Service { Name = "Change Tires & Replace Windows" };
             _context.Services.Add(service);
 
+            // Add appointment and association w/client
+            var appointment = new Appointment
+            {
+                Observations = "Appointment 1",
+                VehicleId = vehicle.Id,  // association w/vehicle
+                ClientId = client.Id     // association w/client
+            };
+            _context.Appointments.Add(appointment);
+
+            // Database Save
             try
             {
                 await _context.SaveChangesAsync();
@@ -83,23 +123,20 @@ namespace Garage88.Data
                 throw;
             }
 
-            Console.WriteLine("Suceessfully Seeding!");
+            Console.WriteLine("Seed successfully!");
+        }
 
-            // Call other Seed methods
-            await CheckCreatedRoles();
-            await AddUserAsync();
-            await AddMechanicsRolesAsync();
-            await AddMechanicsAsync();
-            await AddBrandsAsync();
-            await AddServicesAsync();
-            await AddClientAsync();
-            await AddClientVehiclesAsync();
-            await AddEstimateAsync();
-            await AddAppointmentAsync();
-            await AddWorkOrderAsync();
-            await AddInvoiceAsync();
+        public async Task SeedRolesAsync()
+        {
+            string[] roleNames = { "Admin", "Client", "Employee" };
 
-            //await _context.Database.EnsureCreatedAsync();
+            foreach (var roleName in roleNames)
+            {
+                if (!await _roleManager.RoleExistsAsync(roleName))
+                {
+                    await _roleManager.CreateAsync(new IdentityRole(roleName));
+                }
+            }
         }
 
         private async Task AddInvoiceAsync()

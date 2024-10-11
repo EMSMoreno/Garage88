@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
 using Newtonsoft.Json;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
@@ -48,7 +47,6 @@ namespace Garage88.Controllers
         {
             if (User.Identity.IsAuthenticated)
             {
-
                 return RedirectToAction("Index", "Home");
 
             }
@@ -61,7 +59,6 @@ namespace Garage88.Controllers
         {
             if (ModelState.IsValid)
             {
-
                 var result = await _userHelper.LoginAsync(model);
 
                 if (result.Succeeded)
@@ -264,6 +261,7 @@ namespace Garage88.Controllers
                             return View(model);
                         }
 
+                        // Enviar o e-mail de confirmação
                         string userToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
                         string tokenLink = Url.Action("ConfirmEmail", "Account", new
                         {
@@ -275,11 +273,17 @@ namespace Garage88.Controllers
                             $"<h1>Email Confirmation</h1>" +
                             $" To allow you to access the website, please click on the following link:</br></br><a href= \"{tokenLink}\">Confirm Email </a>", null);
 
-                        if (response.IsSuccess)
+                        if (!response.IsSuccess)
                         {
-                            ViewBag.Message = $"An email has been sent to {user.Email}, please check your email and follow the instructions.";
+                            ModelState.AddModelError(string.Empty, "Failed to send confirmation email.");
                             return View(model);
                         }
+
+                        // Mensagem de sucesso usando FlashMessage
+                        _flashMessage.Info($"Client {model.FirstName} {model.LastName} has been successfully registered.");
+
+                        // Redirecionar para a página inicial
+                        return RedirectToAction("Index", "Home");
                     }
                     catch (Exception ex)
                     {
@@ -287,10 +291,15 @@ namespace Garage88.Controllers
                         return View(model);
                     }
                 }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "This email is already registered. Try again.");
+                }
             }
 
             return View(model);
         }
+
 
         private string GenerateRandomPassword()
         {

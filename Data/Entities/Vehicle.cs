@@ -10,6 +10,9 @@ namespace Garage88.Data.Entities
         [Display(Name = "Brand")]
         public Brand Brand { get; set; }
 
+        //Model FK
+        public int ModelId { get; set; }
+
         [Required]
         [Display(Name = "Model")]
         public Model Model { get; set; }
