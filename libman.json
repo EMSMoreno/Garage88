@@ -7,10 +7,6 @@
       "destination": "wwwroot/lib/font-awesome/"
     },
     {
-      "library": "fullcalendar@6.1.15",
-      "destination": "wwwroot/lib/fullcalendar/"
-    },
-    {
       "library": "cropperjs@1.6.2",
       "destination": "wwwroot/lib/cropperjs/"
     },
@@ -21,6 +17,10 @@
     {
       "library": "bootstrap@5.3.3",
       "destination": "wwwroot/lib/bootstrap/"
+    },
+    {
+      "library": "fullcalendar@6.1.15",
+      "destination": "wwwroot/lib/fullcalendar/"
     }
   ]
 }

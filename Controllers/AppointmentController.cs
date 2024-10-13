@@ -4,6 +4,8 @@ using Garage88.Helpers;
 using Garage88.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Vereyon.Web;
 
 namespace Garage88.Controllers
@@ -36,13 +38,10 @@ namespace Garage88.Controllers
 
         public IActionResult Index()
         {
-            //adiciona um refresh rate à ação index do controlador
-
-            Response.Headers.Add("Refresh", "60");
-
-
             var events = _appointmentRepository.GetAllEvents();
-            ViewData["Events"] = events;
+
+            // Serialize as JSON
+            ViewData["Events"] = JsonConvert.SerializeObject(events);
 
             return View();
         }

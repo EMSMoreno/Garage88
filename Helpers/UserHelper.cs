@@ -139,7 +139,7 @@ namespace Garage88.Helpers
 
         public async Task<User> GetUserByEmailAsync(string email)
         {
-            return await _userManager.FindByEmailAsync(email);
+            return await _userManager.FindByEmailAsync(email.ToLower().Trim());
         }
 
         public async Task<User> GetUserByIdAsync(string userId)

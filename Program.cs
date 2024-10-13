@@ -15,7 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Adicionar serviços ao contêiner.
 builder.Services.AddControllersWithViews();
 
-// Configurar Identity
+// Config Identity
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
     options.Password.RequireDigit = true;
@@ -85,6 +85,13 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 
 // Registar Serviços do Vereyon.Web
 builder.Services.AddFlashMessage();
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+        options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+    });
 
 var app = builder.Build();
 

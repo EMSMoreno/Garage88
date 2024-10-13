@@ -31,84 +31,111 @@ namespace Garage88.Data
                 return;
             }
 
-            // Add especiality
-            var speciality = new Speciality { Name = "Change Tires" };
-            var speciality2 = new Speciality { Name = "Engine Repair" };
-            await _context.Specialities.AddRangeAsync(speciality, speciality2);
+            // Add specialties
+            var specialities = new List<Speciality>
+            {
+                new Speciality { Name = "Change Tires" },
+                new Speciality { Name = "Engine Repair" },
+                new Speciality { Name = "General Mechanics" },
+                new Speciality { Name = "Automotive Electronics" },
+                new Speciality { Name = "Wheel Alignment and Balancing" },
+                new Speciality { Name = "Suspension and Steering" },
+                new Speciality { Name = "Oil Change" },
+                new Speciality { Name = "Automotive Painting" },
+                new Speciality { Name = "Bodywork Services" },
+                new Speciality { Name = "Accessory Installation" },
+                new Speciality { Name = "Cooling System Service" }
+            };
+
+            await _context.Specialities.AddRangeAsync(specialities);
             await _context.SaveChangesAsync();
 
-            // Add role
-            var role = new Role { Name = "Mechanic" };
-            await _context.MechanicsRoles.AddAsync(role);
+            // Add roles
+            var mechanicRole = new Role { Name = "Mechanic" };
+            var seniorMechanicRole = new Role { Name = "Senior Mechanic" };
+            await _context.MechanicsRoles.AddRangeAsync(mechanicRole, seniorMechanicRole);
             await _context.SaveChangesAsync();
 
-            // add mechanics
+            // Add mechanics
             var mechanics = new List<Mechanic>
             {
-                new Mechanic { FirstName = "Mecânico", LastName = "Zézinho", Email = "zezinho@garage88.pt", About = "Mechanic with 4y of experience.", SpecialityId = speciality.Id, RoleId = role.Id },
-                new Mechanic { FirstName = "Mecânico", LastName = "Maria", Email = "maria@garage88.pt", About = "Mechanic with 5y of experience.", SpecialityId = speciality.Id, RoleId = role.Id },
-                new Mechanic { FirstName = "Mecânico", LastName = "Joaquim", Email = "joaquim@garage88.pt", About = "Mechanic with 6y of experience.", SpecialityId = speciality2.Id, RoleId = role.Id },
-                new Mechanic { FirstName = "Mecânico", LastName = "Ana", Email = "ana@garage88.pt", About = "Mechanic with 7y of experience.", SpecialityId = speciality2.Id, RoleId = role.Id }
+                new Mechanic { FirstName = "John", LastName = "Doe", Email = "john.doe@garage.pt", About = "Mechanic with 4 years of experience.", SpecialityId = specialities[0].Id, RoleId = mechanicRole.Id },
+                new Mechanic { FirstName = "Jane", LastName = "Smith", Email = "jane.smith@garage.pt", About = "Mechanic with 5 years of experience.", SpecialityId = specialities[1].Id, RoleId = mechanicRole.Id },
+                new Mechanic { FirstName = "Michael", LastName = "Brown", Email = "michael.brown@garage.pt", About = "Mechanic with 6 years of experience.", SpecialityId = specialities[2].Id, RoleId = seniorMechanicRole.Id },
+                new Mechanic { FirstName = "Emily", LastName = "Johnson", Email = "emily.johnson@garage.pt", About = "Senior mechanic with 7 years of experience.", SpecialityId = specialities[3].Id, RoleId = seniorMechanicRole.Id },
+                new Mechanic { FirstName = "David", LastName = "Miller", Email = "david.miller@garage.pt", About = "Mechanic with 4 years of experience.", SpecialityId = specialities[4].Id, RoleId = mechanicRole.Id },
+                new Mechanic { FirstName = "Sophia", LastName = "Davis", Email = "sophia.davis@garage.pt", About = "Mechanic with 5 years of experience.", SpecialityId = specialities[5].Id, RoleId = mechanicRole.Id },
+                new Mechanic { FirstName = "James", LastName = "Wilson", Email = "james.wilson@garage.pt", About = "Mechanic with 6 years of experience.", SpecialityId = specialities[6].Id, RoleId = seniorMechanicRole.Id },
+                new Mechanic { FirstName = "Olivia", LastName = "Moore", Email = "olivia.moore@garage.pt", About = "Senior mechanic with 7 years of experience.", SpecialityId = specialities[7].Id, RoleId = seniorMechanicRole.Id },
+                new Mechanic { FirstName = "Daniel", LastName = "Taylor", Email = "daniel.taylor@garage.pt", About = "Mechanic with 4 years of experience.", SpecialityId = specialities[8].Id, RoleId = mechanicRole.Id },
+                new Mechanic { FirstName = "Ava", LastName = "Anderson", Email = "ava.anderson@garage.pt", About = "Mechanic with 5 years of experience.", SpecialityId = specialities[9].Id, RoleId = mechanicRole.Id },
+                new Mechanic { FirstName = "Benjamin", LastName = "Thomas", Email = "benjamin.thomas@garage.pt", About = "Mechanic with 6 years of experience.", SpecialityId = specialities[10].Id, RoleId = seniorMechanicRole.Id },
+                new Mechanic { FirstName = "Isabella", LastName = "Jackson", Email = "isabella.jackson@garage.pt", About = "Senior mechanic with 7 years of experience.", SpecialityId = specialities[0].Id, RoleId = seniorMechanicRole.Id },
+                new Mechanic { FirstName = "Lucas", LastName = "White", Email = "lucas.white@garage.pt", About = "Mechanic with 4 years of experience.", SpecialityId = specialities[1].Id, RoleId = mechanicRole.Id },
+                new Mechanic { FirstName = "Mia", LastName = "Harris", Email = "mia.harris@garage.pt", About = "Mechanic with 5 years of experience.", SpecialityId = specialities[2].Id, RoleId = mechanicRole.Id },
+                new Mechanic { FirstName = "Ethan", LastName = "Martin", Email = "ethan.martin@garage.pt", About = "Mechanic with 6 years of experience.", SpecialityId = specialities[3].Id, RoleId = seniorMechanicRole.Id }
             };
 
             await _context.Mechanics.AddRangeAsync(mechanics);
             await _context.SaveChangesAsync();
 
-            // Add client
-            var client = new Client
-            {
-                FirstName = "Carmelita",
-                LastName = "Rodrigues",
-                Email = "carmelita@cinel.pt",
-                Nif = "232212242",
-                Address = "Rua de Exemplo, 123",
-                PhoneNumber = "930008999"
-            };
-            _context.Clients.Add(client);
+            // Add clients
+            var client = new Client { FirstName = "Jéssica", LastName = "Guimarães", Nif = "222908765", Address = "Avenida D.Luis III", Email = "jessicaG@yopmail.com", PhoneNumber = "916969696" };
 
-            // Add brand and model
-            var brand = new Brand { Name = "Mazda" };
-            _context.Brands.Add(brand);
+            var client2 = new Client { FirstName = "Prof.", LastName = "X", Nif = "000100100", Address = "Avenida D.Luis II", Email = "xmen@yopmail.com", PhoneNumber = "930006750" };
+
+            var client3 = new Client { FirstName = "Diogo", LastName = "Ramos", Nif = "765656789", Address = "Avenida D.Luis I", Email = "diogor@yopmail.com", PhoneNumber = "213331212" };
+
+            var client4 = new Client { FirstName = "Tiago", LastName = "Ribeiro", Nif = "666578432", Address = "D. Carlos I", Email = "tiago_ribeiro@yopmail.com", PhoneNumber = "989909873" };
+
+            _context.Clients.Add(client);
             await _context.SaveChangesAsync();
+
+            // Add brands and models
+            var brand = new Brand { Name = "Mazda" };
+            var brand2 = new Brand { Name = "Toyota" };
+            var brand3 = new Brand { Name = "BMW" };
+            var brand4 = new Brand { Name = "Ford" };
+            var brand5 = new Brand { Name = "Tesla" };
+            var brand6 = new Brand { Name = "Mercedes-Benz" };
+            _context.Brands.Add(brand);
 
             var model = new Model { Name = "Miata MX-5", BrandId = brand.Id };
+            var model2 = new Model { Name = "Supra", BrandId = brand.Id };
+            var model3 = new Model { Name = "M3", BrandId = brand.Id };
+            var model4 = new Model { Name = "Mustang GT", BrandId = brand.Id };
+            var model5 = new Model { Name = "Model S", BrandId = brand.Id };
+            var model6 = new Model { Name = "AMG GT", BrandId = brand.Id };
             _context.Models.Add(model);
-
-            // Add vehicle and make association w/client
-            var vehicle = new Vehicle
-            {
-                PlateNumber = "AA-01-Z9",
-                ModelId = model.Id,   // association w/ model
-                ClientId = client.Id  // association w/client
-            };
-            _context.Vehicles.Add(vehicle);
-
-            // Adiciona role e mecânico
-            var mechanicRole = new Role { Name = "Mechanic" };
-            _context.MechanicsRoles.Add(mechanicRole);
             await _context.SaveChangesAsync();
 
-            var mechanic = new Mechanic
-            {
-                FirstName = "Mecânico",
-                LastName = "Zézinho",
-                Email = "zezinho@garage88.pt",
-                About = "Mechanic with 4 years of experience.",
-                SpecialityId = speciality.Id, // association w/speciality
-                RoleId = mechanicRole.Id      // association w/role
-            };
-            _context.Mechanics.Add(mechanic);
+            // Add vehicles and make association w/models and clients
+            var vehicle = new Vehicle { PlateNumber = "MX50555", ModelId = model.Id, ClientId = client.Id };
+            var vehicle2 = new Vehicle { PlateNumber = "TP12345", ModelId = model.Id, ClientId = client.Id };
+            var vehicle3 = new Vehicle { PlateNumber = "MB32321", ModelId = model.Id, ClientId = client.Id };
+            var vehicle4 = new Vehicle { PlateNumber = "FD67890", ModelId = model.Id, ClientId = client.Id };
+            var vehicle5 = new Vehicle { PlateNumber = "TSL0001", ModelId = model.Id, ClientId = client.Id };
+            var vehicle6 = new Vehicle { PlateNumber = "MBZGT20", ModelId = model.Id, ClientId = client.Id };
+
+            _context.Vehicles.Add(vehicle);
 
             // Add services
-            var service = new Service { Name = "Change Tires & Replace Windows" };
+            var service = new Service { Name = "Oil Change", Price = 29.99m, Description = "Standard oil change including oil filter replacement.", Discount = 10.00m };
+            var service2 = new Service { Name = "Brake Pad Replacement", Price = 150.00m, Description = "Replacement of front and rear brake pads.", Discount = 5.00m };
+            var service3 = new Service { Name = "Full Vehicle Inspection", Price = 99.99m, Description = "Comprehensive vehicle inspection covering all critical systems.", Discount = 15.00m };
+            var service4 = new Service { Name = "Tire Rotation and Balancing", Price = 49.95m, Description = "Tire rotation and balancing to ensure even tire wear and smooth driving.", Discount = 0.00m };
+            var service5 = new Service { Name = "Air Conditioning Service", Price = 89.99m, Description = "Air conditioning check and refill to ensure proper cooling.", Discount = 8.50m };
+            var service6 = new Service { Name = "Transmission Fluid Replacement", Price = 180.00m, Description = "Complete transmission fluid replacement service.", Discount = 12.00m };
+
             _context.Services.Add(service);
 
-            // Add appointment and association w/client
+            // Add appointments and associations w/clients
             var appointment = new Appointment
             {
-                Observations = "Appointment 1",
+                Observations = "Initial consultation",
+                ClientId = client.Id,  // association w/client
                 VehicleId = vehicle.Id,  // association w/vehicle
-                ClientId = client.Id     // association w/client
+                   
             };
             _context.Appointments.Add(appointment);
 
@@ -177,7 +204,6 @@ namespace Garage88.Data
         {
             if (!_context.WorkOrders.Any())
             {
-
                 var appointment = await _context.Appointments.FirstOrDefaultAsync();
                 var receptionist = await _userHelper.GetUserByEmailAsync("eduardo_projeto_mecanicos@sapo.pt");
                 var mechanic = await _context.Mechanics.Where(m => m.Email == "eduardo.sousa.moreno@formandos.cinel.pt").FirstOrDefaultAsync();
@@ -207,7 +233,7 @@ namespace Garage88.Data
             if (!_context.Appointments.Any())
             {
                 var client = await _context.Clients.Where(c => c.Email == "eduardo.sousa.moreno@sapo.pt").FirstOrDefaultAsync();
-                var vehicle = await _context.Vehicles.Where(v => v.PlateNumber == "AA-TO-01").FirstOrDefaultAsync();
+                var vehicle = await _context.Vehicles.Where(v => v.PlateNumber == "OPL65437").FirstOrDefaultAsync();
                 var estimate = await _context.Estimates.FirstOrDefaultAsync();
                 var mechanic = await _context.Mechanics.Where(m => m.Email == "eduardo.sousa.moreno@formandos.cinel.pt").FirstOrDefaultAsync();
                 var receptionist = await _userHelper.GetUserByEmailAsync("eduardo_projeto_mecanicos@sapo.pt");
@@ -252,8 +278,8 @@ namespace Garage88.Data
                     Model = model,
                     Client = client,
                     DateOfConstruction = DateTime.Now.AddYears(-5),
-                    PlateNumber = "AA-TO-01",
-                    Horsepower = 90,
+                    PlateNumber = "OPL65437",
+                    Horsepower = 97,
                     ClientId = client.Id,
                 });
 
@@ -269,7 +295,7 @@ namespace Garage88.Data
             {
 
                 var client = await _context.Clients.Where(c => c.Email == "eduardo.sousa.moreno@sapo.pt").FirstOrDefaultAsync();
-                var vehicle = await _context.Vehicles.Where(v => v.PlateNumber == "AA-TO-01").FirstOrDefaultAsync();
+                var vehicle = await _context.Vehicles.Where(v => v.PlateNumber == "OPL65437").FirstOrDefaultAsync();
 
                 var estimate = new Estimate
                 {
@@ -356,16 +382,16 @@ namespace Garage88.Data
                 {
                     FirstName = "Henrique",
                     LastName = "Martins",
-                    Email = "henrique_martins99@sapo.pt", // ainda tenho q criar este email
+                    Email = "henrique_martins99@sapo.pt", // still needs to create this
                     UserName = "henrique_martins99@sapo.pt",
                     PhoneNumber = "935641236",
-                    Address = "Areeiro"
+                    Address = "Aveiro"
                 };
 
                 _context.Clients.Add(new Client
                 {
                     FirstName = "Henrique",
-                    LastName = "Martins",
+                    LastName = "Sousa",
                     User = clientUser2,
                     Email = clientUser2.Email,
                     Nif = "256243800",
@@ -390,7 +416,7 @@ namespace Garage88.Data
                 _context.Services.Add(new Service
                 {
                     Name = "Change Tyres",
-                    Description = "Using the latest technology and tools to work your tyres. We change the valve...",
+                    Description = "Using the latest technology and tools to work your tyres.",
                     Price = 7.40m,
                     Discount = 0m
                 });
@@ -493,12 +519,12 @@ namespace Garage88.Data
             {
                 user = new User
                 {
-                    FirstName = "Filipe",
+                    FirstName = "Rafael",
                     LastName = "Ferreira",
-                    Email = "f92ferreira@gmail.com",
-                    UserName = "f92ferreira@gmail.com",
+                    Email = "rafaferreira@gmail.com", // still needs to create this
+                    UserName = "rafaferreira@gmail.com",
                     PhoneNumber = "925648979",
-                    Address = "Avenida Fialho Gouveia"
+                    Address = "Avenida da Liberdade"
                 };
 
                 await _userHelper.AddUserAsync(user, "123456");
@@ -524,19 +550,19 @@ namespace Garage88.Data
                 // Mechanic 1
                 var mechanicUser1 = new User
                 {
-                    FirstName = "Joaquim",
-                    LastName = "Guedes",
-                    Email = "joaquimguedes@yopmail.com",
-                    UserName = "joaquimguedes@yopmail.com",
+                    FirstName = "David",
+                    LastName = "Pacheco",
+                    Email = "davidpacheco@yopmail.com",
+                    UserName = "davidpacheco@yopmail.com",
                     PhoneNumber = "965897956",
-                    Address = "Rua do barco"
+                    Address = "Rua Luisa Todi"
                 };
 
                 _context.Mechanics.Add(new Mechanic
                 {
-                    FirstName = "Joaquim",
-                    LastName = "Guedes",
-                    About = "Born in Lisbon, Joaquim Guedes started his electrician carrer in Bosch Car Service in Lisbon...",
+                    FirstName = "David",
+                    LastName = "Pacheco",
+                    About = "Born in Bragança, David Pacheco started his electrician career in Bosch Car Service in Lisbon...",
                     User = mechanicUser1,
                     Role = _context.MechanicsRoles.Where(r => r.Name == "Technician").FirstOrDefault(),
                     Speciality = _context.Specialities.Where(s => s.Name == "Electrician").FirstOrDefault(),
@@ -552,19 +578,19 @@ namespace Garage88.Data
                 // Mechanic 2
                 var mechanicUser2 = new User
                 {
-                    FirstName = "Inacio",
-                    LastName = "Torres",
-                    Email = "inaciotorres@yopmail.com",
-                    UserName = "inaciotorres@yopmail.com",
-                    PhoneNumber = "965896425",
+                    FirstName = "Beatriz",
+                    LastName = "Godinho",
+                    Email = "beagodinho@yopmail.com",
+                    UserName = "beagodinho@yopmail.com",
+                    PhoneNumber = "965896421",
                     Address = "Rua das Bananas"
                 };
 
                 _context.Mechanics.Add(new Mechanic
                 {
-                    FirstName = "Inacio",
-                    LastName = "Torres",
-                    About = "Born in Setúbal, Inacio Torres studied mechatronics in ATEC and then joined Garage88, with 4 years of experience..",
+                    FirstName = "Beatriz",
+                    LastName = "Godinho",
+                    About = "Born in Setúbal, Beatriz Godinho studied cybersecurity at CINEL and then joined Garage88, with 4 years of experience.",
                     User = mechanicUser2,
                     Role = _context.MechanicsRoles.Where(r => r.Name == "Technician").FirstOrDefault(),
                     Speciality = _context.Specialities.Where(s => s.Name == "Mechanic").FirstOrDefault(),
@@ -582,18 +608,18 @@ namespace Garage88.Data
                 var mechanicUser3 = new User
                 {
                     FirstName = "Pedro",
-                    LastName = "Rato",
-                    Email = "Pedrorato@yopmail.com",
-                    UserName = "Pedrorato@yopmail.com",
-                    PhoneNumber = "923548965",
-                    Address = "Rua do Alicate"
+                    LastName = "Dinis",
+                    Email = "Pedrodinis@yopmail.com",
+                    UserName = "Pedrodinis@yopmail.com",
+                    PhoneNumber = "923548445",
+                    Address = "Rua das Batatas Fritas"
                 };
 
                 _context.Mechanics.Add(new Mechanic
                 {
                     FirstName = "Pedro",
-                    LastName = "Rato",
-                    About = "There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. ",
+                    LastName = "Dinis",
+                    About = "Pedro is just a guy that keeps breaking his vehicle glasses, so he is one of our best clients. ",
                     User = mechanicUser3,
                     Role = _context.MechanicsRoles.Where(r => r.Name == "Receptionist").FirstOrDefault(),
                     Speciality = _context.Specialities.Where(s => s.Name == "Generalist").FirstOrDefault(),

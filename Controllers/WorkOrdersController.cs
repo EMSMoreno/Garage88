@@ -4,7 +4,6 @@ using Microsoft.JSInterop;
 using Garage88.Data.Entities;
 using Garage88.Data.Repositories;
 using Garage88.Helpers;
-using Garage88.Data.Repositories;
 using Vereyon.Web;
 
 namespace Garage88.Controllers
@@ -19,7 +18,6 @@ namespace Garage88.Controllers
         private readonly IMechanicRepository _mechanicRepository;
         private readonly IInvoiceRepository _invoiceRepository;
         private readonly IJSRuntime _iJSRuntime;
-
 
         public WorkOrdersController(
             IWorkOrderRepository workOrderRepository,

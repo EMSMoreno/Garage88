@@ -1,8 +1,10 @@
 ﻿@using Garage88.Helpers
+@using Newtonsoft.Json
 
 @{
     ViewData["Title"] = "Appointments";
     ViewData["Action"] = "Index";
+    //ViewData["Events"] = JsonConvert.SerializeObject(events);
 
     // Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
     Layout = "_Layout";
@@ -18,69 +20,67 @@
     let eventClickedId;
     let asAttendedStatus;
 
-      document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
         debugger;
         var calendarEl = document.getElementById('calendar');
-          var calendar = new FullCalendar.Calendar(calendarEl, {
+        var calendar = new FullCalendar.Calendar(calendarEl, {
 
-              themeSystem: 'bootstrap',
-              timeZone: 'UTC',
-              aspectRatio: 1.8,
-              height: 750,
-              initialView: 'timeGridWeek',
-              hiddenDays: [0],
-              nowIndicator: true,
-              businessHours: [{
-                  daysOfWeek: [1, 2, 3, 4, 5],
-                  startTime: '09:00',
-                  endTime: '18:00'
-              },
-              {
-                  daysOfWeek: [6],
-                  startTime: '09:00',
-                  endTime: '13:00'
-              }
-              ],
-              customButtons: {
-                  InformClients: {
-                      text: 'Inform',
-                      hint: "Send an email to clients about their appointments for tommorow.",
-                      click: function() {
-                          window.location.href = "/Mailbox/InformClientAppointment";
-
-                      }
-                  }
-              },
-              headerToolbar: {
-                  left: 'prev,next today InformClients',
-                  center: 'title',
-                  right: 'dayGridMonth,timeGridWeek,timeGridDay'
-              },
-              slotLabelInterval: "00:30",
-              slotLabelFormat: {
-                  hour: 'numeric',
-                  minute: '2-digit',
-                  omitZeroMinute: false,
-                  meridiem: false,
-                  hour12: false
-              },
-              slotMinTime: "07:00:00",
-              slotMaxTime: "20:00:00",
-              allDaySlot: false,
-              editable: true,
-              events: @Html.Raw(ViewData["Events"]),
-              eventClick: function(info) {
-                  var dialog = document.getElementById("dialog").ej2_instances[0];
-                  var eventObj = info.event;
-                  let eventStartTime = eventObj.start;
-                  let content = eventObj.title + eventObj.extendedProps.description;
-                  eventClickedId = eventObj.id;
-                  asAttendedStatus = eventObj.extendedProps.asAttended;
-                  console.log(content);
-                  dialog.content = eventObj.extendedProps.description;
-                  dialog.header = eventStartTime.toUTCString();
-                  dialog.show();
-              },
+            themeSystem: 'bootstrap',
+            timeZone: 'UTC',
+            aspectRatio: 1.8,
+            height: 750,
+            initialView: 'timeGridWeek',
+            hiddenDays: [0],
+            nowIndicator: true,
+            businessHours: [{
+                daysOfWeek: [1, 2, 3, 4, 5],
+                startTime: '09:00',
+                endTime: '18:00'
+            },
+            {
+                daysOfWeek: [6],
+                startTime: '09:00',
+                endTime: '13:00'
+            }],
+            customButtons: {
+                InformClients: {
+                    text: 'Inform',
+                    hint: "Send an email to clients about their appointments for tomorrow.",
+                    click: function() {
+                        window.location.href = "/Mailbox/InformClientAppointment";
+                    }
+                }
+            },
+            headerToolbar: {
+                left: 'prev,next today InformClients',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            slotLabelInterval: "00:30",
+            slotLabelFormat: {
+                hour: 'numeric',
+                minute: '2-digit',
+                omitZeroMinute: false,
+                meridiem: false,
+                hour12: false
+            },
+            slotMinTime: "07:00:00",
+            slotMaxTime: "20:00:00",
+            allDaySlot: false,
+            editable: true,
+            events: @Html.Raw(ViewData["Events"]),
+            eventClick: function(info) {
+                var dialog = document.getElementById("dialog").ej2_instances[0];
+                var eventObj = info.event;
+                let eventStartTime = eventObj.start;
+                let content = eventObj.title + eventObj.extendedProps.description;
+                eventClickedId = eventObj.id;
+                asAttendedStatus = eventObj.extendedProps.asAttended;
+                console.log(content);
+                dialog.content = eventObj.extendedProps.description;
+                dialog.header = eventStartTime.toUTCString();
+                dialog.show();
+            },
               eventResize: function(info) {
                   var eventObj = info.event;
                   console.log(eventObj);

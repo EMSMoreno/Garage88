@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Garage88.Helpers;
+using Garage88.Data.Repositories;
+using System.Threading.Tasks;
 
 namespace Garage88.Controllers.API
 {
@@ -7,19 +8,24 @@ namespace Garage88.Controllers.API
     [ApiController]
     public class UserController : Controller
     {
-        private readonly IUserHelper _userHelper;
+        private readonly IClientRepository _clientRepository;
 
-        public UserController(IUserHelper userHelper)
+        public UserController(IClientRepository clientRepository)
         {
-            _userHelper = userHelper;
+            _clientRepository = clientRepository;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetUserDetails(string email)
         {
-            var results = await _userHelper.GetUserDetailsAsync(email);
-            var result = Ok(results);
-            return result;
+            var client = await _clientRepository.GetClientByEmailAsync(email);
+
+            if (client == null)
+            {
+                return NotFound($"User with email {email} was not found.");
+            }
+
+            return Ok(client);
         }
     }
 }

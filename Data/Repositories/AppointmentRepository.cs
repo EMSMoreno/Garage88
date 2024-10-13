@@ -1,5 +1,6 @@
 ﻿using Garage88.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace Garage88.Data.Repositories
 {
