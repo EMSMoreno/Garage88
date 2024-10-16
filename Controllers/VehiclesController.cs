@@ -8,7 +8,7 @@ using Vereyon.Web;
 
 namespace Garage88.Controllers
 {
-    //[Authorize(Roles = "Admin, Technician, Receptionist")]
+    [Authorize(Roles = "Admin, Technician, Receptionist")]
     public class VehiclesController : Controller
     {
         private readonly IVehicleRepository _vehicleRepository;

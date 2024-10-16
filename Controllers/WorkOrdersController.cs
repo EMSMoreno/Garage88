@@ -8,7 +8,7 @@ using Vereyon.Web;
 
 namespace Garage88.Controllers
 {
-    //[Authorize(Roles = "Admin, Technician, Receptionist")]
+    [Authorize(Roles = "Admin, Technician, Receptionist")]
     public class WorkOrdersController : Controller
     {
         private readonly IWorkOrderRepository _workOrderRepository;
@@ -19,15 +19,7 @@ namespace Garage88.Controllers
         private readonly IInvoiceRepository _invoiceRepository;
         private readonly IJSRuntime _iJSRuntime;
 
-        public WorkOrdersController(
-            IWorkOrderRepository workOrderRepository,
-            IFlashMessage flashMessage,
-            IAppointmentRepository appointmentRepository,
-            IUserHelper userHelper,
-            IMechanicRepository mechanicRepository,
-            IInvoiceRepository invoiceRepository,
-            IJSRuntime iJSRuntime
-            )
+        public WorkOrdersController(IWorkOrderRepository workOrderRepository, IFlashMessage flashMessage, IAppointmentRepository appointmentRepository, IUserHelper userHelper, IMechanicRepository mechanicRepository, IInvoiceRepository invoiceRepository, IJSRuntime iJSRuntime)
         {
             _workOrderRepository = workOrderRepository;
             _flashMessage = flashMessage;

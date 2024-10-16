@@ -108,8 +108,6 @@ namespace Garage88.Controllers
 
         public async Task<IActionResult> Estimate(int? id, bool sendEmail)
         {
-
-
             if (id == null)
             {
                 return NotFound();
@@ -181,7 +179,6 @@ namespace Garage88.Controllers
 
         public async Task<IActionResult> WorkOrder(int? id)
         {
-
             if (id == 0)
             {
                 return NotFound();

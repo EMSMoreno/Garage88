@@ -513,7 +513,7 @@ namespace Garage88.Data
 
         private async Task AddUserAsync()
         {
-            var user = await _userHelper.GetUserByEmailAsync("f92ferreira@gmail.com");
+            var user = await _userHelper.GetUserByEmailAsync("rafaferreira@gmail.com");
 
             if (user == null)
             {
@@ -521,9 +521,9 @@ namespace Garage88.Data
                 {
                     FirstName = "Rafael",
                     LastName = "Ferreira",
-                    Email = "rafaferreira@gmail.com", // still needs to create this
+                    Email = "rafaferreira@gmail.com",
                     UserName = "rafaferreira@gmail.com",
-                    PhoneNumber = "925648979",
+                    PhoneNumber = "925648980",
                     Address = "Avenida da Liberdade"
                 };
 
@@ -635,5 +635,6 @@ namespace Garage88.Data
 
             }
         }
+
     }
 }

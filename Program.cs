@@ -2,12 +2,9 @@ using Garage88.Data;
 using Garage88.Data.Entities;
 using Garage88.Data.Repositories;
 using Garage88.Helpers;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Vereyon.Web;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,27 +23,6 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 })
 .AddEntityFrameworkStores<DataContext>()
 .AddDefaultTokenProviders();
-
-// Configurar autenticação JWT
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(cfg =>
-{
-    // Configurar parâmetros de validação do token JWT
-    cfg.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidIssuer = builder.Configuration["Tokens:Issuer"],
-        ValidAudience = builder.Configuration["Tokens:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Tokens:Key"])),
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true
-    };
-});
 
 // Chamar o ApplicationDbContext com o SQL Server
 builder.Services.AddDbContext<DataContext>(options =>
@@ -67,13 +43,15 @@ builder.Services.AddTransient<IServiceRepository, ServiceRepository>();
 builder.Services.AddTransient<IVehicleRepository, VehicleRepository>();
 builder.Services.AddTransient<IWorkOrderRepository, WorkOrderRepository>();
 
-// builder.Services.AddTransient<IGenericRepository, GenericRepository>();
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
 builder.Services.AddTransient<IUserHelper, UserHelper>();
 builder.Services.AddTransient<IMailHelper, MailHelper>();
 builder.Services.AddTransient<IConverterHelper, ConverterHelper>();
 builder.Services.AddTransient<IBlobHelper, BlobHelper>();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 
 // Configurar autenticação por cookie
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -82,6 +60,13 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LoginPath = "/Account/Login";
         options.AccessDeniedPath = "/Account/AccessDenied";
     });
+
+// Configuração de políticas de autorização
+builder.Services.AddAuthorizationBuilder()
+     .AddPolicy("Admin", policy => policy.RequireRole("Admin"))
+     .AddPolicy("Client", policy => policy.RequireRole("Client"))
+     .AddPolicy("Receptionist", policy => policy.RequireRole("Receptionist"))
+     .AddPolicy("Technician", policy => policy.RequireRole("Technician"));
 
 // Registar Serviços do Vereyon.Web
 builder.Services.AddFlashMessage();
@@ -127,22 +112,3 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
-
-// Método para criar os roles
-async Task CreateRoles(IServiceProvider serviceProvider)
-{
-    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-    // Definir os roles que precisas
-    var roles = new List<string> { "Admin", "Client", "User" };
-
-    foreach (var role in roles)
-    {
-        // Verifica se o role já existe, caso contrário, cria-o
-        var roleExist = await roleManager.RoleExistsAsync(role);
-        if (!roleExist)
-        {
-            await roleManager.CreateAsync(new IdentityRole(role));
-        }
-    }
-}

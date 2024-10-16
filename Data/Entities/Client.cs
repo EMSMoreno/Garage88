@@ -34,5 +34,7 @@ namespace Garage88.Data.Entities
 
         [Display(Name = "Full Name")]
         public string FullName => $"{FirstName} {LastName}";
+
+        public int? ProfilePictureId { get; set; }
     }
 }

@@ -12,8 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Vampiro+One&display=swap" rel="stylesheet">
     <!-- End Google Fonts -->
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css">
+    <!-- Font Awesome via CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <!-- Croppie -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.css" />
@@ -25,8 +25,8 @@
     <ejs-scripts></ejs-scripts>
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="~/css/custom.css" />
@@ -36,8 +36,6 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
     <!-- Scripts -->
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js"></script>
     <script async src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAPildPyuwamnN1w0OTg7aJr6z0m0dtP0U&callback=initMap"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
@@ -45,8 +43,8 @@
 
 <body class="d-flex flex-column min-vh-100" style="font-family: 'Josefin Sans', sans-serif; max-width: 100%;">
     <header>
-        <div class="row" id="myHeader"> @* Social Media  *@
-
+        <div class="row" id="myHeader">
+            <!-- Social Media -->
             <div class="col-2">
                 <div class="media d-flex align-items-center">
                     <a href="https://www.facebook.com/garage88/" target="_blank" class="mediaBtn facebook">
@@ -63,30 +61,24 @@
 
             <div class="col-4"></div>
 
-            <div class="col-4">
+            <div class="col-3">
                 <div class="row justify-content-end align-items-center">
-                    @if (User.Identity.IsAuthenticated) @* Is Authenticated, Clients, Mechanics, etc..  *@
+                    @if (User.Identity.IsAuthenticated) @* User.Identiy.Name & Logout *@
                     {
-                        <div class="col-auto d-flex align-items-center">
-                            <a asp-area="" asp-controller="Account" asp-action="ViewUser" class="aColor">@this.User.Identity.Name</a>
-                        </div>
-                        <div class="col-auto d-flex align-items-center">|</div>
-                        <div class="col-auto d-flex align-items-center">
-                            <a asp-area="" asp-controller="Account" asp-action="Logout" class="aColor">Logout</a>
-                        </div>
-
-                        @if (User.IsInRole("Admin")) @* Admin Menu  *@
+                        if (User.IsInRole("Client"))
                         {
                             <div class="col-auto d-flex align-items-center">
-                                <a asp-area="" asp-controller="DashboardPanel" asp-action="Index" class="aColor">Admin Panel</a>
+                                <a asp-area="" asp-controller="Account" asp-action="UpdateUser" class="aColor">@this.User.Identity.Name</a>
+                            </div>
+                            <div class="col-auto d-flex align-items-center">|</div>
+                            <div class="col-auto d-flex align-items-center">
+                                <a asp-area="" asp-controller="Account" asp-action="Logout" class="aColor"><i class="fa-regular fa-user"></i> Logout</a>
                             </div>
                         }
-                    }
-                    else
-                    {
+
+                        <!-- Other Menus -->
                         <div class="col-auto d-flex align-items-center">
-                            @* Anonymous, anyone can access *@
-                            <a class="aColor" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a asp-area="" asp-controller="Home" asp-action="Index" class="aColor">Home</a>
                         </div>
                         <div class="col-auto d-flex align-items-center dropdown">
                             <a id="dropTitle" class="aColor dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Services</a>
@@ -98,7 +90,6 @@
                                 <a class="dropdown-item" asp-area="" asp-controller="Appointment" asp-action="Index">Schedule/Appointments</a>
                             </div>
                         </div>
-
                         <div class="col-auto d-flex align-items-center">
                             <a class="aColor" asp-area="" asp-controller="About" asp-action="Index">About Us</a>
                         </div>
@@ -108,8 +99,18 @@
                         <div class="col-auto d-flex align-items-center">
                             <a class="aColor" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </div>
-                        <div class="col-auto d-flex align-items-center">
-                            <a class="aColor" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+
+                        @if (User.IsInRole("Admin")) @* If it's an Admin' *@
+                        {
+                            <div class="col-auto d-flex align-items-center">
+                                <a asp-area="" asp-controller="DashboardPanel" asp-action="Index" class="aColor">Admin Panel</a>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="col-auto d-flex align-items-center">  @* Login *@
+                            <a asp-area="" asp-controller="Account" asp-action="Login" class="aColor"><i class="fa-regular fa-user"></i> Login</a>
                         </div>
                     }
                 </div>

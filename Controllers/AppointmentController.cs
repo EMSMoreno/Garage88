@@ -46,7 +46,7 @@ namespace Garage88.Controllers
             return View();
         }
 
-        //[Authorize(Roles = "Admin,Receptionist")]
+        [Authorize(Roles = "Admin,Receptionist")]
         public async Task<IActionResult> AddAppointment(int? id)
         {
 
@@ -84,7 +84,7 @@ namespace Garage88.Controllers
             return RedirectToAction("Index", "Estimates");
         }
 
-        //[Authorize(Roles = "Admin,Receptionist")]
+        [Authorize(Roles = "Admin,Receptionist")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddAppointment(AppointmentViewModel model)
@@ -188,7 +188,7 @@ namespace Garage88.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(AppointmentViewModel model)
         {
-            //Devido à restrição imposta para que as marcações sejam todas procedidas para depois da data e hora atual, não permitia editar marcações do passado apesar de
+            //Devido à restrição imposta para que as marcações sejam todas procedidas para depois da data e hora atual, não permite editar marcações do passado apesar de
             //dados se encontrarem preenchidos no modelo.
 
             if (ModelState.ErrorCount < 2 && !string.IsNullOrEmpty(model.AppointmentStartDate.ToString()))
@@ -238,7 +238,7 @@ namespace Garage88.Controllers
 
         }
 
-        //[Authorize(Roles = "Admin,Receptionist")]
+        [Authorize(Roles = "Admin,Receptionist")]
         [HttpPost]
         [Route("Appointment/EventResize")]
         public async Task<bool> EventResize(int eventId, string startTime, string endTime)
@@ -274,7 +274,7 @@ namespace Garage88.Controllers
             }
         }
 
-        //[Authorize(Roles = "Admin,Receptionist")]
+        [Authorize(Roles = "Admin,Receptionist")]
         public async Task<IActionResult> Cancel(int? id)
         {
             if (id == null)

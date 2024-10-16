@@ -63,32 +63,26 @@ namespace Garage88.Controllers
 
                 if (result.Succeeded)
                 {
-                    if (this.Request.Query.Keys.Contains("ReturnUrl"))
-                    {
-                        return Redirect(this.Request.Query["ReturnUrl"].First());
-                    }
-
                     var user = await _userHelper.GetUserByEmailAsync(model.UserName);
-
+                    Console.WriteLine($"User {model.UserName} has roles: {string.Join(", ", user)}");
                     if (user != null)
                     {
                         var isClientRole = await _userHelper.CheckUserInRoleAsync(user, "Client");
 
                         if (isClientRole)
                         {
-                            return this.RedirectToAction("Index", "Clients");
+                            return this.RedirectToAction("Index", "Home");
                         }
                         else
                         {
                             return RedirectToAction("Index", "DashboardPanel");
                         }
                     }
-
-                    ModelState.AddModelError(string.Empty, "Failed to Login");
+                    ModelState.AddModelError(string.Empty, "Failed to Login, try again later!");
                 }
             }
 
-            ModelState.AddModelError(string.Empty, "Failed to login");
+            ModelState.AddModelError(string.Empty, "Failed to login");     
             return View(model);
         }
 
@@ -282,7 +276,6 @@ namespace Garage88.Controllers
                         // Mensagem de sucesso usando FlashMessage
                         _flashMessage.Info($"Client {model.FirstName} {model.LastName} has been successfully registered.");
 
-                        // Redirecionar para a página inicial
                         return RedirectToAction("Index", "Home");
                     }
                     catch (Exception ex)
@@ -300,11 +293,9 @@ namespace Garage88.Controllers
             return View(model);
         }
 
-
         private string GenerateRandomPassword()
         {
-            // Implement password generation logic here
-            return "GeneratedPassword123"; // Example placeholder
+            return "GeneratedPassword123";
         }
 
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
@@ -513,7 +504,7 @@ namespace Garage88.Controllers
 
         }
 
-        //[Authorize]
+        [Authorize]
         public async Task<IActionResult> ViewUser()
         {
             var user = await _userHelper.GetUserByEmailAsync(User.Identity.Name);
@@ -543,30 +534,23 @@ namespace Garage88.Controllers
                     PhoneNumber = client.PhoneNumber,
                     FirstName = client.FirstName,
                     Address = client.Address,
-                    Email = client.Email,
                     LastName = client.LastName,
                     Nif = client.Nif,
                     ProfilePicture = user.ProfilePicture,
                     HasPassword = hasPassword,
                 };
-
-
             }
             else
             {
-
                 model = new ChangeUserViewModel
                 {
                     PhoneNumber = user.PhoneNumber,
                     LastName = user.LastName,
                     FirstName = user.FirstName,
-                    Email = user.Email,
-                    UserName = user.UserName,
                     ProfilePicture = user.ProfilePicture,
                     Address = user.Address,
                     HasPassword = hasPassword,
                 };
-
             }
 
             ViewBag.JsonModel = JsonConvert.SerializeObject(model);
@@ -654,19 +638,16 @@ namespace Garage88.Controllers
 
         [HttpPost]
         [Route("Account/ChangeProfilePic")]
-        public async Task<IActionResult> ChangeProfilePic(IFormFile file)
+        public async Task<ObjectResult> ChangeProfilePic(IFormFile file)
         {
             var user = await _userHelper.GetUserByEmailAsync(User.Identity.Name);
 
             if (user != null && file != null)
             {
-
                 Guid imageId = user.ProfilePicture;
 
                 if (file != null && file.Length > 0)
                 {
-
-
                     using var image = Image.Load(file.OpenReadStream());
                     image.Mutate(img => img.Resize(256, 0));
 
@@ -680,92 +661,81 @@ namespace Garage88.Controllers
 
                 user.ProfilePicture = imageId;
 
-                if (!this.User.IsInRole("Client") && !this.User.IsInRole("Admin"))
-                {
-                    var mechanic = await _mechanicRepository.GetByEmailAsync(User.Identity.Name);
-                    if (mechanic == null)
-                    {
-                        return new ObjectResult(new { Status = "fail" });
-                    }
-
-                    mechanic.PhotoId = imageId;
-                    try
-                    {
-                        await _mechanicRepository.UpdateAsync(mechanic);
-                    }
-                    catch (Exception)
-                    {
-                        return new ObjectResult(new { Status = "fail" });
-                    }
-                }
-
                 var response = await _userHelper.UpdateUserAsync(user);
 
-                if (!response.Succeeded)
+                if (response.Succeeded)
                 {
-                    _flashMessage.Danger("There was an error updating the profile picture.");
-
-                    return new ObjectResult(new { Status = "fail" });
+                    return new ObjectResult(new { Status = "success", ImageId = imageId });
                 }
-
-                return new ObjectResult(new { Status = "success" });
             }
-
 
             return new ObjectResult(new { Status = "fail" });
         }
 
+        public async Task<IActionResult> UpdateUser()
+        {
+            var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+
+            var model = new ChangeUserViewModel();
+
+            if (user != null)
+            {
+                model.FirstName = user.FirstName;
+                model.LastName = user.LastName;
+                model.PhoneNumber = user.PhoneNumber;
+                model.ProfilePicture = user.ProfilePicture;
+            }
+
+            return View(model);
+        }
+
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [Route("Account/UpdateUser")]
-        public async Task<JsonResult> UpdateUser(string email, long phoneNumber, long nif, string address, bool isClient)
+        public async Task<IActionResult> UpdateUser(ChangeUserViewModel model)
         {
-            bool isValid = false;
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
             var user = await _userHelper.GetUserByEmailAsync(User.Identity.Name);
 
             if (user == null)
             {
-                return Json(isValid);
+                return NotFound();
             }
 
-            if (isClient)
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.PhoneNumber = model.PhoneNumber;
+            user.Address = model.Address;
+            user.ProfilePicture = model.ProfilePicture;
+
+            if (model.IsClient)
             {
                 var client = await _clientRepository.GetClientByUserIdAsync(user.Id);
-                if (client == null)
+                if (client != null)
                 {
-                    return Json(isValid);
-                }
-                user.Email = email;
-                user.UserName = email;
-                client.Email = email;
-                client.PhoneNumber = phoneNumber.ToString();
-                client.Address = address;
-                client.Nif = nif.ToString();
+                    client.PhoneNumber = model.PhoneNumber;
+                    client.Address = model.Address;
+                    client.Nif = model.Nif;
 
-                try
-                {
                     await _clientRepository.UpdateAsync(client);
                 }
-                catch (Exception)
-                {
-                    return Json(isValid);
-                }
             }
-
-            user.Address = address;
-            user.PhoneNumber = phoneNumber.ToString();
 
             try
             {
                 await _userHelper.UpdateUserAsync(user);
-
-                isValid = true;
+                TempData["Message"] = "User Updated Successfully!";
+                return RedirectToAction("Index", "Home");
             }
             catch (Exception)
             {
-                return Json(isValid);
+                ModelState.AddModelError("", "Failed to Update User.");
+                return View(model);
             }
-
-            return Json(isValid);
         }
 
         [HttpPost]

@@ -15,10 +15,7 @@ namespace Garage88.Controllers
         private readonly IFlashMessage _flashMessage;
         private readonly IConverterHelper _converterHelper;
 
-        public ServicesController(IServiceRepository serviceRepository
-                                 , IFlashMessage flashMessage
-                                 , IConverterHelper converterHelper
-            )
+        public ServicesController(IServiceRepository serviceRepository, IFlashMessage flashMessage, IConverterHelper converterHelper)
         {
             _serviceRepository = serviceRepository;
             _flashMessage = flashMessage;

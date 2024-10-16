@@ -9,15 +9,23 @@ namespace Garage88.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly IMailHelper _mailHelper;
+        private readonly IUserHelper _userHelper;
 
-        public HomeController(ILogger<HomeController> logger, IMailHelper mailHelper)
+        public HomeController(ILogger<HomeController> logger, IMailHelper mailHelper, IUserHelper userHelper)
         {
             _logger = logger;
             _mailHelper = mailHelper;
+            _userHelper = userHelper;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                var user = await _userHelper.GetUserByEmailAsync(User.Identity.Name);
+                ViewBag.UserProfilePicture = user?.ProfilePicture ?? Guid.Empty;
+                ViewBag.UserName = user?.UserName;
+            }
             return View();
         }
 

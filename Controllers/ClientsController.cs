@@ -8,7 +8,7 @@ using Garage88.Data.Entities;
 
 namespace Garage88.Controllers
 {
-    //[Authorize(Roles = "Admin, Receptionist")]
+    [Authorize(Roles = "Admin, Client, Receptionist")]
     public class ClientsController : Controller
     {
         private readonly IClientRepository _clientRepository;
@@ -33,9 +33,11 @@ namespace Garage88.Controllers
             _flashMessage = flashMessage;
         }
 
+        [Authorize(Roles = "Admin, Client")]
         public IActionResult Index()
         {
-            return View(_clientRepository.GetAll().OrderBy(c => c.FirstName));
+            var clients = _clientRepository.GetAll().OrderBy(c => c.FirstName);
+            return View(clients);
         }
 
         public IActionResult Create()
@@ -241,6 +243,15 @@ namespace Garage88.Controllers
                     vehicle.Model = clientVehicle.Model;
                 }
             }
+
+            string profilePictureUrl = "/images/blankprofilepicture.jpg";
+
+            if (client.ProfilePictureId != null)
+            {
+                profilePictureUrl = Url.Content($"~/images/{client.ProfilePictureId}.jpg");
+            }
+
+            ViewBag.ProfilePictureUrl = profilePictureUrl;
 
             return View(client);
         }

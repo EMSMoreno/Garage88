@@ -1,0 +1,134 @@
+﻿@model Garage88.Models.ChangeUserViewModel
+
+@{
+    ViewData["Title"] = "Update User";
+    Layout = "~/Views/Shared/_PasswordLayout.cshtml";
+}
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Message"]
+    </div>
+}
+
+<style>
+    img {
+        filter: grayscale(50%);
+        width: 100px;
+        cursor: pointer;
+    }
+
+    .card {
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+    }
+</style>
+
+<section class="vh-100" style="background-color: #eee;">
+    <div class="container h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col-lg-12 col-xl-11">
+                <div class="card text-black" style="border-radius: 25px;">
+                    <div class="card-body p-md-5">
+                        <div class="row justify-content-center">
+                            <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
+                                <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Update User</p>
+
+                                <!-- Mensagem de sucesso aqui -->
+                                @if (TempData["Message"] != null)
+                                {
+                                    <div class="alert alert-success">
+                                        @TempData["Message"]
+                                    </div>
+                                }
+
+                                <form class="mx-1 mx-md-4" method="post" asp-controller="Account" asp-action="UpdateUser">
+                                    <div asp-validation-summary="ModelOnly"></div>
+
+                                    <div class="d-flex flex-row align-items-center mb-4">
+                                        <div class="form-outline flex-fill mb-0">
+                                            <span asp-validation-for="FirstName" class="text-warning"></span>
+                                            <input asp-for="FirstName" class="form-control sharp" />
+                                            <label asp-for="FirstName" class="form-label">First Name</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex flex-row align-items-center mb-4">
+                                        <div class="form-outline flex-fill mb-0">
+                                            <span asp-validation-for="LastName" class="text-warning"></span>
+                                            <input asp-for="LastName" class="form-control sharp" />
+                                            <label asp-for="LastName" class="form-label">Last Name</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex flex-row align-items-center mb-4">
+                                        <div class="form-outline flex-fill mb-0">
+                                            <span asp-validation-for="PhoneNumber" class="text-warning"></span>
+                                            <input asp-for="PhoneNumber" class="form-control sharp" />
+                                            <label asp-for="PhoneNumber" class="form-label">Phone Number</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex flex-row align-items-center mb-4">
+                                        <div class="form-outline flex-fill mb-0">
+                                            <span asp-validation-for="Address" class="text-warning"></span>
+                                            <input asp-for="Address" class="form-control sharp" />
+                                            <label asp-for="Address" class="form-label">Address</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex flex-row align-items-center mb-4">
+                                        <div class="form-outline flex-fill mb-0">
+                                            <span asp-validation-for="Nif" class="text-warning"></span>
+                                            <input asp-for="Nif" class="form-control sharp" />
+                                            <label asp-for="Nif" class="form-label">Tax Identification Number / NIF</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-4">
+                                        <label class="form-label">Choose Your Profile Picture:</label>
+                                        <div class="d-flex flex-wrap">
+                                            <div class="form-outline me-2">
+                                                <input type="radio" asp-for="ProfilePicture" value="12345678-1234-1234-1234-1234567890ab" />
+                                                <img src="~/dist/img/avatar.png" alt="Profile 1" />
+                                            </div>
+                                            <div class="form-outline me-2">
+                                                <input type="radio" asp-for="ProfilePicture" value="12345678-1234-1234-1234-1234567890ac" />
+                                                <img src="~/dist/img/avatar2.png" alt="Profile 2" />
+                                            </div>
+                                            <div class="form-outline me-2">
+                                                <input type="radio" asp-for="ProfilePicture" value="12345678-1234-1234-1234-1234567890ad" />
+                                                <img src="~/dist/img/avatar3.png" alt="Profile 3" />
+                                            </div>
+                                            <div class="form-outline me-2">
+                                                <input type="radio" asp-for="ProfilePicture" value="12345678-1234-1234-1234-1234567890ae" />
+                                                <img src="~/dist/img/avatar4.png" alt="Profile 4" />
+                                            </div>
+                                            <div class="form-outline me-2">
+                                                <input type="radio" asp-for="ProfilePicture" value="12345678-1234-1234-1234-1234567890af" />
+                                                <img src="~/dist/img/avatar5.png" alt="Profile 5" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
+                                        <a asp-action="Index" asp-controller="Home" class="btn sharp btn-dark" style="margin-right:10px;">Go Back to Home Screen</a>
+                                        <input type="submit" value="Update" class="btn sharp btn-primary" />
+                                    </div>
+                                    <div asp-validation-summary="All" class="text-danger"></div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts
+{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
