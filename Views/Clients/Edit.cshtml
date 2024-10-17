@@ -52,10 +52,24 @@
                 <span asp-validation-for="Address" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Update Client" class="btn btn-primary" />
-                <a asp-action="Create" asp-controller="Vehicles" asp-route-email="@Model.Email" asp-route-isEstimate="false" class="btn btn-danger"><i class="fas fa-car"></i> Add Vehicle</a>
-                <a asp-action="Index" class="btn btn-success" style="margin-left:147px"><i class="fas fa-arrow-circle-left"></i> Back to List</a>
-            </div>
+            <input type="submit" value="Update Client" class="btn btn-primary" />
+    
+            <a asp-action="Create" asp-controller="Vehicles" asp-route-email="@Model.Email" asp-route-isEstimate="false" class="btn btn-danger">
+                <i class="fas fa-car"></i> Add Vehicle
+            </a>
+    
+            <a asp-action="_WorkOrder" asp-controller="Pdf" asp-route-isEstimate="false" class="btn btn-info">
+                <i class="fas fa-download"></i> Download Work Order
+            </a>
+
+            <a asp-action="_Estimate" asp-controller="Pdf" asp-route-isEstimate="true" class="btn btn-info">
+                <i class="fas fa-file-pdf"></i> Download Estimate
+            </a>
+    
+            <a asp-action="Index" class="btn btn-success">
+                <i class="fas fa-arrow-circle-left"></i> Back to List
+            </a>
+        </div>
         </form>
     </div>
 </div>

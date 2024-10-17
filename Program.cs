@@ -94,8 +94,11 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    app.UseExceptionHandler("/Home/Error");
+    app.UseExceptionHandler("/Home/Error"); // Handles general errors (500)
     app.UseHsts();
+
+    // This will redirect 404 errors
+    app.UseStatusCodePagesWithReExecute("/error/{0}");
 }
 
 app.UseHttpsRedirection();
