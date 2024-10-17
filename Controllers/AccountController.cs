@@ -776,7 +776,14 @@ namespace Garage88.Controllers
             return this.BadRequest();
         }
 
-        public IActionResult NotAuthorized()
+        [Route("error/404")]
+        public IActionResult Error404()
+        {
+            return View();
+        }
+
+        [Route("error/401")]
+        public IActionResult Error401()
         {
             return View();
         }

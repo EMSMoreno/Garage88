@@ -9,7 +9,6 @@ using Vereyon.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Adicionar serviços ao contêiner.
 builder.Services.AddControllersWithViews();
 
 // Config Identity
@@ -24,14 +23,14 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 .AddEntityFrameworkStores<DataContext>()
 .AddDefaultTokenProviders();
 
-// Chamar o ApplicationDbContext com o SQL Server
+// Calls ApplicationDbContext w/ SQL Server
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Registrar o SeedDb
+// SeedDb Register
 builder.Services.AddScoped<SeedDb>();
 
-// Chamar os repositórios e os helpers
+// Calls Repositories & Helpers
 builder.Services.AddTransient<IAppointmentRepository, AppointmentRepository>();
 builder.Services.AddTransient<IBrandRepository, BrandRepository>();
 builder.Services.AddTransient<IClientRepository, ClientRepository>();
@@ -53,22 +52,21 @@ builder.Services.AddTransient<IBlobHelper, BlobHelper>();
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
-// Configurar autenticação por cookie
+// Cookie Auth
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         options.LoginPath = "/Account/Login";
-        options.AccessDeniedPath = "/Account/AccessDenied";
+        options.AccessDeniedPath = "/error/401";
     });
 
-// Configuração de políticas de autorização
 builder.Services.AddAuthorizationBuilder()
      .AddPolicy("Admin", policy => policy.RequireRole("Admin"))
      .AddPolicy("Client", policy => policy.RequireRole("Client"))
      .AddPolicy("Receptionist", policy => policy.RequireRole("Receptionist"))
      .AddPolicy("Technician", policy => policy.RequireRole("Technician"));
 
-// Registar Serviços do Vereyon.Web
+// Vereyon.Web Services
 builder.Services.AddFlashMessage();
 
 builder.Services.AddControllers()
@@ -94,10 +92,10 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    app.UseExceptionHandler("/Home/Error"); // Handles general errors (500)
+    app.UseExceptionHandler("/error/404");
     app.UseHsts();
 
-    // This will redirect 404 errors
+    // Redirect 404 errors
     app.UseStatusCodePagesWithReExecute("/error/{0}");
 }
 
@@ -106,7 +104,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// Ativar autenticação e autorização
+// Active Authentication & Authorization
 app.UseAuthentication();
 app.UseAuthorization();
 
