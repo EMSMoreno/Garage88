@@ -81,8 +81,8 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
-    var seedDb = services.GetRequiredService<SeedDb>();
-    await seedDb.SeedAsync();
+    //var seedDb = services.GetRequiredService<SeedDb>();
+    //await seedDb.SeedAsync();
 }
 
 // Configure the HTTP request pipeline.
