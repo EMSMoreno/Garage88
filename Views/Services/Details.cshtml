@@ -1,0 +1,102 @@
+﻿@model Garage88.Data.Entities.Service
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "Services";
+    ViewData["BreadCrumb"] = "Service Details";
+}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css" />
+
+<div class="container-fluid" style="max-width:90%">
+
+    <div>
+        <hr />
+        <h4 style="text-align:center">Service: @Html.DisplayFor(model => model.Name)</h4>
+        <hr />
+    </div>
+
+    <div class="row" style="justify-content:center">
+        <div class="col-md-8">
+            <dl class="row">
+                <dt class="col-sm-6" style="text-align:end">
+                    @Html.DisplayNameFor(model => model.Name)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.Name)
+                </dd>
+                <dt class="col-sm-6" style="text-align:end">
+                    @Html.DisplayNameFor(model => model.Description)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.Description)
+                </dd>
+                <dt class="col-sm-6" style="text-align:end">
+                    @Html.DisplayNameFor(model => model.Price)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.Price)
+                </dd>
+                <dt class="col-sm-6" style="text-align:end">
+                    @Html.DisplayNameFor(model => model.Discount)
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.Discount)
+                </dd>
+                <dt class="col-sm-6" style="text-align:end">
+                    @Html.DisplayName("Price with Discount")
+                </dt>
+                <dd class="col-sm-6">
+                    @Html.DisplayFor(model => model.PriceWithDiscount)
+                </dd>
+            </dl>
+        </div>
+    </div>
+    <hr />
+
+    <div class="container-fluid" style="margin-top:50px">
+        <a asp-action="Edit" asp-route-id="@Model.Id" style="width:100%;border-radius:0" class="btn btn-warning"><i class="fas fa-edit"></i> Edit</a> <br />
+        <a asp-action="Index" class="btn btn-success" style="width:100%;border-radius:0;margin-top:10px"><i class="fas fa-arrow-circle-left"></i> Back to List</a>
+    </div>
+
+    <partial name="_DeleteDialog" />
+
+    <footer class="footer" style="position:Absolute; bottom:65px;font-size:14px">
+        <table>
+            <tr>
+                <td>
+                    <i class="fas fa-edit" style="background: #31D2F2;padding:10px; margin-left:10px;color:white"></i> @Html.Raw(" = Edit ")
+                </td>
+                @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Admin"))
+                {
+                    <td>
+                        <i class="fas fa-trash" style="background: #C82333;padding:10px; margin-left:10px;color:white "></i> @Html.Raw(" = Delete ")
+                    </td>
+                }
+            </tr>
+        </table>
+    </footer>
+</div>
+
+@section Scripts {
+    @Html.Partial("_ValidationScriptsPartial")
+    <script src="//cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript">
+        // JavaScript para funcionalidade de deletar
+        $(document).ready(function () {
+            let id = 0;
+            $('a[id*=btnDelete]').click(function () {
+                id = $(this).parent()[0].id;
+                $("#deleteDialog").modal('show');
+                return false;
+            });
+            $("#btnNoDelete").click(function () {
+                $("#deleteDialog").modal('hide');
+                return false;
+            });
+            $("#btnYesDelete").click(function () {
+                window.location.href = '/Services/Delete/' + id;
+            });
+        });
+    </script>
+}

@@ -298,6 +298,15 @@ namespace Garage88.Controllers
             return "GeneratedPassword123";
         }
 
+        public IActionResult GenerateHash()
+        {
+            var passwordHasher = new PasswordHasher<IdentityUser>();
+            var newPassword = "GeneratedPassword123";
+            var hash = passwordHasher.HashPassword(null, newPassword);
+
+            return Content(hash);
+        }
+
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
@@ -426,23 +435,24 @@ namespace Garage88.Controllers
                     var result = await _userHelper.ResetPasswordAsync(user, model.Token, model.Password);
                     if (result.Succeeded)
                     {
-                        if (user.EmailConfirmed == false)
+                        if (!user.EmailConfirmed)
                         {
                             var token = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
                             await _userHelper.ConfirmEmailAsync(user, token);
                         }
 
-                        ViewBag.Message = "Password Reset Successful, you can now Log in with your new credentials.";
-                        return View();
+                        return RedirectToAction("Login", "Account");
                     }
 
-
-                    ViewBag.Message = "There was an error while doing reset to your password.";
-                    return View(model);
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
                 }
-
-                ViewBag.Message = "User was not found!";
-                return View(model);
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "User not found!");
+                }
             }
 
             return View(model);

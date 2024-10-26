@@ -144,20 +144,39 @@ namespace Garage88.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpPost]
-        [Route("Services/ServiceDetails")]
-        public async Task<JsonResult> ServiceDetails(int Id)
+        [HttpGet]
+        [Route("Services/Details/{id}")]
+        public async Task<IActionResult> Details(int id)
         {
-            if (Id == 0)
+            if (id <= 0)
             {
-                return null;
+                return NotFound();
             }
 
-            var service = await _serviceRepository.GetByIdAsync(Id);
+            var service = await _serviceRepository.GetByIdAsync(id);
 
-            var json = Json(service);
+            if (service == null)
+            {
+                return NotFound();
+            }
 
-            return json;
+            return View(service);
         }
+
+        //[HttpPost]
+        //[Route("Services/ServiceDetails")]
+        //public async Task<JsonResult> ServiceDetails(int Id)
+        //{
+        //    if (Id == 0)
+        //    {
+        //        return null;
+        //    }
+
+        //    var service = await _serviceRepository.GetByIdAsync(Id);
+
+        //    var json = Json(service);
+
+        //    return json;
+        //}
     }
 }

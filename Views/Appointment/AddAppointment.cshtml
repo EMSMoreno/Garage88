@@ -1,7 +1,8 @@
 ﻿@model Garage88.Models.AppointmentViewModel
 
 @{
-    Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
+    //Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
+    Layout = "_Layout";
     ViewData["Title"] = "Appointment";
     ViewData["BreadCrumb"] = "Add Appointment";
     var minDate = new DateTime(DateTime.UtcNow.Year, DateTime.UtcNow.Month, DateTime.UtcNow.Day, 9, 0, 0);

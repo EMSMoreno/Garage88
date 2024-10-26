@@ -54,6 +54,8 @@
         </table>
     </div>
 
+    <a asp-action="Create" class="btn btn-primary" style="margin-top:50px;width:100%">Add Client</a>
+
     <footer class="footer" style="position:Absolute; bottom:65px;font-size:14px">
         <table>
             <tr>
@@ -87,8 +89,8 @@
         $(document).ready(function () {
             $('#MyTable').DataTable({
                 columnDefs: [
-                    {className: 'dt-center', targets: "_all"},
-                    {className: "tableFont", targets: "_all" },
+                    { className: 'dt-center', targets: "_all" },
+                    { className: "tableFont", targets: "_all" },
                 ]
             });
         });

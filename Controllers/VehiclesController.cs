@@ -307,11 +307,22 @@ namespace Garage88.Controllers
         {
             if (brandId == 0)
             {
-                return null;
+                return Json(new List<object>());
             }
+
             var brand = await _brandRepository.GetBrandWithModelsAsync(brandId);
-            var json = Json(brand.Models.OrderBy(m => m.Name));
-            return json;
+
+            if (brand == null || brand.Models == null || !brand.Models.Any())
+            {
+                return Json(new List<object>());
+            }
+
+            var models = brand.Models
+                              .OrderBy(m => m.Name)
+                              .Select(m => new { Id = m.Id, Name = m.Name })
+                              .ToList();
+
+            return Json(models);
         }
 
         private bool CheckIfVinIsNull(string vinNumber)

@@ -1,7 +1,8 @@
 ﻿@model IEnumerable<Garage88.Data.Entities.Service>
 
 @{
-    Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
+    //Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
+    Layout = "_Layout";
     ViewData["Title"] = "Services";
 }
 
@@ -79,7 +80,9 @@
                         <td id="@item.Id">
                             <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-info btn-sm"><i class="fas fa-edit"></i></a>
 
-                            <a onclick="serviceDetails(@item.Id)" class="btn btn-warning btn-sm"><i class="fas fa-list"></i></a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-warning btn-sm"><i class="fas fa-list"></i></a>
+
+                           @*  <a onclick="serviceDetails(@item.Id)" class="btn btn-warning btn-sm"><i class="fas fa-list"></i></a> *@
 
                             <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm pull-right" id="btnDelete"><i class="fas fa-trash"></i></a>
                         </td>
@@ -87,7 +90,6 @@
                 }
             </tbody>
         </table>
-
     </div>
 
     <div id='container' style="height:auto">
@@ -97,6 +99,8 @@
 
         </ejs-dialog>
     </div>
+
+    <a asp-action="Create" class="btn btn-primary" style="margin-top:50px;width:100%">Add Service</a>
 
     <footer class="footer" style="position:Absolute; bottom:65px;font-size:14px">
         <table>

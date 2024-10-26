@@ -59,9 +59,9 @@
                 </div>
             </div>
 
-            <div class="col-4"></div>
+            <div class="col-3"></div>
 
-            <div class="col-3">
+            <div class="col-6">
                 <div class="row justify-content-end align-items-center">
                     @if (User.Identity.IsAuthenticated) @* User.Identity.Name & Logout *@
                     {
@@ -81,18 +81,21 @@
                             <a asp-area="" asp-controller="Home" asp-action="Index" class="aColor">Home</a>
                         </div>
                         <div class="col-auto d-flex align-items-center dropdown">
-                            <a id="dropTitle" class="aColor dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Services</a>
+                            <a id="dropTitle" class="aColor dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">What We Offer</a>
                             <div class="dropdown-menu">
                                 <a class="dropdown-item" asp-area="" asp-controller="Clients" asp-action="Index">Clients</a>
                                 <a class="dropdown-item" asp-area="" asp-controller="Vehicles" asp-action="Index">Vehicles</a>
                                 <a class="dropdown-item" asp-area="" asp-controller="Mechanics" asp-action="Index">Mechanics</a>
                                 <a class="dropdown-item" asp-area="" asp-controller="WorkOrders" asp-action="Index">Repairs</a>
-                                <a class="dropdown-item" asp-area="" asp-controller="Appointment" asp-action="Index">Schedule/Appointments</a>
+                                <a class="dropdown-item" asp-area="" asp-controller="Appointment" asp-action="Index">Appointments</a>
+                                <a class="dropdown-item" asp-area="" asp-controller="Brands" asp-action="Index">Brands</a>
+                                <a class="dropdown-item" asp-area="" asp-controller="Estimates" asp-action="Index">Estimates</a>
+                                <a class="dropdown-item" asp-area="" asp-controller="Services" asp-action="Index">Services</a>
+                                <a class="dropdown-item" asp-area="" asp-controller="Mailbox" asp-action="Announcement">Mailbox</a>
+                                <a class="dropdown-item" asp-area="" asp-controller="About" asp-action="Technicians">Technicians</a>
                             </div>
                         </div>
-                       @*  <div>
-                            <a class="aColor" asp-area="" asp-controller="About" asp-action="Technicians">Technicians</a>
-                         </div> *@
+
                         <div class="col-auto d-flex align-items-center">
                             <a class="aColor" asp-area="" asp-controller="About" asp-action="Index">About Us</a>
                         </div>

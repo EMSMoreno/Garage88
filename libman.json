@@ -3,10 +3,6 @@
   "defaultProvider": "cdnjs",
   "libraries": [
     {
-      "library": "font-awesome@6.6.0",
-      "destination": "wwwroot/lib/font-awesome/"
-    },
-    {
       "library": "cropperjs@1.6.2",
       "destination": "wwwroot/lib/cropperjs/"
     },
@@ -21,6 +17,13 @@
     {
       "library": "fullcalendar@6.1.15",
       "destination": "wwwroot/lib/fullcalendar/"
+    },
+    {
+      "library": "font-awesome@6.6.0",
+      "destination": "wwwroot/font-awesome/",
+      "files": [
+        "css/all.min.css"
+      ]
     }
   ]
 }
