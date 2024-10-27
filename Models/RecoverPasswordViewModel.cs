@@ -4,9 +4,8 @@ namespace Garage88.Models
 {
     public class RecoverPasswordViewModel
     {
-        [Required]
-        [DataType(DataType.EmailAddress)]
-        [EmailAddress]
+        [Required(ErrorMessage = "Email is required.")]
+        [EmailAddress(ErrorMessage = "Invalid email format.")]
         public string Email { get; set; }
     }
 }

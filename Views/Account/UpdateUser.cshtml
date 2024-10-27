@@ -13,12 +13,6 @@
 }
 
 <style>
-    img {
-        filter: grayscale(50%);
-        width: 100px;
-        cursor: pointer;
-    }
-
     .card {
         box-shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px, rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
     }
@@ -85,29 +79,19 @@
                                         </div>
                                     </div>
 
-                                    <div class="mb-4">
-                                        <label class="form-label">Choose Your Profile Picture:</label>
-                                        <div class="d-flex flex-wrap">
-                                            <div class="form-outline me-2">
-                                                <input type="radio" asp-for="ProfilePicture" value="12345678-1234-1234-1234-1234567890ab" />
-                                                <img src="~/dist/img/avatar.png" alt="Profile 1" />
-                                            </div>
-                                            <div class="form-outline me-2">
-                                                <input type="radio" asp-for="ProfilePicture" value="12345678-1234-1234-1234-1234567890ac" />
-                                                <img src="~/dist/img/avatar2.png" alt="Profile 2" />
-                                            </div>
-                                            <div class="form-outline me-2">
-                                                <input type="radio" asp-for="ProfilePicture" value="12345678-1234-1234-1234-1234567890ad" />
-                                                <img src="~/dist/img/avatar3.png" alt="Profile 3" />
-                                            </div>
-                                            <div class="form-outline me-2">
-                                                <input type="radio" asp-for="ProfilePicture" value="12345678-1234-1234-1234-1234567890ae" />
-                                                <img src="~/dist/img/avatar4.png" alt="Profile 4" />
-                                            </div>
-                                            <div class="form-outline me-2">
-                                                <input type="radio" asp-for="ProfilePicture" value="12345678-1234-1234-1234-1234567890af" />
-                                                <img src="~/dist/img/avatar5.png" alt="Profile 5" />
-                                            </div>
+                                    <div class="d-flex flex-row align-items-center mb-4">
+                                        <div class="form-outline flex-fill mb-0">
+                                            <span asp-validation-for="NewPassword" class="text-warning"></span>
+                                            <input asp-for="NewPassword" class="form-control sharp" />
+                                            <label asp-for="NewPassword" class="form-label">New Password</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex flex-row align-items-center mb-4">
+                                        <div class="form-outline flex-fill mb-0">
+                                            <span asp-validation-for="ConfirmPassword" class="text-warning"></span>
+                                            <input asp-for="ConfirmPassword" class="form-control sharp" />
+                                            <label asp-for="ConfirmPassword" class="form-label">Confirm Password</label>
                                         </div>
                                     </div>
 
@@ -117,6 +101,7 @@
                                     </div>
                                     <div asp-validation-summary="All" class="text-danger"></div>
                                 </form>
+
                             </div>
                         </div>
                     </div>

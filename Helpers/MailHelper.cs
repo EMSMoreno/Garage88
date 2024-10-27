@@ -135,42 +135,49 @@ namespace Garage88.Helpers
 
         public async Task<Response> SendEmail(string to, string subject, string body, string attachmentPath)
         {
+            var mailSettings = _configuration.GetSection("Mail");
+
             Response response = new Response();
 
             try
             {
-                System.Net.Mail.SmtpClient client = new System.Net.Mail.SmtpClient("smtp.sapo.pt", 587);
-                client.UseDefaultCredentials = false;
-                client.Credentials = new NetworkCredential("garage88.support@sapo.pt", "&w_Rq25@!=A6000S");
-
-                MailMessage mailMessage = new MailMessage();
-                mailMessage.From = new MailAddress("garage88.support@sapo.pt");
-                mailMessage.To.Add(to);
-                mailMessage.Subject = subject;
-                mailMessage.Body = body;
-
-                if (!string.IsNullOrEmpty(attachmentPath))
+                using (var client = new System.Net.Mail.SmtpClient(mailSettings["Smtp"], int.Parse(mailSettings["Port"])))
                 {
-                    Attachment attachment = new Attachment(attachmentPath);
-                    mailMessage.Attachments.Add(attachment);
+                    client.UseDefaultCredentials = false;
+                    client.Credentials = new NetworkCredential(mailSettings["From"], mailSettings["Password"]);
+                    client.EnableSsl = bool.Parse(mailSettings["EnableSsl"]); // Use a configuração SSL
+
+                    var mailMessage = new MailMessage
+                    {
+                        From = new MailAddress(mailSettings["From"]),
+                        Subject = subject,
+                        Body = body,
+                        IsBodyHtml = true
+                    };
+                    mailMessage.To.Add(to);
+
+                    if (!string.IsNullOrEmpty(attachmentPath))
+                    {
+                        Attachment attachment = new Attachment(attachmentPath);
+                        mailMessage.Attachments.Add(attachment);
+                    }
+
+                    await client.SendMailAsync(mailMessage); // Use SendMailAsync para melhor tratamento de exceções
+
+                    response.Message = "E-mail sent successfully!";
                 }
-
-                // Envia o e-mail
-                await client.SendMailAsync(mailMessage); // Use SendMailAsync para melhor tratamento de exceções
-
-                // Retorna sucesso
-                response.Message = "E-mail sent successfully!";
             }
             catch (SmtpFailedRecipientException ex)
             {
-                response.Message = $"There was an error: {ex.FailedRecipient}";
-                _logger.LogError($"Failed to send email to {to}: {ex.Message}"); // Log detalhado
+                response.Message = $"There was an error sending email to {ex.FailedRecipient}: {ex.Message}";
+                _logger.LogError($"Failed to send email to {to}: {ex.Message}\n{ex.StackTrace}");
             }
             catch (Exception ex)
             {
                 response.Message = "An unexpected error occurred while sending the email.";
-                _logger.LogError($"Unexpected error: {ex.Message}"); // Log para outros erros
+                _logger.LogError($"Unexpected error: {ex.Message}\n{ex.StackTrace}");
             }
+
 
             return response;
         }

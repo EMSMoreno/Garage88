@@ -1,39 +1,42 @@
-﻿using Garage88.Data.Entities;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Garage88.Models
 {
-    public class ChangeUserViewModel : User
+    public class ChangeUserViewModel
     {
+        [Required]
+        [Display(Name = "First Name")]
         public string FirstName { get; set; }
 
+        [Required]
+        [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
+        [Display(Name = "Phone Number")]
         public string PhoneNumber { get; set; }
 
+        [MaxLength(100, ErrorMessage = "The field {0} cannot have more than {1} characters.")]
         public string Address { get; set; }
 
-        [Display(Name = "Tax Identification Number / NIF")]
-        [Required(ErrorMessage = "NIF is Required.")]
-        public string Nif { get; set; }
+        [Display(Name = "Email")]
+        public string? Email { get; set; }
+
+        [Display(Name = "Profile Picture")]
+        public Guid ProfilePicture { get; set; }
+
+        [DataType(DataType.Password)]
+        [Display(Name = "New Password")]
+        public string NewPassword { get; set; }
+
+        [DataType(DataType.Password)]
+        [Display(Name = "Confirm Password")]
+        [Compare("NewPassword", ErrorMessage = "The password and confirmation password do not match.")]
+        public string ConfirmPassword { get; set; }
 
         public bool HasPassword { get; set; }
 
         public bool IsClient { get; set; }
 
-        [Required(ErrorMessage = "Please choose a Profile Picture.")]
-        public Guid ProfilePicture { get; set; }
-    }
-
-    public static class ProfilePictureMapping
-    {
-        public static Dictionary<Guid, string> Pictures = new Dictionary<Guid, string>
-        {
-            { Guid.Parse("12345678-1234-1234-1234-1234567890ab"), "~/dist/img/avatar.png" },
-            { Guid.Parse("12345678-1234-1234-1234-1234567890ac"), "~/dist/img/avatar2.png" },
-            { Guid.Parse("12345678-1234-1234-1234-1234567890ad"), "~/dist/img/avatar3.png" },
-            { Guid.Parse("12345678-1234-1234-1234-1234567890ae"), "~/dist/img/avatar4.png" },
-            { Guid.Parse("12345678-1234-1234-1234-1234567890af"), "~/dist/img/avatar5.png" }
-        };
+        public string Nif { get; set; }
     }
 }

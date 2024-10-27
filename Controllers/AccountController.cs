@@ -366,37 +366,43 @@ namespace Garage88.Controllers
             return View(model);
         }
 
+        // GET: Account/RecoverPassword
         public IActionResult RecoverPassword()
         {
             return View();
         }
 
+        // POST: Account/RecoverPassword
         [HttpPost]
         public async Task<IActionResult> RecoverPassword(RecoverPasswordViewModel model)
         {
             if (ModelState.IsValid)
             {
-
                 var user = await _userHelper.GetUserByEmailAsync(model.Email);
                 if (user == null)
                 {
-                    ModelState.AddModelError(string.Empty, "The Email does not correspond to a registered email.");
+                    ModelState.AddModelError(string.Empty, "The email does not correspond to a registered email.");
                     return View(model);
                 }
 
                 var userToken = await _userHelper.GeneratePasswordResetTokenAsync(user);
                 var link = Url.Action("ResetPassword", "Account", new { token = userToken, userId = user.Id }, protocol: HttpContext.Request.Scheme);
 
-                Response response = await _mailHelper.SendEmail(model.Email, "PitStop Lisbon Recover Password ", $"<h1>PitStop Lisbon password reset</h1>" +
-                    $"To Reset the password click in the link bellow: </br></br>" +
-                    $"<a href = \"{link}\">Reset Password</a>", null);
+                Response response = await _mailHelper.SendEmail(model.Email, "Garage88 Recover Password",
+                    $"<h1>Garage88 password reset</h1>" +
+                    $"To reset the password, click the link below: </br></br>" +
+                    $"<a href=\"{link}\">Reset Password</a>", null);
 
                 if (response.IsSuccess)
                 {
                     ViewBag.Message = "The instructions to recover your password have been sent to the email address.";
+                    return View();
                 }
-
-                return View();
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "There was a problem sending the email. Please try again later.");
+                    return View(model);
+                }
             }
 
             return View(model);
@@ -682,6 +688,8 @@ namespace Garage88.Controllers
             return new ObjectResult(new { Status = "fail" });
         }
 
+        [HttpGet]
+        [Route("Account/UpdateUser")]
         public async Task<IActionResult> UpdateUser()
         {
             var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
@@ -694,6 +702,9 @@ namespace Garage88.Controllers
                 model.LastName = user.LastName;
                 model.PhoneNumber = user.PhoneNumber;
                 model.ProfilePicture = user.ProfilePicture;
+                model.Email = user.Email;
+                model.Address = user.Address;
+                model.HasPassword = await _userHelper.HasPasswordAsync(user);
             }
 
             return View(model);
@@ -722,6 +733,18 @@ namespace Garage88.Controllers
             user.Address = model.Address;
             user.ProfilePicture = model.ProfilePicture;
 
+            if (!string.IsNullOrEmpty(model.NewPassword))
+            {
+                var token = await _userHelper.GeneratePasswordResetTokenAsync(user);
+                var result = await _userHelper.ResetPasswordAsync(user, token, model.NewPassword);
+
+                if (!result.Succeeded)
+                {
+                    ModelState.AddModelError("", "Failed to change password.");
+                    return View(model);
+                }
+            }
+
             if (model.IsClient)
             {
                 var client = await _clientRepository.GetClientByUserIdAsync(user.Id);
@@ -729,7 +752,6 @@ namespace Garage88.Controllers
                 {
                     client.PhoneNumber = model.PhoneNumber;
                     client.Address = model.Address;
-                    client.Nif = model.Nif;
 
                     await _clientRepository.UpdateAsync(client);
                 }
@@ -738,12 +760,12 @@ namespace Garage88.Controllers
             try
             {
                 await _userHelper.UpdateUserAsync(user);
-                TempData["Message"] = "User Updated Successfully!";
+                TempData["Message"] = "User updated successfully!";
                 return RedirectToAction("Index", "Home");
             }
             catch (Exception)
             {
-                ModelState.AddModelError("", "Failed to Update User.");
+                ModelState.AddModelError("", "Failed to update user.");
                 return View(model);
             }
         }
