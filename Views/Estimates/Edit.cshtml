@@ -1,7 +1,6 @@
 ﻿@model IEnumerable<Garage88.Data.Entities.EstimateDetailTemp>
 
 @{
-    // Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
     Layout = "_Layout";
     ViewData["Title"] = "Estimates";
     ViewData["BreadCrumb"] = "Edit Estimate";
@@ -11,95 +10,84 @@
 
 <div>
     <hr />
-    <p style="text-align:center">Edit estimate Nº @Model.FirstOrDefault().EstimateId</p>
+    <p style="text-align:center">
+        @if (Model != null && Model.Any())
+        {
+            <text>Edit estimate Nº @Model.First().EstimateId</text>
+        }
+        else
+        {
+            <text>No estimates available to edit.</text>
+        }
+    </p>
     <hr />
-
 </div>
 
-<div class="container-fluid" style="max-width:90%">
-
-    <table class="hover stripe compact row-border testTable" style="display:inline-table;" id="MyTable">
-        <thead>
-            <tr>
-                <th>
-                    @Html.DisplayNameFor(model => model.Service.Name)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Service.Discount)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Price)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Quantity)
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.Value)
-                </th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                if (item.Service != null)
-                {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Service.Name)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Service.Discount)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.PriceWithDiscount)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Quantity)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.ValueWithDiscount)
-                        </td>
-                        <td id="@item.Id">
-                            <a asp-action="Increase" asp-route-id="@item.Id" asp-route-isEdit="true" class="btn btn-sm btn-warning"><i class="fa fa-plus"></i></a>
-                            <a asp-action="Decrease" asp-route-id="@item.Id" asp-route-isEdit="true" class="btn btn-sm btn-info"><i class="fa fa-minus"></i></a>
-                            <a asp-action="DeleteItem" asp-route-id="@item.Id" asp-route-isEdit="true" class="btn btn-sm btn-danger" id="btnDeleteItem">Delete</a>
-                        </td>
-                    </tr>
-                }
-            }
-        </tbody>
-    </table>
-    <div style="margin-top:50px">
-        <table class="stripe cell-border" style="display:inline-table" id="MyTable2">
+@if (Model != null && Model.Any())
+{
+    <div class="container-fluid" style="max-width:90%">
+        <table class="hover stripe compact row-border testTable" id="MyTable">
             <thead>
                 <tr>
-                    <th style="padding-right: 89px;">
-                        Total
-                    </th>
+                    <th>@Html.DisplayNameFor(model => model.Service.Name)</th>
+                    <th>@Html.DisplayNameFor(model => model.Service.Discount)</th>
+                    <th>@Html.DisplayNameFor(model => model.PriceWithDiscount)</th>
+                    <th>@Html.DisplayNameFor(model => model.Quantity)</th>
+                    <th>@Html.DisplayNameFor(model => model.ValueWithDiscount)</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td style="padding-right: 80px;">@Html.Raw(ViewData["TotalCost"])</td>
-                </tr>
+                @foreach (var item in Model)
+                {
+                    if (item.Service != null)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => item.Service.Name)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Service.Discount)</td>
+                            <td>@Html.DisplayFor(modelItem => item.PriceWithDiscount)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Quantity)</td>
+                            <td>@Html.DisplayFor(modelItem => item.ValueWithDiscount)</td>
+                            <td id="@item.Id">
+                                <a asp-action="Increase" asp-route-id="@item.Id" asp-route-isEdit="true" class="btn btn-sm btn-warning"><i class="fa fa-plus"></i></a>
+                                <a asp-action="Decrease" asp-route-id="@item.Id" asp-route-isEdit="true" class="btn btn-sm btn-info"><i class="fa fa-minus"></i></a>
+                                <a asp-action="DeleteItem" asp-route-id="@item.Id" asp-route-isEdit="true" class="btn btn-sm btn-danger" id="btnDeleteItem">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                }
             </tbody>
         </table>
-    </div>
+        <div style="margin-top:50px">
+            <table class="stripe cell-border" id="MyTable2">
+                <thead>
+                    <tr>
+                        <th style="padding-right: 89px;">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding-right: 80px;">@Html.Raw(ViewData["TotalCost"])</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-    <div class="form-group" style="margin-top:20px">
-        <label class="control-label">Fault Description</label>
-        <textarea class="form-control" id="faultDescriptionText" rows="5">
-            @Html.Raw(ViewData["faultDescription"])                
-                </textarea>
-    </div>
+        <div class="form-group" style="margin-top:20px">
+            <label class="control-label">Fault Description</label>
+            <textarea class="form-control" id="faultDescriptionText" rows="5">@Html.Raw(ViewData["faultDescription"])</textarea>
+        </div>
 
-    <div style="margin-top:20px">
-        <a asp-action="AddService" asp-route-id="@Model.First().VehicleId" asp-route-isEdit="true" style="width:100%" class="btn btn-info btn-sm"><i class="fas fa-file-medical"></i>  Add Service</a> <br />
-        <a asp-action="ConfirmEstimate" asp-route-isEdit="true" class="btn btn-success btn-sm" style="width:100%;margin-top:10px" id="btnConfirm"><i class="fas fa-check-square"></i>  Save Estimate</a>
+        <div style="margin-top:20px">
+            <a asp-action="AddService" asp-route-id="@Model.First().VehicleId" asp-route-isEdit="true" style="width:100%" class="btn btn-info btn-sm"><i class="fas fa-file-medical"></i> Add Service</a> <br />
+            <a asp-action="ConfirmEstimate" asp-route-isEdit="true" class="btn btn-success btn-sm" style="width:100%;margin-top:10px" id="btnConfirm"><i class="fas fa-check-square"></i> Save Estimate</a>
+        </div>
     </div>
-
-</div>
+}
+else
+{
+    <p>No estimate details available to display.</p>
+}
 
 <div id="confirmDialog" class="modal fade">
     <div class="modal-dialog modal-sm">
@@ -151,73 +139,36 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-    <script src="//cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
-    <script type="text/javascript">
-
-        $(document).ready(function() {
-            $('#MyTable').DataTable({
-                columnDefs: [{
-                    className: 'dt-center', targets: "_all"
-                }],
-                paging: false,
-                info: false,
-            });
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#MyTable').DataTable();
         });
 
-        $('#MyTable2').DataTable({
-                columnDefs: [
-                    {className: 'dt-right', targets: "_all"},
-                ],
-                paging: false,
-                searching: false,
-                info: false,
-                ordering: false,
+        $('#btnConfirm').click(function () {
+            $('#confirmDialog').modal('show');
         });
 
-        $(document).ready(function() {
-
-            var id = 0;
-
-
-            $("#btnConfirm").click(function() {
-                $("#confirmDialog").modal("show");
-                return false;
-            });
-
-             $("#btnNoConfirm").click(function() {
-                $("#confirmDialog").modal("hide");
-                return false;
-            });
-
-             $("#btnYesConfirm").click(function() {
-                  id = @Model.FirstOrDefault().VehicleId;
-                  var faultDesc = document.getElementById("faultDescriptionText").value;
-                  window.location.href = "/Estimates/ConfirmEstimate/"+id+"?isEdit=true&faultDescription="+faultDesc;
-            });
-
-
-            $("a[id*=btnDeleteItem]").click(function() {
-                    id=$(this).parent()[0].id;
-                    $("#deleteDialog").modal("show");
-                    return false;
-            });
-
-            $("#btnNoDelete").click(function() {
-              $("#deleteDialog").modal("hide");
-                return false;
-            });
-
-            $("#btnYesDelete").click(function() {
-                window.location.href = "/Estimates/DeleteItem/"+id+"?isEdit=true";
-            });
-
+        $('#btnYesConfirm').click(function () {
+            $('#confirmDialog').modal('hide');
+            // Add your confirm estimate logic here
         });
 
+        $('#btnNoConfirm').click(function () {
+            $('#confirmDialog').modal('hide');
+        });
 
+        $('#btnDeleteItem').click(function () {
+            $('#deleteDialog').modal('show');
+        });
+
+        $('#btnYesDelete').click(function () {
+            $('#deleteDialog').modal('hide');
+        });
+
+        $('#btnNoDelete').click(function () {
+            $('#deleteDialog').modal('hide');
+        });
     </script>
-
-
 }

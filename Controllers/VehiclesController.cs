@@ -8,7 +8,7 @@ using Vereyon.Web;
 
 namespace Garage88.Controllers
 {
-    [Authorize(Roles = "Admin, Technician, Receptionist")]
+    [Authorize(Roles = "Admin")] //, Technician, Receptionist
     public class VehiclesController : Controller
     {
         private readonly IVehicleRepository _vehicleRepository;
@@ -159,7 +159,7 @@ namespace Garage88.Controllers
             return View(vehicleModel);
         }
 
-        //// GET: Vehicles/Edit/5
+        // GET: Vehicles/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -238,7 +238,7 @@ namespace Garage88.Controllers
                 catch (Exception ex)
                 {
 
-                    ModelState.AddModelError(string.Empty, ex.InnerException.Message);
+                    ModelState.AddModelError(string.Empty, ex.Message);
                     vehicleModel.Brands = _brandRepository.GetComboBrands();
                     vehicleModel.Models = _brandRepository.GetComboModels(vehicleModel.BrandId);
                     return View(vehicleModel);

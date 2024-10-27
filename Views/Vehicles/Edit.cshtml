@@ -1,7 +1,7 @@
 ﻿@model Garage88.Models.VehicleViewModel
 
 @{
-    // Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
+    //Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
     Layout = "_Layout";
     ViewData["Title"] = "Vehicles";
     ViewData["BreadCrumb"] = "Edit";
@@ -74,7 +74,7 @@
                     url: '@Url.Action("GetModelsAsync", "Vehicles")',
                     type: 'POST',
                     dataType: 'json',
-                    data: {brandId:$("#BrandId").val()},
+                    data: { brandId: $("#BrandId").val() },
                     success: function (models) {
                         debugger;
                         $("#ModelId").append('<option value="0">[Select a model]</option>');
@@ -86,7 +86,7 @@
                         });
 
                     },
-                    error: function(ex) {
+                    error: function (ex) {
                         alert('Failed to retrieve models.' + ex);
                     }
                 });
@@ -95,4 +95,3 @@
         });
     </script>
 }
-

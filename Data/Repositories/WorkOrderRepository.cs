@@ -42,7 +42,6 @@ namespace Garage88.Data.Repositories
 
         public async Task<List<APIServiceViewModel>> GetAllWorkOrdersByPlateNumberAsync(string plateNumber)
         {
-
             List<APIServiceViewModel> list = new List<APIServiceViewModel>();
 
             var vehicle = _context.Vehicles

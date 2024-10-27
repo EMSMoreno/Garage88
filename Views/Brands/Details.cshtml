@@ -17,11 +17,10 @@
 
 @if (Model.Models == null || Model.Models.Count == 0)
 {
-    <h5 style="text-align:center; padding-bottom:100px">No vehicle models added yet</h5>
+    <h5 style="text-align:center; padding-bottom:100px">No Vehicle Models added yet</h5>
 }
 else
 {
-
     <div class="container-fluid" style="max-width:90%">
         <div>
             <table class="hover stripe compact row-border testTable" style="display:inline-table" id="MyTable">
@@ -41,8 +40,8 @@ else
                                 @Html.DisplayFor(modelItem => item.Name)
                             </td>
                             <td id="@item.Id">
-                                <a asp-action="EditModel" asp-route-id="@item.Id" class="btn btn-info btn-sm"><i class="fas fa-edit"></i></a>
-                                <a asp-action="DeleteModel" asp-route-id="@item.Id" class="btn btn-danger btn-sm pull-right" id="btnDelete"><i class="fas fa-trash"></i></a>
+                                <a asp-action="EditModel" asp-route-id="@item.Id" class="btn btn-info btn-sm" style="margin-left: 50px;"><i class="fas fa-edit"></i></a>
+                                <a asp-action="DeleteModel" asp-route-id="@item.Id" class="btn btn-danger btn-sm" style="margin-left: 50px;" id="btnDelete"><i class="fas fa-trash"></i></a>
                             </td>
                         </tr>
                     }
@@ -55,7 +54,7 @@ else
 
 <div class="container-fluid" style="max-width:90%">
     <a asp-action="AddModel" asp-route-id="@Model.Id" class="btn btn-info">Add Model</a>
-    <a asp-action="Index" class="btn btn-success">Back to brands List</a>
+    <a asp-action="Index" class="btn btn-success">Back to Brands List</a>
 
 
     <footer class="footer" style="position:Absolute; bottom:65px;font-size:14px">

@@ -344,81 +344,56 @@ namespace Garage88.Controllers
                 return NotFound();
             }
 
-            if (isNew)
+            try
             {
-                var estimate = await _estimateRepository.GetEstimateWithDetailsByIdAsync(id.Value);
-
-                if (estimate == null)
+                if (isNew)
                 {
-                    return NotFound();
-                }
+                    var estimate = await _estimateRepository.GetEstimateWithDetailsByIdAsync(id.Value);
+                    if (estimate == null)
+                    {
+                        return NotFound();
+                    }
 
-                //deletes estimateDetailTemps if any already exists for the car and vehicle. Case User leaves the page while already editing
-                //a estimate, if he goes back to edit again the temps are deleted and nothing unwanted is saved.
-                var deletedTemps = await _estimateRepository.DeleteEstimateDetailTempsAsync(estimate.Vehicle.Id, estimate.Client.Id);
+                    await _estimateRepository.DeleteEstimateDetailTempsAsync(estimate.Vehicle.Id, estimate.Client.Id);
 
-                var estimateDetailsTemps = await _converterHelper.ToEstimateDetailTemps(estimate.Services, User.Identity.Name);
+                    var estimateDetailsTemps = await _converterHelper.ToEstimateDetailTemps(estimate.Services, User.Identity.Name);
+                    foreach (var item in estimateDetailsTemps)
+                    {
+                        item.EstimateId = estimate.Id;
+                    }
 
-                foreach (var item in estimateDetailsTemps)
-                {
-                    item.EstimateId = estimate.Id;
-                }
-
-                try
-                {
                     await _estimateRepository.CreateEstimatesDetailsTemps(estimateDetailsTemps);
+
+                    double totalCost = estimateDetailsTemps.Sum(item => item.ValueWithDiscount);
+                    ViewData["faultDescription"] = estimate.FaultDescription;
+                    ViewData["TotalCost"] = totalCost.ToString("C2");
+
+                    return View(estimateDetailsTemps);
                 }
-                catch (Exception ex)
+                else
                 {
-                    _flashMessage.Danger("There was an error editing the estimate! " + ex.InnerException);
-                    return RedirectToAction(nameof(Index));
+                    var vehicle = await _vehicleRepository.GetVehicleDetailsByIdAsync(id.Value);
+                    if (vehicle == null)
+                    {
+                        return NotFound();
+                    }
+
+                    var userDetailTemps = await _estimateRepository.GetEstimateDetailTempWithVehicleIdAsync(User.Identity.Name, vehicle);
+                    var listmodel = await _estimateRepository.GetDetailTempsAsync(userDetailTemps.VehicleId, userDetailTemps.ClientId);
+
+                    var estimate = await _estimateRepository.GetEstimateWithDetailsByIdAsync(listmodel.FirstOrDefault().EstimateId);
+                    double totalCost = listmodel.Sum(item => item.ValueWithDiscount);
+
+                    ViewData["faultDescription"] = estimate.FaultDescription;
+                    ViewData["TotalCost"] = totalCost.ToString("C2");
+
+                    return View(listmodel);
                 }
-
-                double totalCost = 0;
-
-                foreach (var item in estimateDetailsTemps)
-                {
-                    totalCost += item.ValueWithDiscount;
-                }
-
-
-                ViewData["faultDescription"] = estimate.FaultDescription;
-
-                ViewData["TotalCost"] = totalCost.ToString("C2");
-
-                return View(estimateDetailsTemps);
             }
-            else
+            catch (Exception ex)
             {
-
-                //if action is called when editing the estimate(increase/decrease/delete Item actions), isNew boolean is passed as false and 
-                //the value from id passed is the vehicle Id.
-
-                var vehicle = await _vehicleRepository.GetVehicleDetailsByIdAsync(id.Value);
-
-                if (vehicle == null)
-                {
-                    return NotFound();
-                }
-
-                var userDetailTemps = await _estimateRepository.GetEstimateDetailTempWithVehicleIdAsync(this.User.Identity.Name, vehicle);
-
-                var listmodel = await _estimateRepository.GetDetailTempsAsync(userDetailTemps.VehicleId, userDetailTemps.ClientId);
-
-                var estimate = await _estimateRepository.GetEstimateWithDetailsByIdAsync(listmodel.FirstOrDefault().EstimateId);
-
-                double totalCost = 0;
-
-                foreach (var item in listmodel)
-                {
-                    totalCost += item.ValueWithDiscount;
-                }
-
-
-                ViewData["faultDescription"] = estimate.FaultDescription;
-                ViewData["TotalCost"] = totalCost.ToString("C2");
-
-                return View(listmodel);
+                _flashMessage.Danger($"There was an error editing the estimate! {ex.Message}");
+                return RedirectToAction(nameof(Index));
             }
 
         }
@@ -440,6 +415,7 @@ namespace Garage88.Controllers
             return View(estimate);
         }
 
+        [HttpGet]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -455,28 +431,49 @@ namespace Garage88.Controllers
                 return NotFound();
             }
 
-            try
+            var viewModel = new EstimateDeleteViewModel
             {
-                var success = await _estimateRepository.DeleteEstimateDetailsAsync(estimate.Id);
-                if (success > 0)
-                {
-                    await _estimateRepository.DeleteAsync(estimate);
-                    _flashMessage.Confirmation("Estimate deleted with success!");
-                    return RedirectToAction(nameof(Index));
-                }
-                else
-                {
-                    _flashMessage.Danger("There was an error deleting the estimate, probably the estimate is open elsewhere. ");
-                    return RedirectToAction(nameof(Index));
-                }
-            }
-            catch (Exception ex)
-            {
-                _flashMessage.Danger("There was an error deleting the estimate, probably the estimate is open elsewhere. " + ex.InnerException);
+                Id = estimate.Id,
+                //Name = estimate.Name
+            };
 
-                return RedirectToAction(nameof(Index));
-            }
+            return View(viewModel);
         }
+
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var estimate = await _estimateRepository.GetByIdAsync(id);
+            if (estimate == null)
+            {
+                return NotFound();
+            }
+
+            await _estimateRepository.DeleteEstimateDetailsAsync(estimate.Id);
+            await _estimateRepository.DeleteAsync(estimate);
+
+            _flashMessage.Confirmation("Estimate deleted with success!");
+            return RedirectToAction(nameof(Index));
+        }
+
+        [HttpPost, ActionName("DeleteConfirmed")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var estimate = await _estimateRepository.GetByIdAsync(id);
+            if (estimate == null)
+            {
+                return NotFound();
+            }
+
+            await _estimateRepository.DeleteEstimateDetailsAsync(estimate.Id);
+            await _estimateRepository.DeleteAsync(estimate);
+
+            _flashMessage.Confirmation("Estimate deleted with success!");
+            return RedirectToAction(nameof(Index));
+        }
+
 
         [HttpPost]
         [Route("Estimates/RemoveTemps")]

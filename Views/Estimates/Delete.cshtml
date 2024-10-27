@@ -1,0 +1,14 @@
+﻿@model Garage88.Models.EstimateDeleteViewModel
+
+<h2>Delete Estimate</h2>
+
+<h4>Are you sure you want to delete this estimate?</h4>
+<div>
+    <h4>@Model.Name</h4>
+</div>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete Estimate</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

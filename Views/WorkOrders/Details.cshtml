@@ -52,7 +52,6 @@
             </div>
         </div>
 
-
         <div class="col-md-2"></div>
 
         <div class="col-md-5 bg-gray-light border border-dark">
@@ -102,7 +101,7 @@
                     Service Done By
                 </div>
                 <div class="col-md-8 border">
-                    @if (Model.IsFinished == true)
+                    @if (Model.ServiceDoneBy != null)
                     {
                         @Html.DisplayFor(model => model.ServiceDoneBy.FullName)
                     }

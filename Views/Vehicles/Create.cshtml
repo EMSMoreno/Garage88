@@ -1,8 +1,8 @@
 ﻿@model Garage88.Models.VehicleViewModel
 
 @{
-    // Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
-    Layout = "_Layout";
+    Layout = "~/Views/Shared/_LayoutDashboardPanel.cshtml";
+    //Layout = "_Layout";
     ViewData["Title"] = "Vehicles";
     ViewData["BreadCrumb"] = "Create";
 }
@@ -64,10 +64,6 @@
         </div>
     </div>
 </div>
-
-@*<div>
-    <a asp-action="edit" asp-controller="Client" asp-route-id="@Model.Client.Id">Back to @Model.Client.FullName</a>
-</div>*@
 
 @section Scripts
 {

@@ -5,6 +5,7 @@ using Garage88.Data.Entities;
 using Garage88.Data.Repositories;
 using Garage88.Helpers;
 using Vereyon.Web;
+using System.Diagnostics;
 
 namespace Garage88.Controllers
 {
@@ -113,6 +114,7 @@ namespace Garage88.Controllers
             }
 
             return View(workOrder);
+
         }
 
         [Authorize(Roles = "Admin,Technician")]
