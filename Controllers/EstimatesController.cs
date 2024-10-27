@@ -474,7 +474,6 @@ namespace Garage88.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-
         [HttpPost]
         [Route("Estimates/RemoveTemps")]
         public async Task<bool> RemoveTemps(int vehicleId, int clientId)

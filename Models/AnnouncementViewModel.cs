@@ -7,15 +7,13 @@ namespace Garage88.Models
     {
         public IEnumerable<SelectListItem> To { get; set; }
 
-        [Required(ErrorMessage = "Must insert the {0} Destination.")]
-        [Display(Name = "To:")]
-        [Range(1, int.MaxValue, ErrorMessage = "You must select a To Destination")]
+        [Required(ErrorMessage = "You must select a To Destination.")]
         public int ToId { get; set; }
 
-        [Required(ErrorMessage = "Must insert the {0}.")]
+        [Required(ErrorMessage = "Must insert the Subject.")]
         public string Subject { get; set; }
 
-        [Required(ErrorMessage = "Must insert the {0}.")]
+        [Required(ErrorMessage = "Must insert the Message.")]
         public string Message { get; set; }
 
         public IFormFile Attachment { get; set; }

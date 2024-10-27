@@ -156,7 +156,7 @@ namespace Garage88.Helpers
                 }
 
                 // Envia o e-mail
-                client.Send(mailMessage);
+                await client.SendMailAsync(mailMessage); // Use SendMailAsync para melhor tratamento de exceções
 
                 // Retorna sucesso
                 response.Message = "E-mail sent successfully!";
@@ -164,10 +164,16 @@ namespace Garage88.Helpers
             catch (SmtpFailedRecipientException ex)
             {
                 response.Message = $"There was an error: {ex.FailedRecipient}";
-                Console.WriteLine($"Error Details: {ex.Message}");
+                _logger.LogError($"Failed to send email to {to}: {ex.Message}"); // Log detalhado
+            }
+            catch (Exception ex)
+            {
+                response.Message = "An unexpected error occurred while sending the email.";
+                _logger.LogError($"Unexpected error: {ex.Message}"); // Log para outros erros
             }
 
             return response;
         }
+
     }
 }

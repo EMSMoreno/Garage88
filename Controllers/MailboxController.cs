@@ -32,45 +32,27 @@ namespace Garage88.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Announcement(AnnouncementViewModel model)
+        public async Task<IActionResult> Announcement(int ToId, string Subject, string Message)
         {
             if (ModelState.IsValid)
             {
-                var path = "";
+                // Aqui você pode chamar seu método para enviar o anúncio
+                var result = await _mailHelper.SendAnnouncementAsync(ToId, Subject, Message, null); // Ajuste conforme necessário
 
-                if (model.Attachment != null)
+                if (result.IsSuccess)
                 {
-                    path = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\tempData\" + model.Attachment.FileName);
-
-                    using (var stream = System.IO.File.Create(path))
-                    {
-                        await model.Attachment.CopyToAsync(stream);
-                    }
-                }
-
-                var response = await _mailHelper.SendAnnouncementAsync(model.ToId, model.Subject, model.Message, path);
-
-                if (!string.IsNullOrEmpty(path))
-                {
-                    System.IO.File.Delete(path);
-                }
-
-                if (response.IsSuccess == true)
-                {
-                    _flashMessage.Confirmation("The annoucment was successfully sent!");
-                    return RedirectToAction(nameof(Announcement));
+                    ViewBag.SuccessMessage = "Announcement sent successfully!";
+                    // Você pode redirecionar ou retornar a mesma view
+                    return RedirectToAction("Announcement"); // Redirecionar para evitar reenvio de formulário
                 }
                 else
                 {
-                    _flashMessage.Warning("There was an error sending the announcement!");
-                    model.To = _mailHelper.Destinations();
-                    return View(model);
+                    ViewBag.ErrorMessage = result.Message; // Mensagem de erro do seu método
                 }
             }
 
-            model.To = _mailHelper.Destinations();
-
-            return View(model);
+            // Se o ModelState não for válido ou houver erro, retorne a mesma view
+            return View();
         }
 
         public async Task<IActionResult> InformClientAppointment()
@@ -123,5 +105,7 @@ namespace Garage88.Controllers
 
             return RedirectToAction("Index", "Appointment");
         }
+
+
     }
 }
