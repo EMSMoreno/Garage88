@@ -20,7 +20,7 @@ namespace Garage88.Data.Entities
 
         public User UpdatedBy { get; set; }
 
-        public User ServiceDoneBy { get; set; }
+        public User ? ServiceDoneBy { get; set; }
 
         public bool IsFinished { get; set; }
 

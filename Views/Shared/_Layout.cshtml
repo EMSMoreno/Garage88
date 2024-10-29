@@ -68,7 +68,7 @@
                         if (User.IsInRole("Client"))
                         {
                             <div class="col-auto d-flex align-items-center">
-                                <a asp-area="" asp-controller="Account" asp-action="UpdateUser" class="aColor">@this.User.Identity.Name</a>
+                                <a asp-area="" asp-controller="Account" asp-action="ViewUser" class="aColor">@this.User.Identity.Name</a>
                             </div>
                             <div class="col-auto d-flex align-items-center">|</div>
                             <div class="col-auto d-flex align-items-center">
@@ -86,7 +86,7 @@
                                 <a class="dropdown-item" asp-area="" asp-controller="Clients" asp-action="Index">Clients</a>
                                 <a class="dropdown-item" asp-area="" asp-controller="Vehicles" asp-action="Index">Vehicles</a>
                                 <a class="dropdown-item" asp-area="" asp-controller="Mechanics" asp-action="Index">Mechanics</a>
-                                <a class="dropdown-item" asp-area="" asp-controller="WorkOrders" asp-action="Index">Repairs</a>
+                                <a class="dropdown-item" asp-area="" asp-controller="WorkOrders" asp-action="Index">WorkOrders</a>
                                 <a class="dropdown-item" asp-area="" asp-controller="Appointment" asp-action="Index">Appointments</a>
                                 <a class="dropdown-item" asp-area="" asp-controller="Brands" asp-action="Index">Brands</a>
                                 <a class="dropdown-item" asp-area="" asp-controller="Estimates" asp-action="Index">Estimates</a>

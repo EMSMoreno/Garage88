@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Garage88.Data.Entities;
+using System.ComponentModel.DataAnnotations;
 
 namespace Garage88.Models
 {
-    public class ChangeUserViewModel
+    public class ChangeUserViewModel : User
     {
         [Required]
         [Display(Name = "First Name")]
@@ -37,6 +38,6 @@ namespace Garage88.Models
 
         public bool IsClient { get; set; }
 
-        public string Nif { get; set; }
+        //public string Nif { get; set; }
     }
 }

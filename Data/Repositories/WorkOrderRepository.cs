@@ -110,24 +110,9 @@ namespace Garage88.Data.Repositories
         public async Task<WorkOrder> GetWorkOrderByIdAsync(int id)
         {
             return await _context.WorkOrders
-                .Include(wo => wo.ServiceDoneBy)
-                .Include(wo => wo.UpdatedBy)
-                .Include(wo => wo.CreatedBy)
-                .Include(wo => wo.Appointment)
-                    .ThenInclude(a => a.Client)
-                .Include(wo => wo.Appointment)
-                    .ThenInclude(a => a.Mechanic)
-                .Include(wo => wo.Appointment)
-                    .ThenInclude(a => a.Estimate)
-                        .ThenInclude(e => e.Services)
-                            .ThenInclude(es => es.Service)
-                .Include(wo => wo.Appointment)
-                    .ThenInclude(a => a.Vehicle)
-                        .ThenInclude(v => v.Brand)
-                .Include(wo => wo.Appointment)
-                    .ThenInclude(a => a.Vehicle)
-                        .ThenInclude(v => v.Model)
-                .Where(wo => wo.Id == id).FirstOrDefaultAsync();
+            .Include(w => w.Appointment) 
+            .Include(w => w.ServiceDoneBy)
+            .FirstOrDefaultAsync(w => w.Id == id);
         }
 
         public async Task<List<WorkOrderChartDataModel>> GetWorkOrdersChartAsync(int month)

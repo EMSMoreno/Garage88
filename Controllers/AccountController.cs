@@ -255,7 +255,6 @@ namespace Garage88.Controllers
                             return View(model);
                         }
 
-                        // Enviar o e-mail de confirmação
                         string userToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
                         string tokenLink = Url.Action("ConfirmEmail", "Account", new
                         {
@@ -309,24 +308,24 @@ namespace Garage88.Controllers
 
         public async Task<IActionResult> ConfirmEmail(string userId, string token)
         {
-            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
-            {
-                return NotFound();
-            }
+            //if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(token))
+            //{
+            //    return NotFound();
+            //}
 
-            var user = await _userHelper.GetUserByIdAsync(userId);
+            //var user = await _userHelper.GetUserByIdAsync(userId);
 
-            if (user == null)
-            {
-                return NotFound();
-            }
+            //if (user == null)
+            //{
+            //    return NotFound();
+            //}
 
-            var result = await _userHelper.ConfirmEmailAsync(user, token);
+            //var result = await _userHelper.ConfirmEmailAsync(user, token);
 
-            if (!result.Succeeded)
-            {
-                return NotFound();
-            }
+            //if (!result.Succeeded)
+            //{
+            //    return NotFound();
+            //}
 
 
             var model = new AddUserPasswordViewModel
@@ -524,58 +523,34 @@ namespace Garage88.Controllers
         public async Task<IActionResult> ViewUser()
         {
             var user = await _userHelper.GetUserByEmailAsync(User.Identity.Name);
-
             if (user == null)
             {
                 return NotFound();
             }
 
-            var hasPassword = await _userHelper.HasPasswordAsync(user);
-
-
-            ChangeUserViewModel model = null;
-            bool isClient = false;
-
-            if (this.User.IsInRole("Client"))
+            bool isClient = User.IsInRole("Client");
+            var model = new ChangeUserViewModel
             {
-                var client = await _clientRepository.GetClientByUserIdAsync(user.Id);
-                isClient = true;
-                if (client == null)
-                {
-                    return NotFound();
-                }
+                //FullName = $"{user.FirstName} {user.LastName}",
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                PhoneNumber = user.PhoneNumber,
+                Email = user.Email,
+                Address = user.Address,
+                //Nif = user.Nif,
+                NewPassword = string.Empty,
+                HasPassword = user.PasswordHash != null
+            };
 
-                model = new ChangeUserViewModel
-                {
-                    PhoneNumber = client.PhoneNumber,
-                    FirstName = client.FirstName,
-                    Address = client.Address,
-                    LastName = client.LastName,
-                    Nif = client.Nif,
-                    ProfilePicture = user.ProfilePicture,
-                    HasPassword = hasPassword,
-                };
-            }
-            else
-            {
-                model = new ChangeUserViewModel
-                {
-                    PhoneNumber = user.PhoneNumber,
-                    LastName = user.LastName,
-                    FirstName = user.FirstName,
-                    ProfilePicture = user.ProfilePicture,
-                    Address = user.Address,
-                    HasPassword = hasPassword,
-                };
-            }
+            ViewBag.Image = user.ProfilePicture != Guid.Empty ? user.ProfilePicture.ToString() : "/images/blankProfilePicture.jpg";
 
             ViewBag.JsonModel = JsonConvert.SerializeObject(model);
             ViewBag.IsClient = JsonConvert.SerializeObject(isClient);
 
             Random r = new Random();
-            string[] images = new string[5] { "/images/siteContent/ponte.jpg", "/images/siteContent/recoverPassword.jpg", "/images/siteContent/teste.jpg",
-                 "/images/siteContent/karts.jpg", "/images/siteContent/city.jpg" };
-            string selectedImage = images[r.Next(5)];
+            string[] images = new string[4] { "/images/siteContent/ponte.jpg", "/images/siteContent/recoverPassword.jpg", "/images/siteContent/teste.jpg",
+             "/images/siteContent/city.jpg" };
+            string selectedImage = images[r.Next(images.Length)];
             ViewBag.Image = selectedImage;
 
             return View(model);
@@ -647,25 +622,59 @@ namespace Garage88.Controllers
         [Route("Account/GetProfilePicturePath")]
         public async Task<JsonResult> GetProfilePicturePath()
         {
+            if (string.IsNullOrEmpty(User.Identity.Name))
+            {
+                return Json(new { Status = "error", Message = "User not authenticated." });
+            }
+
             var user = await _userHelper.GetUserByEmailAsync(User.Identity.Name);
-            var json = Json(user);
-            return json;
+            if (user == null)
+            {
+                return Json(new { Status = "error", Message = "User not found." });
+            }
+
+            // Return image path or ID
+            return Json(new { Status = "success", ProfilePictureId = user.ProfilePicture });
         }
 
         [HttpPost]
         [Route("Account/ChangeProfilePic")]
         public async Task<ObjectResult> ChangeProfilePic(IFormFile file)
         {
+            if (string.IsNullOrEmpty(User.Identity.Name))
+            {
+                return BadRequest(new { Status = "error", Message = "User not authenticated." });
+            }
+
             var user = await _userHelper.GetUserByEmailAsync(User.Identity.Name);
 
-            if (user != null && file != null)
+            if (user != null && file != null && file.Length > 0)
             {
-                Guid imageId = user.ProfilePicture;
-
-                if (file != null && file.Length > 0)
+                try
                 {
+                    // Type of file
+                    if (!file.ContentType.StartsWith("image/"))
+                    {
+                        return BadRequest(new { Status = "fail", Message = "Uploaded file is not an image." });
+                    }
+
+                    const long maxFileSize = 5 * 1024 * 1024; // 5 MB
+                    if (file.Length > maxFileSize)
+                    {
+                        return BadRequest(new { Status = "fail", Message = "Image size exceeds the limit." });
+                    }
+
+                    Guid imageId = user.ProfilePicture;
+
                     using var image = Image.Load(file.OpenReadStream());
-                    image.Mutate(img => img.Resize(256, 0));
+
+                    int maxWidth = 256;
+                    int maxHeight = 256;
+                    image.Mutate(img => img.Resize(new ResizeOptions
+                    {
+                        Size = new Size(maxWidth, maxHeight),
+                        Mode = ResizeMode.Max // Redimensiona mantendo a proporção, sem esticar
+                    }));
 
                     using (MemoryStream m = new MemoryStream())
                     {
@@ -673,19 +682,22 @@ namespace Garage88.Controllers
                         byte[] imageBytes = m.ToArray();
                         imageId = await _blobHelper.UploadBlobAsync(imageBytes, "profilepictures");
                     }
+
+                    user.ProfilePicture = imageId;
+                    var response = await _userHelper.UpdateUserAsync(user);
+
+                    if (response.Succeeded)
+                    {
+                        return Ok(new { Status = "success", ImageId = imageId });
+                    }
                 }
-
-                user.ProfilePicture = imageId;
-
-                var response = await _userHelper.UpdateUserAsync(user);
-
-                if (response.Succeeded)
+                catch (Exception)
                 {
-                    return new ObjectResult(new { Status = "success", ImageId = imageId });
+                    return BadRequest(new { Status = "fail", Message = "Error processing the image." });
                 }
             }
 
-            return new ObjectResult(new { Status = "fail" });
+            return BadRequest(new { Status = "fail", Message = "Invalid input." });
         }
 
         [HttpGet]

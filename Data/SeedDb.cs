@@ -38,13 +38,6 @@ namespace Garage88.Data
                 new Speciality { Name = "Engine Repair" },
                 new Speciality { Name = "General Mechanics" },
                 new Speciality { Name = "Automotive Electronics" },
-                new Speciality { Name = "Wheel Alignment and Balancing" },
-                new Speciality { Name = "Suspension and Steering" },
-                new Speciality { Name = "Oil Change" },
-                new Speciality { Name = "Automotive Painting" },
-                new Speciality { Name = "Bodywork Services" },
-                new Speciality { Name = "Accessory Installation" },
-                new Speciality { Name = "Cooling System Service" }
             };
 
             await _context.Specialities.AddRangeAsync(specialities);
@@ -61,19 +54,6 @@ namespace Garage88.Data
             {
                 new Mechanic { FirstName = "John", LastName = "Doe", Email = "john.doe@garage.pt", About = "Mechanic with 4 years of experience.", SpecialityId = specialities[0].Id, RoleId = mechanicRole.Id },
                 new Mechanic { FirstName = "Jane", LastName = "Smith", Email = "jane.smith@garage.pt", About = "Mechanic with 5 years of experience.", SpecialityId = specialities[1].Id, RoleId = mechanicRole.Id },
-                new Mechanic { FirstName = "Michael", LastName = "Brown", Email = "michael.brown@garage.pt", About = "Mechanic with 6 years of experience.", SpecialityId = specialities[2].Id, RoleId = seniorMechanicRole.Id },
-                new Mechanic { FirstName = "Emily", LastName = "Johnson", Email = "emily.johnson@garage.pt", About = "Senior mechanic with 7 years of experience.", SpecialityId = specialities[3].Id, RoleId = seniorMechanicRole.Id },
-                new Mechanic { FirstName = "David", LastName = "Miller", Email = "david.miller@garage.pt", About = "Mechanic with 4 years of experience.", SpecialityId = specialities[4].Id, RoleId = mechanicRole.Id },
-                new Mechanic { FirstName = "Sophia", LastName = "Davis", Email = "sophia.davis@garage.pt", About = "Mechanic with 5 years of experience.", SpecialityId = specialities[5].Id, RoleId = mechanicRole.Id },
-                new Mechanic { FirstName = "James", LastName = "Wilson", Email = "james.wilson@garage.pt", About = "Mechanic with 6 years of experience.", SpecialityId = specialities[6].Id, RoleId = seniorMechanicRole.Id },
-                new Mechanic { FirstName = "Olivia", LastName = "Moore", Email = "olivia.moore@garage.pt", About = "Senior mechanic with 7 years of experience.", SpecialityId = specialities[7].Id, RoleId = seniorMechanicRole.Id },
-                new Mechanic { FirstName = "Daniel", LastName = "Taylor", Email = "daniel.taylor@garage.pt", About = "Mechanic with 4 years of experience.", SpecialityId = specialities[8].Id, RoleId = mechanicRole.Id },
-                new Mechanic { FirstName = "Ava", LastName = "Anderson", Email = "ava.anderson@garage.pt", About = "Mechanic with 5 years of experience.", SpecialityId = specialities[9].Id, RoleId = mechanicRole.Id },
-                new Mechanic { FirstName = "Benjamin", LastName = "Thomas", Email = "benjamin.thomas@garage.pt", About = "Mechanic with 6 years of experience.", SpecialityId = specialities[10].Id, RoleId = seniorMechanicRole.Id },
-                new Mechanic { FirstName = "Isabella", LastName = "Jackson", Email = "isabella.jackson@garage.pt", About = "Senior mechanic with 7 years of experience.", SpecialityId = specialities[0].Id, RoleId = seniorMechanicRole.Id },
-                new Mechanic { FirstName = "Lucas", LastName = "White", Email = "lucas.white@garage.pt", About = "Mechanic with 4 years of experience.", SpecialityId = specialities[1].Id, RoleId = mechanicRole.Id },
-                new Mechanic { FirstName = "Mia", LastName = "Harris", Email = "mia.harris@garage.pt", About = "Mechanic with 5 years of experience.", SpecialityId = specialities[2].Id, RoleId = mechanicRole.Id },
-                new Mechanic { FirstName = "Ethan", LastName = "Martin", Email = "ethan.martin@garage.pt", About = "Mechanic with 6 years of experience.", SpecialityId = specialities[3].Id, RoleId = seniorMechanicRole.Id }
             };
 
             await _context.Mechanics.AddRangeAsync(mechanics);
@@ -83,10 +63,6 @@ namespace Garage88.Data
             var client = new Client { FirstName = "Jéssica", LastName = "Guimarães", Nif = "222908765", Address = "Avenida D.Luis III", Email = "jessicaG@yopmail.com", PhoneNumber = "916969696" };
 
             var client2 = new Client { FirstName = "Prof.", LastName = "X", Nif = "000100100", Address = "Avenida D.Luis II", Email = "xmen@yopmail.com", PhoneNumber = "930006750" };
-
-            var client3 = new Client { FirstName = "Diogo", LastName = "Ramos", Nif = "765656789", Address = "Avenida D.Luis I", Email = "diogor@yopmail.com", PhoneNumber = "213331212" };
-
-            var client4 = new Client { FirstName = "Tiago", LastName = "Ribeiro", Nif = "666578432", Address = "D. Carlos I", Email = "tiago_ribeiro@yopmail.com", PhoneNumber = "989909873" };
 
             _context.Clients.Add(client);
             await _context.SaveChangesAsync();
@@ -122,10 +98,6 @@ namespace Garage88.Data
             // Add services
             var service = new Service { Name = "Oil Change", Price = 29.99m, Description = "Standard oil change including oil filter replacement.", Discount = 10.00m };
             var service2 = new Service { Name = "Brake Pad Replacement", Price = 150.00m, Description = "Replacement of front and rear brake pads.", Discount = 5.00m };
-            var service3 = new Service { Name = "Full Vehicle Inspection", Price = 99.99m, Description = "Comprehensive vehicle inspection covering all critical systems.", Discount = 15.00m };
-            var service4 = new Service { Name = "Tire Rotation and Balancing", Price = 49.95m, Description = "Tire rotation and balancing to ensure even tire wear and smooth driving.", Discount = 0.00m };
-            var service5 = new Service { Name = "Air Conditioning Service", Price = 89.99m, Description = "Air conditioning check and refill to ensure proper cooling.", Discount = 8.50m };
-            var service6 = new Service { Name = "Transmission Fluid Replacement", Price = 180.00m, Description = "Complete transmission fluid replacement service.", Discount = 12.00m };
 
             _context.Services.Add(service);
 

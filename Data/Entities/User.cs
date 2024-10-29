@@ -17,6 +17,7 @@ namespace Garage88.Data.Entities
         [MaxLength(100, ErrorMessage = "The field {0} cannot have more then {1} characters.")]
         public string? Address { get; set; }
 
+        //public string Nif { get; set; }
 
         [Display(Name = "Full Name")]
         public string FullName => $"{FirstName} {LastName}";

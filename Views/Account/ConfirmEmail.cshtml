@@ -1,8 +1,9 @@
 ﻿@model Garage88.Models.AddUserPasswordViewModel
 
 @{
-    ViewData["Title"] = "Add Password";
+    ViewData["Title"] = "Confirm Email";
     Layout = "~/Views/Shared/_PasswordLayout.cshtml";
+    //Layout = "_Layout";
 }
 
 <style>
@@ -29,7 +30,7 @@
         <div class="row d-flex align-items-center justify-content-center h-100">
 
             <div class="col-md-8 col-lg-7 col-xl-6">
-                <img src="/images/siteContent/welcome.jpg" class="img-fluid imgBorder" alt="image">
+                <img src="~/images/siteContent/welcome.jpeg" class="img-fluid imgBorder" alt="image">
             </div>
 
             @if (string.IsNullOrEmpty(ViewBag.Success))
@@ -39,7 +40,7 @@
                     <form method="post">
                         <div asp-validation-summary="ModelOnly"></div>
 
-                        <h4 style="text-align: center; margin-bottom:10%;"><mark class="yellow">Your email as been confirmed!</mark><br /><br /> To complete the proccess please add a password.</h4>
+                        <h4 style="text-align: center; margin-bottom:10%;"><mark class="yellow">Your email as been confirmed!</mark><br /><br /> To complete the process please add a password.</h4>
 
                         <div class="form-outline mb-4">
                             <span asp-validation-for="Password" class="text-warning"></span>
@@ -53,7 +54,6 @@
                             <label asp-for="Confirm"></label>
                         </div>
 
-                        <!-- Submit button -->
                         <button type="submit" class="btn sharp btn-primary btn-lg btn-block">Register Password</button>
 
                     </form>
@@ -64,9 +64,9 @@
             {
                 <div class="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
 
-                    <h4 class="text-success" style="text-align: center; margin-bottom:10%;"><mark class="yellow">Thank you for creating your account!</mark><br /><br />@ViewBag.Success</h4>
+                    <h4 class="text-success" style="text-align: center; margin-bottom:10%;"><mark class="yellow">Thank you, your account is now confirmed!</mark><br /><br />@ViewBag.Success</h4>
 
-                    <a asp-action="Login" asp-controller="Account" class="btn sharp btn-success btn-lg btn-block">Login</a>
+                    <a asp-action="Index" asp-controller="Home" class="btn sharp btn-success btn-lg btn-block">Home</a>
 
                 </div>
             }

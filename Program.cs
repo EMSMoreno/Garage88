@@ -78,15 +78,23 @@ builder.Services.AddControllers()
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
+try
 {
-    var services = scope.ServiceProvider;
-    //var seedDb = services.GetRequiredService<SeedDb>();
-    //await seedDb.SeedAsync();
+    // Call SeedAsync
+    using (var scope = app.Services.CreateScope())
+    {
+        var seedDb = scope.ServiceProvider.GetRequiredService<SeedDb>();
+        await seedDb.SeedAsync();
+    }
+}
+catch (Exception ex)
+{
+    Console.WriteLine($"An error occurred during seeding: {ex.Message}");
+    throw;
 }
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+    // Configure the HTTP request pipeline.
+    if (app.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
 }

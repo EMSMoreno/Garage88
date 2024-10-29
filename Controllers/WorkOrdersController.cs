@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.JSInterop;
-using Garage88.Data.Entities;
+﻿using Garage88.Data.Entities;
 using Garage88.Data.Repositories;
 using Garage88.Helpers;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.JSInterop;
 using Vereyon.Web;
-using System.Diagnostics;
 
 namespace Garage88.Controllers
 {
