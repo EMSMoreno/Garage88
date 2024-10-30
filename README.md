@@ -6,7 +6,7 @@ This repository contains the official project developed for CINEL's final web pr
 
 ![Logo](https://raw.githubusercontent.com/EMSMoreno/Garage88/master/wwwroot/images/logoAutilizar.png)
 
-Overview:
+## Overview
 Delivery of a complex, functional and online system that meets market needs, using a user-friendly interface and solid data architecture.
 
 ## Description
