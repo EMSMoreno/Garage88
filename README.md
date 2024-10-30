@@ -4,6 +4,7 @@ Repository used as a Final Web Project (w/Azure integration)
 
 This repository contains the official project developed for CINEL's final web project focusing on a mechanic website called **Garage88**.
 
+![Logo](https://raw.githubusercontent.com/EMSMoreno/Garage88/master/wwwroot/images/logoAutilizar.png)
 Overview:
 Delivery of a complex, functional and online system that meets market needs, using a user-friendly interface and solid data architecture.
 
@@ -31,7 +32,7 @@ The main technologies and tools used in the development of this project are:
 - **Mechanic Management**
 - **Estimates and Services**
 - **Administration and Activity Log**
--** User Management**
+- **User Management**
 - **Access Control**
 - **Intuitive Interface**
 - **PDF Reports**
