@@ -45,8 +45,11 @@ namespace Garage88.Data.Entities
 
         public string ? Color { get; set; }
 
-        //    public string ImageFullPath => PhotoId == Guid.Empty ? "/images/blankprofilepicture.png" :
-        //        $"https://garage88.blob.core.windows.net/profilepictures/{PhotoId}";
-        //}
+        public string ImageFullPath => PhotoId != null && PhotoId != Guid.Empty
+         ? $"/dist/img/{PhotoId}.jpg"
+         : "/dist/img/user1-128x128.jpg";
+
+        //public string ImageFullPath => PhotoId == Guid.Empty ? "/images/blankprofilepicture.png" :
+        //      $"https://garage88.blob.core.windows.net/profilepictures/{PhotoId}";
     }
 }

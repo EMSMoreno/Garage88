@@ -344,7 +344,7 @@ namespace Garage88.Controllers
                 var user = await _userHelper.GetUserByIdAsync(model.UserId);
                 if (user != null)
                 {
-                    var result = await _userHelper.ChangePasswordAsync(user, "DefaultPassword123", model.Password);
+                    var result = await _userHelper.ChangePasswordAsync(user, "GeneratedPassword123", model.Password);
                     if (result.Succeeded)
                     {
 

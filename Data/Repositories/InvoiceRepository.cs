@@ -111,22 +111,22 @@ namespace Garage88.Data.Repositories
 
         public async Task<List<SalesChartDataModel>> GetYearSalesByMonthAsync(int year)
         {
-            DateTime requestedYearDate = new DateTime(year, DateTime.UtcNow.Month, DateTime.UtcNow.Day);
+            DateTime requestedYearDate = new DateTime(year, 1, 1);
 
             List<SalesChartDataModel> list = new List<SalesChartDataModel>();
-
             double value;
-            CultureInfo ci = new CultureInfo("en-Us");
-
+            CultureInfo ci = new CultureInfo("en-US");
 
             for (int month = 1; month <= 12; month++)
             {
-                value = (double)await _context.Invoices.Where(i => i.InvoicDate.Month == month && i.InvoicDate.Year == requestedYearDate.Year).SumAsync(i => i.Value);
+                value = (double)await _context.Invoices
+                    .Where(i => i.InvoicDate.Month == month && i.InvoicDate.Year == requestedYearDate.Year)
+                    .SumAsync(i => i.Value);
 
                 list.Add(new SalesChartDataModel
                 {
                     Year = year.ToString(),
-                    Month = new DateTime(year, month, DateTime.UtcNow.Day).ToString("MMMM", ci),
+                    Month = new DateTime(year, month, 1).ToString("MMMM", ci),
                     Sales = value,
                 });
             }

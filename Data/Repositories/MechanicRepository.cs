@@ -38,7 +38,7 @@ namespace Garage88.Data.Repositories
         public IEnumerable<SelectListItem> GetComboTechnicians()
         {
             var list = _context.Mechanics.Include(e => e.Role)
-                                         .Where(e => e.Role.PermissionsName == "Technician")
+                                         .Where(e => e.Role.PermissionsName == "Mechanic")
                                          .Select(e => new SelectListItem
                                          {
                                              Text = e.FirstName + " " + e.LastName,
@@ -64,7 +64,7 @@ namespace Garage88.Data.Repositories
             return await _context.Mechanics.Include(e => e.User)
                                     .Include(e => e.Role)
                                     .Include(e => e.Speciality)
-                                    .Where(e => e.Role.Name == "Technician")
+                                    .Where(e => e.Role.Name == "Mechanic")
                                     .ToListAsync();
         }
 

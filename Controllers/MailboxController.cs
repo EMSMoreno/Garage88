@@ -36,22 +36,19 @@ namespace Garage88.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Aqui você pode chamar seu método para enviar o anúncio
-                var result = await _mailHelper.SendAnnouncementAsync(ToId, Subject, Message, null); // Ajuste conforme necessário
+                var result = await _mailHelper.SendAnnouncementAsync(ToId, Subject, Message, null);
 
                 if (result.IsSuccess)
                 {
                     ViewBag.SuccessMessage = "Announcement sent successfully!";
-                    // Você pode redirecionar ou retornar a mesma view
-                    return RedirectToAction("Announcement"); // Redirecionar para evitar reenvio de formulário
+                    return RedirectToAction("Announcement");
                 }
                 else
                 {
-                    ViewBag.ErrorMessage = result.Message; // Mensagem de erro do seu método
+                    ViewBag.ErrorMessage = result.Message;
                 }
             }
 
-            // Se o ModelState não for válido ou houver erro, retorne a mesma view
             return View();
         }
 
@@ -60,7 +57,7 @@ namespace Garage88.Controllers
             int emailsSent = 0;
             var tommorowAppointments = await _appointmentRepository.GetTommorowAppointmentsAsync(DateTime.UtcNow.AddDays(1));
 
-            if (tommorowAppointments == null)
+            if (tommorowAppointments == null || !tommorowAppointments.Any())
             {
                 return RedirectToAction("Index", "Appointment");
             }
@@ -69,10 +66,14 @@ namespace Garage88.Controllers
             {
                 if (!appointment.IsInformed)
                 {
-                    var response = await _mailHelper.SendEmail(appointment.Client.Email, "Appointment Confirmation Garage88", $"<h1>Appointment Confirmation</h1>" +
-                    $" Mr/Mrs {appointment.Client.FullName},<br>We send you this email to remind you that you have an appointment with our services for tommorow ({DateTime.UtcNow.AddDays(1).ToString("dd/MM/yyyy")}) " +
-                    $"at {appointment.AppointmentStartDate.ToString("HH:mm")} with your {appointment.Vehicle.Brand.Name} {appointment.Vehicle.Model.Name} ({appointment.Vehicle.PlateNumber}).<br>" +
-                    $"<br>Thanks for your time and Hope to see you Tommorow! <br> Best regards, <br> Garage88 ", null);
+                    var response = await _mailHelper.SendEmail(
+                        appointment.Client.Email,
+                        "Appointment Confirmation Garage88",
+                        $"<h1>Appointment Confirmation</h1>" +
+                        $" Mr/Mrs {appointment.Client.FullName},<br>We send you this email to remind you that you have an appointment with our services for tomorrow ({DateTime.UtcNow.AddDays(1).ToString("dd/MM/yyyy")}) " +
+                        $"at {appointment.AppointmentStartDate.ToString("HH:mm")} with your {appointment.Vehicle.Brand.Name} {appointment.Vehicle.Model.Name} ({appointment.Vehicle.PlateNumber}).<br>" +
+                        $"<br>Thanks for your time and Hope to see you Tomorrow! <br> Best regards, <br> Garage88 ", null
+                    );
 
                     if (!response.IsSuccess)
                     {
@@ -88,7 +89,7 @@ namespace Garage88.Controllers
                     }
                     catch (Exception)
                     {
-                        _flashMessage.Danger("There was an error sending the confirmation emails");
+                        _flashMessage.Danger("There was an error updating the appointment information.");
                         return RedirectToAction("Index", "Appointment");
                     }
                 }
@@ -96,16 +97,16 @@ namespace Garage88.Controllers
 
             if (emailsSent == 0)
             {
-                _flashMessage.Info("All the clients for tommorow were already informed.");
+                _flashMessage.Info("All the clients for tomorrow were already informed.");
             }
             else
             {
-                _flashMessage.Confirmation("All the clients for tommorow were informed!");
+                _flashMessage.Confirmation("All the clients for tomorrow were informed!");
+                return RedirectToAction("AddAppointment", "Appointment");
             }
 
             return RedirectToAction("Index", "Appointment");
         }
-
 
     }
 }

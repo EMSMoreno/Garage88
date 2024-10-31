@@ -1,15 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Garage88.Data.Repositories;
+using Garage88.Helpers;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
-using Garage88.Data.Repositories;
-using Garage88.Helpers;
-using Vereyon.Web;
 using SelectPdf;
-using System;
-using System.IO;
-using System.Threading.Tasks;
+using Vereyon.Web;
 
 namespace Garage88.Controllers
 {
@@ -93,7 +90,7 @@ namespace Garage88.Controllers
                     Response response = await _mailHelper.SendEmail(invoice.Client.Email, "Invoice Garage88", $"<h1>Service Invoice</h1>" +
                         $" Mr/Mrs {invoice.Client.FullName},<br>you can find attached to this email the invoice corresponding to the service done on " +
                         $"your {invoice.Vehicle.Brand.Name} {invoice.Vehicle.Model.Name} with the following plate number: {invoice.Vehicle.PlateNumber} .<br>" +
-                        $"<br> Thanks for trusting in our services! <br> Best regards, <br> Garage88 ", path);
+                        $"<br> Thanks for trusting in our services! <br> Best regards, <br> Garage88", path);
 
                     if (response.IsSuccess == true)
                     {

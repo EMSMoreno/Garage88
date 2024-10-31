@@ -49,7 +49,6 @@ namespace Garage88.Controllers
         [Authorize(Roles = "Admin,Receptionist")]
         public async Task<IActionResult> AddAppointment(int? id)
         {
-
             if (id == null)
             {
                 return NotFound();

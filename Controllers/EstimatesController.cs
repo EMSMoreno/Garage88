@@ -232,7 +232,7 @@ namespace Garage88.Controllers
 
             if (estimateDetailTemp == null)
             {
-                _flashMessage.Danger("there was an error decreasing the quantity");
+                _flashMessage.Danger("There was an error decreasing the quantity");
                 return RedirectToAction("Create");
             }
 
