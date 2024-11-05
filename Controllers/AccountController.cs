@@ -228,6 +228,7 @@ namespace Garage88.Controllers
 
                     try
                     {
+                        // Adiciona o usuário com uma senha gerada aleatoriamente
                         var result = await _userHelper.AddUserAsync(user, GenerateRandomPassword());
 
                         if (!result.Succeeded)
@@ -236,6 +237,7 @@ namespace Garage88.Controllers
                             return View(model);
                         }
 
+                        // Cria um novo cliente associado ao usuário
                         var client = new Client
                         {
                             FirstName = model.FirstName,
@@ -247,6 +249,7 @@ namespace Garage88.Controllers
 
                         await _clientRepository.CreateAsync(client);
 
+                        // Adiciona o usuário ao papel de "Client"
                         result = await _userHelper.AddUserToRoleAsync(user, "Client");
 
                         if (!result.Succeeded)
@@ -255,6 +258,7 @@ namespace Garage88.Controllers
                             return View(model);
                         }
 
+                        // Gera um token de confirmação de e-mail
                         string userToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
                         string tokenLink = Url.Action("ConfirmEmail", "Account", new
                         {
@@ -262,17 +266,18 @@ namespace Garage88.Controllers
                             token = userToken
                         }, protocol: HttpContext.Request.Scheme);
 
+                        // Envia o e-mail de confirmação
                         Response response = await _mailHelper.SendEmail(model.UserName, "Email confirmation",
                             $"<h1>Email Confirmation</h1>" +
-                            $" To allow you to access the website, please click on the following link:</br></br><a href= \"{tokenLink}\">Confirm Email </a>", null);
+                            $" To allow you to access the website, please click on the following link:</br></br><a href=\"{tokenLink}\">Confirm Email </a>", null);
 
+                        // Verifica se o envio do e-mail foi bem-sucedido
                         if (!response.IsSuccess)
                         {
-                            ModelState.AddModelError(string.Empty, "Failed to send confirmation email.");
+                            ModelState.AddModelError(string.Empty, "Failed to send confirmation email but your account was created. Login and change your password when possible.");
                             return View(model);
                         }
 
-                        // Mensagem de sucesso usando FlashMessage
                         _flashMessage.Info($"Client {model.FirstName} {model.LastName} has been successfully registered.");
 
                         return RedirectToAction("Index", "Home");

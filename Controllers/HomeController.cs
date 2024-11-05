@@ -53,21 +53,28 @@ namespace Garage88.Controllers
             {
                 var message = $"<p> New client contact request <br/><br/><b>Name: <b/>{model.Name}<br/><b>Phone Number: </b>{model.PhoneNumber}<br/>" +
                     $"<b>Email: </b> {model.Email}<br/><b>Plate Number: </b>{model.PlateNumber}<br/><b>Message: </b>{model.Message}<br/><br/>Please refer to this client as soon as possible. </br>" +
-                    $"Your Garage88 management team.";
+                    $"Garage88 Management Team.";
 
                 var response = await _mailHelper.SendContactEmailAsync(model.Email, "Contact request", message, model.Name);
 
                 if (response.IsSuccess)
                 {
-                    ViewBag.Message = "Your contact request was sent with success! We will get in touch with you as soon as possible.";
+                    ViewBag.Message = "Your contact request was sent successfully! We will get in touch with you as soon as possible.";
                     ModelState.Clear();
                     return View();
                 }
                 else
                 {
+                    _logger.LogError("Failed to send contact email: " + response.Message);
                     ViewBag.Message = "There was a problem sending your contact request. Please try again.";
                     return View(model);
                 }
+            }
+
+            _logger.LogWarning("Contact form validation failed.");
+            foreach (var error in ModelState.Values.SelectMany(v => v.Errors))
+            {
+                _logger.LogWarning(error.ErrorMessage);
             }
 
             return View(model);

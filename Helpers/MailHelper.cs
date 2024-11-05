@@ -2,8 +2,8 @@
 using MailKit.Net.Smtp;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using MimeKit;
-using System.Net.Mail;
 using System.Net;
+using System;
 
 namespace Garage88.Helpers
 {
@@ -102,6 +102,16 @@ namespace Garage88.Helpers
             var port = _configuration["Mail:Port"];
             var password = _configuration["Mail:Password"];
 
+            // Validate e-mail
+            if (string.IsNullOrWhiteSpace(email) || !IsValidEmail(email))
+            {
+                return new Response
+                {
+                    IsSuccess = false,
+                    Message = "Invalid email address. Please make sure it is correct before submitting!"
+                };
+            }
+
             var mimeMessage = new MimeMessage();
             mimeMessage.From.Add(new MailboxAddress(custName, email));
             mimeMessage.To.Add(new MailboxAddress(nameTo, to));
@@ -116,71 +126,100 @@ namespace Garage88.Helpers
 
             try
             {
-                using (var client = new MailKit.Net.Smtp.SmtpClient())
+                using (var client = new SmtpClient())
                 {
-                    client.Connect(smtp, int.Parse(port), false);
-                    client.Authenticate(to, password);
+                    await client.ConnectAsync(smtp, int.Parse(port), MailKit.Security.SecureSocketOptions.StartTls);
+                    await client.AuthenticateAsync(to, password);
                     await client.SendAsync(mimeMessage);
-                    client.Disconnect(true);
+                    await client.DisconnectAsync(true);
                 }
             }
             catch (System.Exception ex)
             {
-                _logger.LogError(ex, "Error sending contact email"); // Log the error
-                return new Response { IsSuccess = false, Message = "An error occurred while sending the email." };
+                _logger.LogError(ex, "Error sending contact email");
+                return new Response
+                {
+                    IsSuccess = false,
+                    Message = "There was a problem in the garage while we were trying to send the email. Try again later!"
+                };
             }
 
-            return new Response { IsSuccess = true };
+            return new Response
+            {
+                IsSuccess = true,
+                Message = "Your email has been sent successfully! We will speed up the resolution of your problem!"
+            };
+        }
+
+        // Validate e-mail
+        private bool IsValidEmail(string email)
+        {
+            try
+            {
+                var mailAddress = new System.Net.Mail.MailAddress(email);
+                return mailAddress.Address == email;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
         public async Task<Response> SendEmail(string to, string subject, string body, string attachmentPath)
         {
-            var mailSettings = _configuration.GetSection("Mail");
+            var nameFrom = _configuration["Mail:NameFrom"];
+            var from = _configuration["Mail:From"];
+            var smtp = _configuration["Mail:Smtp"];
+            var port = _configuration["Mail:Port"];
+            var password = _configuration["Mail:Password"];
 
-            Response response = new Response();
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress(nameFrom, from));
+            message.To.Add(new MailboxAddress(to, to));
+            message.Subject = subject;
+
+            var bodybuilder = new BodyBuilder
+            {
+                HtmlBody = body,
+            };
+            message.Body = bodybuilder.ToMessageBody();
+
+            if (!string.IsNullOrEmpty(attachmentPath))
+            {
+                var attachment = new MimePart("application", "octet-stream")
+                {
+                    Content = new MimeContent(File.OpenRead(attachmentPath)),
+                    ContentDisposition = new ContentDisposition(ContentDisposition.Attachment),
+                    ContentTransferEncoding = ContentEncoding.Base64,
+                    FileName = Path.GetFileName(attachmentPath)
+                };
+                bodybuilder.Attachments.Add(attachment);
+            }
 
             try
             {
-                using (var client = new System.Net.Mail.SmtpClient(mailSettings["Smtp"], int.Parse(mailSettings["Port"])))
+                using (var client = new SmtpClient())
                 {
-                    client.UseDefaultCredentials = false;
-                    client.Credentials = new NetworkCredential(mailSettings["From"], mailSettings["Password"]);
-                    client.EnableSsl = bool.Parse(mailSettings["EnableSsl"]); // Use a configuração SSL
-
-                    var mailMessage = new MailMessage
-                    {
-                        From = new MailAddress(mailSettings["From"]),
-                        Subject = subject,
-                        Body = body,
-                        IsBodyHtml = true
-                    };
-                    mailMessage.To.Add(to);
-
-                    if (!string.IsNullOrEmpty(attachmentPath))
-                    {
-                        Attachment attachment = new Attachment(attachmentPath);
-                        mailMessage.Attachments.Add(attachment);
-                    }
-
-                    await client.SendMailAsync(mailMessage); // Use SendMailAsync para melhor tratamento de exceções
-
-                    response.Message = "E-mail sent successfully!";
+                    await client.ConnectAsync(smtp, int.Parse(port), MailKit.Security.SecureSocketOptions.StartTls); 
+                    await client.AuthenticateAsync(from, password);
+                    await client.SendAsync(message);
+                    await client.DisconnectAsync(true);
                 }
-            }
-            catch (SmtpFailedRecipientException ex)
-            {
-                response.Message = $"There was an error sending email to {ex.FailedRecipient}: {ex.Message}";
-                _logger.LogError($"Failed to send email to {to}: {ex.Message}\n{ex.StackTrace}");
             }
             catch (Exception ex)
             {
-                response.Message = "An unexpected error occurred while sending the email.";
-                _logger.LogError($"Unexpected error: {ex.Message}\n{ex.StackTrace}");
+                return new Response
+                {
+                    IsSuccess = false,
+                    Message = $"Oops! Something went wrong when trying to send the email. Check if the machine is working properly: {ex.Message}"
+                };
             }
 
-
-            return response;
+            return new Response
+            {
+                IsSuccess = true,
+                Message = "Email sent successfully! The engine is running and the message has been delivered successfully!"
+            };
         }
-
     }
 }
