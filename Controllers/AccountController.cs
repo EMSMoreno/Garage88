@@ -828,13 +828,13 @@ namespace Garage88.Controllers
         [Route("error/404")]
         public IActionResult Error404()
         {
-            return View();
+            return View("Error404");
         }
 
         [Route("error/401")]
         public IActionResult Error401()
         {
-            return View();
+            return View("Error401");
         }
     }
 }

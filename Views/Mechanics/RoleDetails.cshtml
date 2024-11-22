@@ -17,7 +17,7 @@
 
 @if (Model.Specialities == null || Model.Specialities.Count == 0)
 {
-    <h5 style="text-align:center; padding-bottom:100px">No Role Specialties added yet</h5>
+    <h5 style="text-align:center; padding-bottom:100px">No Role Specialities added yet</h5>
 }
 else
 {
@@ -55,7 +55,7 @@ else
 
 <div class="container-fluid" style="max-width:90%">
     <a asp-action="AddSpeciality" asp-route-id="@Model.Id" class="btn btn-info">Add Speciality</a>
-    <a asp-action="ManageRoles" class="btn btn-success">Back to roles List</a>
+    <a asp-action="ManageRoles" class="btn btn-success">Back to Roles List</a>
 
     <footer class="footer" style="position:Absolute; bottom:65px;font-size:14px">
         <table>
@@ -106,7 +106,7 @@ else
             });
 
             $("#btnYesDelete").click(function() {
-                window.location.href = "/Employees/DeleteSpeciality/"+id;
+                window.location.href = "/Mechanics/DeleteSpeciality/"+id;
             });
 
         });

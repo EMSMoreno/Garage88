@@ -7,7 +7,7 @@ using Garage88.Data.Entities;
 
 namespace Garage88.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    //[Authorize(Roles = "Admin")]
     public class BrandsController : Controller
     {
         private readonly IBrandRepository _brandRepository;
@@ -19,16 +19,19 @@ namespace Garage88.Controllers
             _flashMessage = flashMessage;
         }
 
+        [Authorize]
         public IActionResult Index()
         {
             return View(_brandRepository.GetBrandsWithModels());
         }
 
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Create(Brand brand)
         {
@@ -48,6 +51,7 @@ namespace Garage88.Controllers
             return View(brand);
         }
 
+        [Authorize(Roles = "Admin,Client")]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -65,6 +69,7 @@ namespace Garage88.Controllers
             return View(brand);
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -82,6 +87,7 @@ namespace Garage88.Controllers
             return View(brand);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> Edit(Brand brand)
         {
@@ -94,6 +100,7 @@ namespace Garage88.Controllers
             return View(brand);
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -115,6 +122,7 @@ namespace Garage88.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> AddModel(int? id)
         {
             if (id == null)
@@ -137,6 +145,7 @@ namespace Garage88.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> AddModel(ModelViewModel model)
         {
@@ -149,6 +158,7 @@ namespace Garage88.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> EditModel(int? id)
         {
             if (id == null)
@@ -181,6 +191,7 @@ namespace Garage88.Controllers
             return View(editableModel);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> EditModel(ModelViewModel model)
         {
@@ -213,6 +224,7 @@ namespace Garage88.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteModel(int? id)
         {
             if (id == null)

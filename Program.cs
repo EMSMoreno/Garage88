@@ -11,6 +11,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost", builder =>
+    {
+        builder.WithOrigins("https://localhost:44396")
+               .AllowAnyHeader()
+               .AllowAnyMethod();
+    });
+});
+
 // Config Identity
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
@@ -26,9 +36,6 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 // Calls ApplicationDbContext w/ SQL Server
 builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// SeedDb Register
-builder.Services.AddScoped<SeedDb>();
 
 // Calls Repositories & Helpers
 builder.Services.AddTransient<IAppointmentRepository, AppointmentRepository>();
@@ -49,6 +56,9 @@ builder.Services.AddTransient<IMailHelper, MailHelper>();
 builder.Services.AddTransient<IConverterHelper, ConverterHelper>();
 builder.Services.AddTransient<IBlobHelper, BlobHelper>();
 
+// SeedDb Register
+builder.Services.AddScoped<SeedDb>();
+
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
@@ -60,21 +70,21 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.AccessDeniedPath = "/error/401";
     });
 
-builder.Services.AddAuthorizationBuilder()
-     .AddPolicy("Admin", policy => policy.RequireRole("Admin"))
-     .AddPolicy("Client", policy => policy.RequireRole("Client"))
-     .AddPolicy("Receptionist", policy => policy.RequireRole("Receptionist"))
-     .AddPolicy("Technician", policy => policy.RequireRole("Technician"));
+//builder.Services.AddAuthorizationBuilder()
+//     .AddPolicy("Admin", policy => policy.RequireRole("Admin"))
+//     .AddPolicy("Client", policy => policy.RequireRole("Client"))
+//     .AddPolicy("Receptionist", policy => policy.RequireRole("Receptionist"))
+//     .AddPolicy("Technician", policy => policy.RequireRole("Technician"));
 
 // Vereyon.Web Services
 builder.Services.AddFlashMessage();
 
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
-        options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
-    });
+//builder.Services.AddControllers()
+//    .AddJsonOptions(options =>
+//    {
+//        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+//        options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+//    });
 
 var app = builder.Build();
 
@@ -100,12 +110,14 @@ catch (Exception ex)
 }
 else
 {
-    app.UseExceptionHandler("/error/404");
+    app.UseExceptionHandler("/error/401");
     app.UseHsts();
 
     // Redirect 404 errors
     app.UseStatusCodePagesWithReExecute("/error/{0}");
 }
+
+app.UseCors("AllowLocalhost");
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

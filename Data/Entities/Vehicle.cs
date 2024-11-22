@@ -27,6 +27,7 @@ namespace Garage88.Data.Entities
         [Display(Name = "Plate Number")]
         public string PlateNumber { get; set; }
 
+        [Required(ErrorMessage = "Vehicle Identification Number is required.")]
         [MaxLength(17)]
         [Display(Name = "VIN")]
         public string VehicleIdentificationNumber { get; set; }

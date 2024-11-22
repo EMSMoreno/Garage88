@@ -1,12 +1,12 @@
 ﻿using Garage88.Data.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 
 namespace Garage88.Data
 {
     public class DataContext : IdentityDbContext<User>
     {
+
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
         }
@@ -26,16 +26,17 @@ namespace Garage88.Data
         public DbSet<WorkOrder> WorkOrders { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
 
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            // Delete All Connections using Cascade Delete Rule
-            foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
-            {
-                relationship.DeleteBehavior = DeleteBehavior.Restrict;
-            }
+            base.OnModelCreating(builder);
 
-            base.OnModelCreating(modelBuilder);
+            builder.Entity<Vehicle>().HasIndex(v => v.PlateNumber).IsUnique();
+
+            builder.Entity<Client>().HasIndex(c => c.Nif).IsUnique();
+
+            builder.Entity<Role>().HasIndex(r => r.Name).IsUnique();
+
+            builder.Entity<Mechanic>().HasIndex(e => e.Email).IsUnique();
         }
     }
 }

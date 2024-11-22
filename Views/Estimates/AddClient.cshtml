@@ -48,7 +48,7 @@
                     type: 'POST',
                     url: '@Url.Action("GetVehiclesAsync", "Estimates")',
                     dataType: 'json',
-                    data: { customerId: $("#ClientId").val() },
+                    data: { clientId: $("#ClientId").val() },
                     success:
                         function (vehicles) {
                             $("#VehicleId").append('<option value="0">[Select a vehicle]</option>');

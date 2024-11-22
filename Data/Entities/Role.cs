@@ -13,7 +13,7 @@ namespace Garage88.Data.Entities
 
         [Required]
         [Display(Name = "Permissions")]
-        public string ? PermissionsName { get; set; }
+        public string PermissionsName { get; set; }
 
         public ICollection<Speciality> Specialities { get; set; }
 

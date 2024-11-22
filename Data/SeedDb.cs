@@ -9,133 +9,31 @@ namespace Garage88.Data
 {
     public class SeedDb
     {
-        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly DataContext _context;
         private readonly IUserHelper _userHelper;
 
-        public SeedDb(DataContext context, IUserHelper userHelper, RoleManager<IdentityRole> roleManager)
+        public SeedDb(DataContext context, IUserHelper userHelper)
         {
             _context = context;
             _userHelper = userHelper;
-            _roleManager = roleManager;
         }
 
         public async Task SeedAsync()
         {
-            // Verify if data exists
-            if (_context.Clients.Any() || _context.Mechanics.Any() || _context.Vehicles.Any() ||
-                _context.Brands.Any() || _context.Models.Any() || _context.Appointments.Any() ||
-                _context.Specialities.Any() || _context.Services.Any())
-            {
-                Console.WriteLine("Seed not needed, there are already data available!");
-                return;
-            }
+            await _context.Database.EnsureCreatedAsync();
 
-            // Add specialties
-            var specialities = new List<Speciality>
-            {
-                new Speciality { Name = "Change Tires" },
-                new Speciality { Name = "Engine Repair" },
-                new Speciality { Name = "General Mechanics" },
-                new Speciality { Name = "Automotive Electronics" },
-            };
-
-            await _context.Specialities.AddRangeAsync(specialities);
-            await _context.SaveChangesAsync();
-
-            // Add roles
-            var mechanicRole = new Role { Name = "Mechanic" };
-            var seniorMechanicRole = new Role { Name = "Senior Mechanic" };
-            await _context.MechanicsRoles.AddRangeAsync(mechanicRole, seniorMechanicRole);
-            await _context.SaveChangesAsync();
-
-            // Add mechanics
-            var mechanics = new List<Mechanic>
-            {
-                new Mechanic { FirstName = "John", LastName = "Doe", Email = "john.doe@garage.pt", About = "Mechanic with 4 years of experience.", SpecialityId = specialities[0].Id, RoleId = mechanicRole.Id },
-                new Mechanic { FirstName = "Jane", LastName = "Smith", Email = "jane.smith@garage.pt", About = "Mechanic with 5 years of experience.", SpecialityId = specialities[1].Id, RoleId = mechanicRole.Id },
-            };
-
-            await _context.Mechanics.AddRangeAsync(mechanics);
-            await _context.SaveChangesAsync();
-
-            // Add clients
-            var client = new Client { FirstName = "Jéssica", LastName = "Guimarães", Nif = "222908765", Address = "Avenida D.Luis III", Email = "jessicaG@yopmail.com", PhoneNumber = "916969696" };
-
-            var client2 = new Client { FirstName = "Prof.", LastName = "X", Nif = "000100100", Address = "Avenida D.Luis II", Email = "xmen@yopmail.com", PhoneNumber = "930006750" };
-
-            _context.Clients.Add(client);
-            await _context.SaveChangesAsync();
-
-            // Add brands and models
-            var brand = new Brand { Name = "Mazda" };
-            var brand2 = new Brand { Name = "Toyota" };
-            var brand3 = new Brand { Name = "BMW" };
-            var brand4 = new Brand { Name = "Ford" };
-            var brand5 = new Brand { Name = "Tesla" };
-            var brand6 = new Brand { Name = "Mercedes-Benz" };
-            _context.Brands.Add(brand);
-
-            var model = new Model { Name = "Miata MX-5", BrandId = brand.Id };
-            var model2 = new Model { Name = "Supra", BrandId = brand.Id };
-            var model3 = new Model { Name = "M3", BrandId = brand.Id };
-            var model4 = new Model { Name = "Mustang GT", BrandId = brand.Id };
-            var model5 = new Model { Name = "Model S", BrandId = brand.Id };
-            var model6 = new Model { Name = "AMG GT", BrandId = brand.Id };
-            _context.Models.Add(model);
-            await _context.SaveChangesAsync();
-
-            // Add vehicles and make association w/models and clients
-            var vehicle = new Vehicle { PlateNumber = "MX50555", ModelId = model.Id, ClientId = client.Id };
-            var vehicle2 = new Vehicle { PlateNumber = "TP12345", ModelId = model.Id, ClientId = client.Id };
-            var vehicle3 = new Vehicle { PlateNumber = "MB32321", ModelId = model.Id, ClientId = client.Id };
-            var vehicle4 = new Vehicle { PlateNumber = "FD67890", ModelId = model.Id, ClientId = client.Id };
-            var vehicle5 = new Vehicle { PlateNumber = "TSL0001", ModelId = model.Id, ClientId = client.Id };
-            var vehicle6 = new Vehicle { PlateNumber = "MBZGT20", ModelId = model.Id, ClientId = client.Id };
-
-            _context.Vehicles.Add(vehicle);
-
-            // Add services
-            var service = new Service { Name = "Oil Change", Price = 29.99m, Description = "Standard oil change including oil filter replacement.", Discount = 10.00m };
-            var service2 = new Service { Name = "Brake Pad Replacement", Price = 150.00m, Description = "Replacement of front and rear brake pads.", Discount = 5.00m };
-
-            _context.Services.Add(service);
-
-            // Add appointments and associations w/clients
-            var appointment = new Appointment
-            {
-                Observations = "Initial consultation",
-                ClientId = client.Id,  // association w/client
-                VehicleId = vehicle.Id,  // association w/vehicle
-                   
-            };
-            _context.Appointments.Add(appointment);
-
-            // Database Save
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException ex)
-            {
-                Console.WriteLine(ex.InnerException?.Message);
-                throw;
-            }
-
-            Console.WriteLine("Seed successfully!");
-        }
-
-        public async Task SeedRolesAsync()
-        {
-            string[] roleNames = { "Admin", "Client", "Employee" };
-
-            foreach (var roleName in roleNames)
-            {
-                if (!await _roleManager.RoleExistsAsync(roleName))
-                {
-                    await _roleManager.CreateAsync(new IdentityRole(roleName));
-                }
-            }
+            await CheckCreatedRoles();
+            await AddUserAsync();
+            await AddMechanicsRolesAsync();
+            await AddMechanicsAsync();
+            await AddBrandsAsync();
+            await AddServicesAsync();
+            await AddClientAsync();
+            await AddClientVehiclesAsync();
+            await AddEstimateAsync();
+            await AddAppointmentAsync();
+            await AddWorkOrderAsync();
+            await AddInvoiceAsync();
         }
 
         private async Task AddInvoiceAsync()
@@ -143,6 +41,13 @@ namespace Garage88.Data
             if (!_context.Invoices.Any())
             {
                 var workOrder = await _context.WorkOrders.FirstOrDefaultAsync();
+
+                if (workOrder == null)
+                {
+                    Console.WriteLine("No work order found.");
+                    return;
+                }
+
                 var mechanic = await _userHelper.GetUserByEmailAsync("eduardo.sousa.moreno@formandos.cinel.pt");
                 var client = await _context.Clients.Where(c => c.Email == "eduardo.sousa.moreno@sapo.pt").FirstOrDefaultAsync();
                 var receptionist = await _userHelper.GetUserByEmailAsync("eduardo_projeto_mecanicos@sapo.pt");
@@ -167,7 +72,6 @@ namespace Garage88.Data
                     Value = (decimal)estimate.ValueWithDiscount,
                 });
 
-
                 await _context.SaveChangesAsync();
             }
         }
@@ -177,6 +81,13 @@ namespace Garage88.Data
             if (!_context.WorkOrders.Any())
             {
                 var appointment = await _context.Appointments.FirstOrDefaultAsync();
+
+                if (appointment == null)
+                {
+                    Console.WriteLine("No appointment found.");
+                    return;
+                }
+
                 var receptionist = await _userHelper.GetUserByEmailAsync("eduardo_projeto_mecanicos@sapo.pt");
                 var mechanic = await _context.Mechanics.Where(m => m.Email == "eduardo.sousa.moreno@formandos.cinel.pt").FirstOrDefaultAsync();
 
@@ -205,11 +116,19 @@ namespace Garage88.Data
             if (!_context.Appointments.Any())
             {
                 var client = await _context.Clients.Where(c => c.Email == "eduardo.sousa.moreno@sapo.pt").FirstOrDefaultAsync();
-                var vehicle = await _context.Vehicles.Where(v => v.PlateNumber == "OPL65437").FirstOrDefaultAsync();
+                var vehicle = await _context.Vehicles.Where(v => v.PlateNumber == "MZD68439").FirstOrDefaultAsync();
                 var estimate = await _context.Estimates.FirstOrDefaultAsync();
                 var mechanic = await _context.Mechanics.Where(m => m.Email == "eduardo.sousa.moreno@formandos.cinel.pt").FirstOrDefaultAsync();
                 var receptionist = await _userHelper.GetUserByEmailAsync("eduardo_projeto_mecanicos@sapo.pt");
 
+                // Verifique se algum dos objetos é null
+                if (client == null || vehicle == null || estimate == null || mechanic == null || receptionist == null)
+                {
+                    Console.WriteLine("One or more required entities are null.");
+                    return;  // Ou lançar uma exceção, conforme o comportamento desejado
+                }
+
+                // Adicionando o Appointment
                 _context.Appointments.Add(new Appointment
                 {
                     AppointmentStartDate = DateTime.UtcNow.AddDays(-3).AddHours(-2),
@@ -227,10 +146,36 @@ namespace Garage88.Data
                     Observations = "Client doesn't want to align the direction",
                 });
 
+                // Atualizando a estimativa
                 estimate.HasAppointment = true;
                 _context.Estimates.Update(estimate);
 
                 await _context.SaveChangesAsync();
+
+                if (client == null)
+                {
+                    throw new Exception("Client not found.");
+                }
+
+                if (vehicle == null)
+                {
+                    throw new Exception("Vehicle not found.");
+                }
+
+                if (estimate == null)
+                {
+                    throw new Exception("Estimate not found.");
+                }
+
+                if (mechanic == null)
+                {
+                    throw new Exception("Mechanic not found.");
+                }
+
+                if (receptionist == null)
+                {
+                    throw new Exception("Receptionist not found.");
+                }
             }
 
         }
@@ -239,10 +184,28 @@ namespace Garage88.Data
         {
             if (!_context.Vehicles.Any())
             {
-
                 var brand = await _context.Brands.Where(b => b.Name == "Mazda").FirstOrDefaultAsync();
                 var model = await _context.Models.Where(m => m.Name == "MX-5 Miata").FirstOrDefaultAsync();
                 var client = await _context.Clients.Where(c => c.Email == "eduardo.sousa.moreno@sapo.pt").FirstOrDefaultAsync();
+
+                // Verifique se as variáveis não são null antes de prosseguir
+                if (brand == null)
+                {
+                    Console.WriteLine("Brand 'Mazda' not found.");
+                    return;
+                }
+
+                if (model == null)
+                {
+                    Console.WriteLine("Model 'MX-5 Miata' not found.");
+                    return;
+                }
+
+                if (client == null)
+                {
+                    Console.WriteLine("Client with email 'eduardo.sousa.moreno@sapo.pt' not found.");
+                    return;
+                }
 
                 _context.Vehicles.Add(new Vehicle
                 {
@@ -250,14 +213,12 @@ namespace Garage88.Data
                     Model = model,
                     Client = client,
                     DateOfConstruction = DateTime.Now.AddYears(-5),
-                    PlateNumber = "OPL65437",
+                    PlateNumber = "MZD68439",
                     Horsepower = 97,
                     ClientId = client.Id,
                 });
 
-
                 await _context.SaveChangesAsync();
-
             }
         }
 
@@ -265,13 +226,20 @@ namespace Garage88.Data
         {
             if (!_context.Estimates.Any())
             {
-
                 var client = await _context.Clients.Where(c => c.Email == "eduardo.sousa.moreno@sapo.pt").FirstOrDefaultAsync();
-                var vehicle = await _context.Vehicles.Where(v => v.PlateNumber == "OPL65437").FirstOrDefaultAsync();
+                var vehicle = await _context.Vehicles.Where(v => v.PlateNumber == "MZD68439").FirstOrDefaultAsync();
+
+                var createdByUser = await _userHelper.GetUserByEmailAsync("eduardo.sousa.moreno@formandos.cinel.pt");
+
+                if (createdByUser == null)
+                {
+                    Console.WriteLine("User not found.");
+                    return; // Retorna caso o usuário não seja encontrado
+                }
 
                 var estimate = new Estimate
                 {
-                    CreatedBy = await _userHelper.GetUserByEmailAsync("eduardo.sousa.moreno@formandos.cinel.pt"),
+                    CreatedBy = createdByUser,
                     Client = client,
                     EstimateDate = DateTime.Now.AddDays(-5),
                     FaultDescription = "Blowed up Tyre, needs to replace front tyres.",
@@ -280,7 +248,6 @@ namespace Garage88.Data
                 };
 
                 _context.Estimates.Add(estimate);
-
                 await _context.SaveChangesAsync();
 
                 var service = await _context.Services.Where(s => s.Name == "Change Tyres").FirstOrDefaultAsync();
@@ -312,9 +279,7 @@ namespace Garage88.Data
                 _context.EstimateDetails.Add(estimateDetail2);
 
                 await _context.SaveChangesAsync();
-
             }
-
         }
 
         private async Task AddClientAsync()
@@ -485,21 +450,21 @@ namespace Garage88.Data
 
         private async Task AddUserAsync()
         {
-            var user = await _userHelper.GetUserByEmailAsync("rafaferreira@gmail.com");
+            var user = await _userHelper.GetUserByEmailAsync("rafaelsantos@yopmail.com");
 
             if (user == null)
             {
                 user = new User
                 {
                     FirstName = "Rafael",
-                    LastName = "Ferreira",
-                    Email = "rafaferreira@gmail.com",
-                    UserName = "rafaferreira@gmail.com",
+                    LastName = "Santos",
+                    Email = "rafaelsantos@yopmail.com",
+                    UserName = "rafaelsantos@yopmail.com",
                     PhoneNumber = "925648980",
                     Address = "Avenida da Liberdade"
                 };
 
-                await _userHelper.AddUserAsync(user, "123456");
+                await _userHelper.AddUserAsync(user, "RafaelSantos!4");
             }
 
             var isInRole = await _userHelper.CheckUserInRoleAsync(user, "Admin");

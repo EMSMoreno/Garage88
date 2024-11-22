@@ -38,19 +38,18 @@ namespace Garage88.Models
         [Required(ErrorMessage = "Must insert the {0}.")]
         [Display(Name = "Role")]
         [Range(1, int.MaxValue, ErrorMessage = "You must select a Role")]
-        public int RoleId { get; set; }
+        public int ? RoleId { get; set; }
 
         public IEnumerable<SelectListItem> Roles { get; set; }
 
         [Required(ErrorMessage = "Must insert the {0}.")]
-        [Display(Name = "speciality")]
-        [Range(1, int.MaxValue, ErrorMessage = "You must select a speciality")]
-
+        [Display(Name = "Speciality")]
+        [Range(1, int.MaxValue, ErrorMessage = "You must select a Speciality")]
         public int SpecialityId { get; set; }
 
         public IEnumerable<SelectListItem> Specialities { get; set; }
 
-        public string Color { get; set; }
+        public string ? Color { get; set; }
 
         public Guid PhotoId { get; set; }
     }

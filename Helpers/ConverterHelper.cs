@@ -1,6 +1,7 @@
 ﻿using Garage88.Data.Entities;
 using Garage88.Data.Repositories;
 using Garage88.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Garage88.Helpers
 {
@@ -118,18 +119,16 @@ namespace Garage88.Helpers
 
         public async Task<Mechanic> ToMechanic(MechanicViewModel model, User user, bool isNew)
         {
-            var role = await _mechanicsRolesRepository.GetRoleWithSpecialitiesAsync(model.RoleId);
-
+            var role = await _mechanicsRolesRepository.GetRoleWithSpecialitiesAsync(model.RoleId ?? 0);
             if (role == null)
             {
-                return null;
+                throw new InvalidOperationException($"Role with ID {model.RoleId} not found.");
             }
 
             var speciality = await _mechanicsRolesRepository.GetSpecialityAsync(model.SpecialityId);
-
             if (speciality == null)
             {
-                return null;
+                throw new InvalidOperationException($"Speciality with ID {model.SpecialityId} not found.");
             }
 
             var mechanic = new Mechanic
@@ -146,17 +145,16 @@ namespace Garage88.Helpers
                 PhotoId = model.PhotoId == Guid.Empty ? new Guid() : model.PhotoId,
             };
 
-            if (isNew)
+            try
             {
-                try
+                if (isNew)
                 {
                     await _mechanicRepository.CreateAsync(mechanic);
-                    return mechanic;
                 }
-                catch (Exception)
-                {
-                    return null;
-                }
+            }
+            catch (DbUpdateException ex)
+            {
+                throw new Exception("An error occurred while saving the mechanic.", ex);
             }
 
             return mechanic;
@@ -179,8 +177,7 @@ namespace Garage88.Helpers
                 Roles = _mechanicsRolesRepository.GetComboRoles(),
                 Specialities = _mechanicsRolesRepository.GetComboSpeciality(isNew ? 0 : mechanic.Role.Id),
                 UserId = mechanic.User.Id,
-                Color = mechanic.Color,
-                //PhotoId = mechanic.PhotoId
+                Color = mechanic.Color
             };
 
             return model;

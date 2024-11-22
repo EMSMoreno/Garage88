@@ -30,12 +30,12 @@
                     <input class="form-control my_file" id="file" name="file" type="file" onchange="changeProfilePicture('file')" />
                 </div>
 
-                <a asp-action="ConfirmEmail" style="width:256px; margin-left:6px; margin-bottom:20px; margin-top:20px" class="btn btn-danger sharp">Confirm Email</a>
+                @* <a asp-action="ConfirmEmail" style="width:256px; margin-left:6px; margin-bottom:20px; margin-top:20px" class="btn btn-danger sharp">Confirm Email</a> *@
 
-                @if (this.User.IsInRole("Client"))
+                @if (User.Identity.IsAuthenticated && User.IsInRole("Client"))
                 {
-                    <a asp-action="ServiceHistory" class="btn btn-dark sharp" style="width:256px; margin-left:6px;margin-top:20px">My Service History</a>
-                    <a asp-action="Vehicles" class="btn btn-primary sharp" style="width:256px; margin-left:6px;margin-top:20px">My Vehicles</a>
+                    <a asp-controller="Account" asp-action="ServiceHistory" class="btn btn-dark sharp" style="width:256px; margin-left:6px; margin-top:20px">My Service History</a>
+                    <a asp-controller="Account" asp-action="Vehicles" class="btn btn-primary sharp" style="width:256px; margin-left:6px; margin-top:20px">My Vehicles</a>
                 }
 
                 <a asp-action="UpdateUser" style="width:256px; margin-left:6px;margin-top:20px" class="btn btn-success sharp">Update Profile</a>

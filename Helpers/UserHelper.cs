@@ -33,6 +33,13 @@ namespace Garage88.Helpers
 
         public async Task<IdentityResult> AddUserToRoleAsync(User user, string roleName)
         {
+            var createUserResult = await _userManager.CreateAsync(user, "GeneratedPassword123");
+
+            if (!createUserResult.Succeeded)
+            {
+                throw new Exception("Error creating user: " + string.Join(", ", createUserResult.Errors.Select(e => e.Description)));
+            }
+
             return await _userManager.AddToRoleAsync(user, roleName);
         }
 

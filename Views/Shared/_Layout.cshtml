@@ -24,16 +24,18 @@
     <!-- Syncfusion ASP.NET Core Script Manager -->
     <ejs-scripts></ejs-scripts>
 
+    <!-- jQuery via CDN (before Bootstrap) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+
+    <!-- Bootstrap JS (after jQuery) -->
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="~/css/custom.css" />
     <link rel="stylesheet" href="~/css/site.css" />
-
-    <!-- JQuery -->
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
 
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js"></script>
@@ -63,39 +65,77 @@
 
             <div class="col-6">
                 <div class="row justify-content-end align-items-center">
-                    @if (User.Identity.IsAuthenticated) @* User.Identity.Name & Logout *@
+                    @if (User.Identity.IsAuthenticated)
                     {
-                        if (User.IsInRole("Client"))
+                        <div class="col-auto d-flex align-items-center">
+                            <a asp-area="" asp-controller="Account" asp-action="ViewUser" class="aColor">@this.User.Identity.Name</a>
+                        </div>
+                        <div class="col-auto d-flex align-items-center">|</div>
+                        <div class="col-auto d-flex align-items-center">
+                            <a asp-area="" asp-controller="Account" asp-action="Logout" class="aColor"><i class="fa-regular fa-user"></i> Logout</a>
+                        </div>
+
+                        <!-- Role-based Menus -->
+                        @if (User.IsInRole("Admin"))
                         {
-                            <div class="col-auto d-flex align-items-center">
-                                <a asp-area="" asp-controller="Account" asp-action="ViewUser" class="aColor">@this.User.Identity.Name</a>
+                            <!-- Admin Menu -->
+                            <div class="col-auto d-flex align-items-center dropdown">
+                                <a class="aColor dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin Menu</a>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Clients" asp-action="Index">Clients</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Vehicles" asp-action="Index">Vehicles</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Mechanics" asp-action="Index">Mechanics</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Mechanics" asp-action="ManageRoles">Mechanic Roles</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Brands" asp-action="Index">Brands</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Services" asp-action="Index">Services</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Estimates" asp-action="Index">Estimates</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="WorkOrders" asp-action="Index">WorkOrders</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Appointment" asp-action="Index">Appointments</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="DashboardPanel" asp-action="Index">Admin Panel</a>
+                                </div>
                             </div>
-                            <div class="col-auto d-flex align-items-center">|</div>
-                            <div class="col-auto d-flex align-items-center">
-                                <a asp-area="" asp-controller="Account" asp-action="Logout" class="aColor"><i class="fa-regular fa-user"></i> Logout</a>
+                        }
+                        else if (User.IsInRole("Technician"))
+                        {
+                            <!-- Technician Menu -->
+                            <div class="col-auto d-flex align-items-center dropdown">
+                                <a class="aColor dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Mechanic Menu</a>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Mechanics" asp-action="Index">Mechanics</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="WorkOrders" asp-action="Index">Work Orders</a>
+                                </div>
                             </div>
                         }
 
-                        <!-- Other Menus -->
-                        <div class="col-auto d-flex align-items-center">
-                            <a asp-area="" asp-controller="Home" asp-action="Index" class="aColor">Home</a>
-                        </div>
-                        <div class="col-auto d-flex align-items-center dropdown">
-                            <a id="dropTitle" class="aColor dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">What We Offer</a>
-                            <div class="dropdown-menu">
-                                <a class="dropdown-item" asp-area="" asp-controller="Clients" asp-action="Index">Clients</a>
-                                <a class="dropdown-item" asp-area="" asp-controller="Vehicles" asp-action="Index">Vehicles</a>
-                                <a class="dropdown-item" asp-area="" asp-controller="Mechanics" asp-action="Index">Mechanics</a>
-                                <a class="dropdown-item" asp-area="" asp-controller="WorkOrders" asp-action="Index">WorkOrders</a>
-                                <a class="dropdown-item" asp-area="" asp-controller="Appointment" asp-action="Index">Appointments</a>
-                                <a class="dropdown-item" asp-area="" asp-controller="Brands" asp-action="Index">Brands</a>
-                                <a class="dropdown-item" asp-area="" asp-controller="Estimates" asp-action="Index">Estimates</a>
-                                <a class="dropdown-item" asp-area="" asp-controller="Services" asp-action="Index">Services</a>
-                                <a class="dropdown-item" asp-area="" asp-controller="Mailbox" asp-action="Announcement">Mailbox</a>
-                                <a class="dropdown-item" asp-area="" asp-controller="About" asp-action="Technicians">Technicians</a>
+                        else if (User.IsInRole("Receptionist"))
+                        {
+                            <!-- Receptionist Menu -->
+                            <div class="col-auto d-flex align-items-center dropdown">
+                                <a class="aColor dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Receptionist Menu</a>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" asp-area="" asp-controller="DashboardPanel" asp-action="Index">Dashboard Panel</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Estimates" asp-action="Index">Estimates Panel</a>
+                                </div>
                             </div>
-                        </div>
+                        }
 
+                        else if (User.IsInRole("Client"))
+                        {
+                            <!-- Client Menu -->
+                            <div class="col-auto d-flex align-items-center dropdown">
+                                <a class="aColor dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Client Menu</a>
+                                <div class="dropdown-menu">
+                                    <a class="dropdown-item" asp-area="" asp-controller="Clients" asp-action="Index">Clients List</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Brands" asp-action="Index"> Car Brands & Models</a>
+                                    <a class="dropdown-item" asp-area="" asp-controller="Invoice" asp-action="Index">Invoices List</a>
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Common Menu Items -->
+                        <div class="col-auto d-flex align-items-center">
+                            <a class="aColor" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </div>
                         <div class="col-auto d-flex align-items-center">
                             <a class="aColor" asp-area="" asp-controller="About" asp-action="Index">About Us</a>
                         </div>
@@ -105,17 +145,10 @@
                         <div class="col-auto d-flex align-items-center">
                             <a class="aColor" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </div>
-
-                        @if (User.IsInRole("Admin")) @* If it's an Admin *@
-                        {
-                            <div class="col-auto d-flex align-items-center">
-                                <a asp-area="" asp-controller="DashboardPanel" asp-action="Index" class="aColor">Admin Panel</a>
-                            </div>
-                        }
                     }
                     else
                     {
-                        <div class="col-auto d-flex align-items-center">  @* Login *@
+                        <div class="col-auto d-flex align-items-center">
                             <a asp-area="" asp-controller="Account" asp-action="Login" class="aColor"><i class="fa-regular fa-user"></i> Login</a>
                         </div>
                     }
@@ -125,6 +158,7 @@
             <div class="col-1"></div>
         </div>
     </header>
+
 
     <div class="container-fluid mainContainer" style="padding:0;padding-bottom:10px" id="Container">
         @RenderBody()

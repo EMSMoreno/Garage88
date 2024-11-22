@@ -11,12 +11,13 @@
 <hr />
 <div class="row" style="margin-top:50px;">
     <div class="col-md-12">
-        <form asp-action="Create">
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <input type="hidden" asp-for="MechanicId" />
-            <input type="hidden" asp-for="User" />
-            <input type="hidden" asp-for="UserId" />
+            <input type="hidden" name="UserId" value="@Model.UserId" />
+            <input type="hidden" name="User" value="@Model.User" />
 
             <div class="row">
                 <div class="col-md-1"></div>
@@ -51,6 +52,7 @@
 
                 <div class="col-md-1"></div>
             </div>
+
             <div class="row">
                 <div class="col-md-1"></div>
                 <div class="col-md-10">
@@ -62,6 +64,7 @@
                 </div>
                 <div class="col-md-1"></div>
             </div>
+
             <div class="row">
                 <div class="col-md-1"></div>
                 <div class="col-md-3">
@@ -74,7 +77,9 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label asp-for="SpecialityId" class="control-label"></label>
-                        <select asp-for="SpecialityId" asp-items="Model.Specialities" class="form-control"></select>
+                        <select id="SpecialityId" name="SpecialityId" class="form-control">
+                            <option value="">[Select a Speciality]</option>
+                        </select>
                         <span asp-validation-for="SpecialityId" class="text-danger"></span>
                     </div>
                 </div>
@@ -122,38 +127,56 @@
     </div>
 </div>
 
+@if (!ViewData.ModelState.IsValid)
+{
+    <div class="alert alert-danger">
+        <strong>There were errors in your form submission:</strong>
+        <ul>
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <li>@error.ErrorMessage</li>
+            }
+        </ul>
+    </div>
+}
+
+@Html.ValidationSummary(true)
+
 @section Scripts
 {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
-    <script type="text/javascript">
+    <script>
         $(document).ready(function () {
             $("#RoleId").change(function () {
-                $("#SpecialityId").empty();
-                $.ajax({
-                    url: '@Url.Action("GetSpecialitiesAsync", "Mechanics")',
-                    type: 'POST',
-                    dataType: 'json',
-                    data: { roleId: $("#RoleId").val() },
-                    success: function (models) {
-                        debugger;
-                        $("#SpecialtyId").append('<option value="0">[Select a Speciality]</option>');
-                        $.each(models, function (i, speciality) {
-                            $("#SpecialtyId").append('<option value="'
-                                + speciality.id + '">'
-                                + speciality.name + '</option>'
-                            );
-                        });
+                var roleId = $(this).val();
 
-                    },
-                    error: function (ex) {
-                        alert('Failed to retrieve specialities.' + ex);
-                    }
+                $.get("/Mechanics/GetSpecialities", { roleId: roleId }, function (data) {
+                    var specialityDropdown = $("#SpecialityId");
+                    specialityDropdown.empty(); // Clear existing options
+
+                    // Add the new options returned from the server
+                    $.each(data, function (index, item) {
+                        specialityDropdown.append(new Option(item.text, item.value));
+                    });
                 });
-                return false;
-            })
+            });
+
+            // Initial population of speciality dropdown
+            var initialRoleId = $("#RoleId").val();
+            if (initialRoleId) {
+                $.get("/Mechanics/GetSpecialities", { roleId: initialRoleId }, function (data) {
+                    var specialityDropdown = $("#SpecialityId");
+                    specialityDropdown.empty(); // Clear existing options
+
+                    $.each(data, function (index, item) {
+                        specialityDropdown.append(new Option(item.text, item.value));
+                    });
+                });
+            }
         });
     </script>
+
 }
