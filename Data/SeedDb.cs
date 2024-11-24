@@ -188,7 +188,7 @@ namespace Garage88.Data
                 var model = await _context.Models.Where(m => m.Name == "MX-5 Miata").FirstOrDefaultAsync();
                 var client = await _context.Clients.Where(c => c.Email == "eduardo.sousa.moreno@sapo.pt").FirstOrDefaultAsync();
 
-                // Verifique se as variáveis não são null antes de prosseguir
+                // Check for null variables before proceeding
                 if (brand == null)
                 {
                     Console.WriteLine("Brand 'Mazda' not found.");
@@ -216,6 +216,7 @@ namespace Garage88.Data
                     PlateNumber = "MZD68439",
                     Horsepower = 97,
                     ClientId = client.Id,
+                    VehicleIdentificationNumber = "MZD82633A123456"
                 });
 
                 await _context.SaveChangesAsync();
@@ -572,6 +573,7 @@ namespace Garage88.Data
 
             }
         }
+
 
     }
 }

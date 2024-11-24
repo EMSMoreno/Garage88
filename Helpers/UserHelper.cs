@@ -33,14 +33,33 @@ namespace Garage88.Helpers
 
         public async Task<IdentityResult> AddUserToRoleAsync(User user, string roleName)
         {
-            var createUserResult = await _userManager.CreateAsync(user, "GeneratedPassword123");
-
-            if (!createUserResult.Succeeded)
+            // Check if the user already exists
+            var existingUser = await _userManager.FindByEmailAsync(user.Email);
+            if (existingUser == null)
             {
-                throw new Exception("Error creating user: " + string.Join(", ", createUserResult.Errors.Select(e => e.Description)));
+                // Create the user only if they do not exist
+                var createUserResult = await _userManager.CreateAsync(user, "GeneratedPassword123");
+
+                if (!createUserResult.Succeeded)
+                {
+                    throw new Exception("Error creating user: " + string.Join(", ", createUserResult.Errors.Select(e => e.Description)));
+                }
+            }
+            else
+            {
+                // If the user exists, reassign the input parameter to the existing user
+                user = existingUser;
             }
 
-            return await _userManager.AddToRoleAsync(user, roleName);
+            // Check if the user is already in the specified role
+            var isInRole = await _userManager.IsInRoleAsync(user, roleName);
+            if (!isInRole)
+            {
+                return await _userManager.AddToRoleAsync(user, roleName);
+            }
+
+            // If the user is already in the role, return a success result
+            return IdentityResult.Success;
         }
 
         public async Task<IdentityResult> ChangePasswordAsync(User user, string oldPassword, string newPassword)

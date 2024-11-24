@@ -37,10 +37,10 @@ namespace Garage88.Controllers
 
         public IActionResult Index()
         {
-            var events = _appointmentRepository.GetAllEvents();
+            Response.Headers.Add("Refresh", "60");
 
-            // Serialize as JSON
-            ViewData["Events"] = JsonConvert.SerializeObject(events);
+            var events = _appointmentRepository.GetAllEvents();
+            ViewData["Events"] = events;
 
             return View();
         }

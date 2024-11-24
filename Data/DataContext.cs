@@ -1,6 +1,7 @@
 ﻿using Garage88.Data.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Emit;
 
 namespace Garage88.Data
 {
@@ -26,17 +27,16 @@ namespace Garage88.Data
         public DbSet<WorkOrder> WorkOrders { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(builder);
+            // Delete All Connections using Cascade Delete Rule
+            foreach (var relationship in modelBuilder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
+            {
+                relationship.DeleteBehavior = DeleteBehavior.Restrict;
+            }
 
-            builder.Entity<Vehicle>().HasIndex(v => v.PlateNumber).IsUnique();
+            base.OnModelCreating(modelBuilder);
 
-            builder.Entity<Client>().HasIndex(c => c.Nif).IsUnique();
-
-            builder.Entity<Role>().HasIndex(r => r.Name).IsUnique();
-
-            builder.Entity<Mechanic>().HasIndex(e => e.Email).IsUnique();
         }
     }
 }
