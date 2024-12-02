@@ -75,5 +75,25 @@ namespace Garage88.Data.Repositories
                                      .Include(e => e.Speciality);
         }
 
+        public IEnumerable<SelectListItem> GetSpecialitiesAsync()
+        {
+            var list = _context.Specialities
+                               .Select(s => new SelectListItem
+                               {
+                                   Text = s.Name,
+                                   Value = s.Id.ToString()
+                               })
+                               .OrderBy(s => s.Text)
+                               .ToList();
+
+            list.Insert(0, new SelectListItem
+            {
+                Text = "[Select a Speciality]",
+                Value = "0"
+            });
+
+            return list;
+        }
+
     }
 }

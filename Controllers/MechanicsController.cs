@@ -39,9 +39,8 @@ namespace Garage88.Controllers
         public async Task<IActionResult> Index()
         {
             var mechanics = await _mechanicRepository.GetTechniciansMechanicsAsync();
-            Console.WriteLine($"Number of mechanics found: {mechanics.Count()}");  // Verifique se está retornando dados
+            Console.WriteLine($"Number of mechanics found: {mechanics.Count()}");
 
-            // Se a lista estiver vazia, você pode querer exibir uma mensagem de erro
             if (!mechanics.Any())
             {
                 Console.WriteLine("No mechanics found.");
@@ -361,11 +360,9 @@ namespace Garage88.Controllers
             var model = new MechanicViewModel
             {
                 Roles = _mechanicsRolesRepository.GetComboRoles(),
-                Specialities = new List<SelectListItem>
-                {
-                new SelectListItem { Text = "[Select a Speciality]", Value = "0" }
-                }
+                Specialities = _mechanicRepository.GetSpecialitiesAsync()
             };
+
             return View(model);
         }
 
@@ -398,10 +395,11 @@ namespace Garage88.Controllers
                     FirstName = model.FirstName,
                     LastName = model.LastName,
                     Email = model.Email,
+                    About = string.IsNullOrWhiteSpace(model.About) ? "No details available." : model.About,
                     User = user,
                     PhotoId = Guid.NewGuid(),
-                    RoleId = model.RoleId ?? 1, // Default to Role ID 1 if RoleId is null
-                    SpecialityId = model.SpecialityId ?? 1 // Default to Speciality ID 1 if SpecialityId is null
+                    RoleId = model.RoleId ?? 1,  // Default to Role ID 1 if RoleId is null
+                    SpecialityId = model.SpecialityId ?? 1  // Default to Speciality ID 1 if SpecialityId is null
                 };
 
                 await _mechanicRepository.CreateAsync(mechanic);
@@ -410,6 +408,9 @@ namespace Garage88.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
+            // If model is not valid, return the same view with errors
+            model.Roles = _mechanicsRolesRepository.GetComboRoles();
+            model.Specialities = _mechanicRepository.GetSpecialitiesAsync();
             return View(model);
         }
 

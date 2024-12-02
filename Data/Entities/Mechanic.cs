@@ -27,7 +27,7 @@ namespace Garage88.Data.Entities
         public Role? Role { get; set; }
         public int? RoleId { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Must insert the {0}.")]
         public string About { get; set; }
 
         [Display(Name = "Photo")]

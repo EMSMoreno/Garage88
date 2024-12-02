@@ -65,22 +65,22 @@
             <div class="row">
                 <div class="col-md-1"></div>
                 <div class="col-md-3">
-                    @* <div class="form-group">
+                    <div class="form-group">
                         <label for="RoleId">Role</label>
                         <select asp-for="RoleId" asp-items="Model.Roles" class="form-control">
-                            <option value="0">[Select a Role]</option>
+                            <option value="">[Select a Role]</option>
                         </select>
                         <span asp-validation-for="RoleId" class="text-danger"></span>
-                    </div> *@
+                    </div>
                 </div> 
                 <div class="col-md-3">
-                    @* <div class="form-group">
+                    <div class="form-group">
                         <label for="SpecialityId">Speciality</label>
                         <select asp-for="SpecialityId" asp-items="Model.Specialities" class="form-control">
-                            <option value="0">[Select a Speciality]</option>
+                            <option value="">[Select a Speciality]</option>
                         </select>
                         <span asp-validation-for="SpecialityId" class="text-danger"></span>
-                    </div> *@
+                    </div>
                 </div>
                 <div class="col-md-2">
                     <div class="form-group">
@@ -125,16 +125,6 @@
         </form>
     </div>
 </div>
-
-@if (Model.RoleName != null)
-{
-    <p>@Model.RoleName</p>
-}
-else
-{
-    <p>No Role Assigned</p>
-}
-
 
 @if (!ViewData.ModelState.IsValid)
 {

@@ -20,8 +20,8 @@ namespace Garage88.Models
 
         public string FullName => $"{FirstName} {LastName}";
 
-        [Required]
-        public string ? About { get; set; }
+        [Required(ErrorMessage = "Must insert the {0}.")]
+        public string About { get; set; }
 
         [Required]
         [DataType(DataType.EmailAddress)]
@@ -43,27 +43,18 @@ namespace Garage88.Models
         [Range(1, int.MaxValue, ErrorMessage = "You must select a Role")]
         public int? RoleId { get; set; }
 
-        public string? RoleName { get; set; }
-
-        public IEnumerable<SelectListItem> ? Roles { get; set; }
+        public IEnumerable<SelectListItem> Roles { get; set; } = new List<SelectListItem>();
 
         //[Required(ErrorMessage = "Must insert the {0}.")]
         [Display(Name = "Speciality")]
         [Range(1, int.MaxValue, ErrorMessage = "You must select a Speciality")]
         public int? SpecialityId { get; set; }
 
-        public string? SpecialityName { get; set; }
-
-        public IEnumerable<SelectListItem> ? Specialities { get; set; }
+        public IEnumerable<SelectListItem> Specialities { get; set; } = new List<SelectListItem>();
 
         public string ? Color { get; set; }
 
         public Guid PhotoId { get; set; }
 
-        public void SetDefaultValues()
-        {
-            RoleName = string.IsNullOrEmpty(RoleName) ? "No Role Assigned" : RoleName;
-            SpecialityName = string.IsNullOrEmpty(SpecialityName) ? "No Speciality Assigned" : SpecialityName;
-        }
     }
 }
