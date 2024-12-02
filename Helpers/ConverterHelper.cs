@@ -119,19 +119,24 @@ namespace Garage88.Helpers
 
         public async Task<Mechanic> ToMechanic(MechanicViewModel model, User user, bool isNew)
         {
-            var role = await _mechanicsRolesRepository.GetRoleWithSpecialitiesAsync(model.RoleId ?? 0);
+            if (!model.RoleId.HasValue || !model.SpecialityId.HasValue)
+            {
+                throw new ArgumentException("RoleId and SpecialityId must be provided.");
+            }
+
+            var role = await _mechanicsRolesRepository.GetRoleWithSpecialitiesAsync(model.RoleId.Value);
             if (role == null)
             {
-                throw new InvalidOperationException($"Role with ID {model.RoleId} not found.");
+                throw new ArgumentException($"Role with ID {model.RoleId.Value} not found.");
             }
 
-            var speciality = await _mechanicsRolesRepository.GetSpecialityAsync(model.SpecialityId);
+            var speciality = await _mechanicsRolesRepository.GetSpecialityAsync(model.SpecialityId.Value);
             if (speciality == null)
             {
-                throw new InvalidOperationException($"Speciality with ID {model.SpecialityId} not found.");
+                throw new ArgumentException($"Speciality with ID {model.SpecialityId.Value} not found.");
             }
 
-            var mechanic = new Mechanic
+            return new Mechanic
             {
                 Id = isNew ? 0 : model.MechanicId,
                 FirstName = model.FirstName,
@@ -142,22 +147,8 @@ namespace Garage88.Helpers
                 User = user,
                 Email = model.Email,
                 Color = model.Color,
-                PhotoId = model.PhotoId == Guid.Empty ? new Guid() : model.PhotoId,
+                PhotoId = model.PhotoId == Guid.Empty ? Guid.NewGuid() : model.PhotoId,
             };
-
-            try
-            {
-                if (isNew)
-                {
-                    await _mechanicRepository.CreateAsync(mechanic);
-                }
-            }
-            catch (DbUpdateException ex)
-            {
-                throw new Exception("An error occurred while saving the mechanic.", ex);
-            }
-
-            return mechanic;
         }
 
         public MechanicViewModel ToMechanicViewModel(Mechanic mechanic, bool isNew)

@@ -70,21 +70,23 @@ namespace Garage88.Data.Repositories
 
         public IEnumerable<SelectListItem> GetComboSpeciality(int roleId)
         {
-            var list = _context.Specialities
-                .Where(s => roleId == 0 || s.RoleId == roleId)
-                .Select(s => new SelectListItem
+            var role = _context.MechanicsRoles.Find(roleId);
+            var list = new List<SelectListItem>();
+
+            if (role != null)
+            {
+                list = _context.Specialities.Select(s => new SelectListItem
                 {
                     Text = s.Name,
                     Value = s.Id.ToString()
-                })
-                .OrderBy(l => l.Text)
-                .ToList();
+                }).OrderBy(l => l.Text).ToList();
 
-            list.Insert(0, new SelectListItem
-            {
-                Text = "[Select a Speciality]",
-                Value = "0"
-            });
+                list.Insert(0, new SelectListItem
+                {
+                    Text = "[Select a speciality]",
+                    Value = "0"
+                });
+            }
 
             return list;
         }
@@ -96,10 +98,16 @@ namespace Garage88.Data.Repositories
 
         public async Task<int> GetRoleIdWithSpecialityAsync(int specialityId)
         {
-            return await _context.MechanicsRoles
-                         .Where(r => r.Specialities.Any(s => s.Id == specialityId))
-                         .Select(r => r.Id)
-                         .FirstOrDefaultAsync();
+            var role = await _context.MechanicsRoles.Where(r => r.Specialities.Any(s => s.Id == specialityId)).FirstOrDefaultAsync();
+
+            if (role == null)
+            {
+                return 0;
+            }
+            else
+            {
+                return role.Id;
+            }
         }
 
         public IQueryable GetRolesWithSpecialities()

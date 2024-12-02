@@ -9,7 +9,7 @@ namespace Garage88.Models
         public int SpecialityId { get; set; }
 
         [Required]
-        [Display(Name = "Specialty")]
+        [Display(Name = "speciality")]
         [MaxLength(50, ErrorMessage = "The {0} may only contain {1} characters.")]
         public string Name { get; set; }
 

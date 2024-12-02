@@ -155,10 +155,10 @@
                     success: function (models) {
                         debugger;
                         $("#SpecialityId").append('<option value="0">[Select a Speciality]</option>');
-                        $.each(models, function (i, specialty) {
+                        $.each(models, function (i, speciality) {
                             $("#SpecialityId").append('<option value="'
-                                + specialty.id + '">'
-                                + specialty.name + '</option>'
+                                + speciality.id + '">'
+                                + speciality.name + '</option>'
                             );
                         });
 

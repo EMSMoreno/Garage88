@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Garage88.Data.Entities;
 using Garage88.Helpers;
+using System.Data.SqlTypes;
 
 namespace Garage88.Data.Repositories
 {
@@ -61,11 +62,10 @@ namespace Garage88.Data.Repositories
 
         public async Task<List<Mechanic>> GetTechniciansMechanicsAsync()
         {
-            return await _context.Mechanics.Include(e => e.User)
-                                    .Include(e => e.Role)
-                                    .Include(e => e.Speciality)
-                                    .Where(e => e.Role.Name == "Mechanic")
-                                    .ToListAsync();
+            return await _context.Mechanics
+                    .Include(m => m.Role)
+                    .Include(m => m.Speciality)
+                    .ToListAsync();
         }
 
         private IQueryable<Mechanic> GetMechanicsWithIncludes()

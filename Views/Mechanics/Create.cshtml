@@ -11,13 +11,12 @@
 <hr />
 <div class="row" style="margin-top:50px;">
     <div class="col-md-12">
-        <form asp-action="Create" method="post">
-            @Html.AntiForgeryToken()
+        <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
             <input type="hidden" asp-for="MechanicId" />
-            <input type="hidden" name="UserId" value="@Model.UserId" />
-            <input type="hidden" name="User" value="@Model.User" />
+            <input type="hidden" asp-for="User" />
+            <input type="hidden" asp-for="UserId" />
 
             <div class="row">
                 <div class="col-md-1"></div>
@@ -52,7 +51,6 @@
 
                 <div class="col-md-1"></div>
             </div>
-
             <div class="row">
                 <div class="col-md-1"></div>
                 <div class="col-md-10">
@@ -64,36 +62,36 @@
                 </div>
                 <div class="col-md-1"></div>
             </div>
-
             <div class="row">
                 <div class="col-md-1"></div>
                 <div class="col-md-3">
-                    <div class="form-group">
-                        <label asp-for="RoleId" class="control-label"></label>
-                        <select asp-for="RoleId" asp-items="Model.Roles" class="form-control"></select>
+                    @* <div class="form-group">
+                        <label for="RoleId">Role</label>
+                        <select asp-for="RoleId" asp-items="Model.Roles" class="form-control">
+                            <option value="0">[Select a Role]</option>
+                        </select>
                         <span asp-validation-for="RoleId" class="text-danger"></span>
-                    </div>
-                </div>
+                    </div> *@
+                </div> 
                 <div class="col-md-3">
-                    <div class="form-group">
-                        <label asp-for="SpecialityId" class="control-label"></label>
-                        <select id="SpecialityId" name="SpecialityId" class="form-control">
-                            <option value="">[Select a Speciality]</option>
+                    @* <div class="form-group">
+                        <label for="SpecialityId">Speciality</label>
+                        <select asp-for="SpecialityId" asp-items="Model.Specialities" class="form-control">
+                            <option value="0">[Select a Speciality]</option>
                         </select>
                         <span asp-validation-for="SpecialityId" class="text-danger"></span>
-                    </div>
+                    </div> *@
                 </div>
                 <div class="col-md-2">
                     <div class="form-group">
-                        <label asp-for="Color" class="control-label"></label> <br />
-                        <input asp-for="Color" class="form-control" />
+                        <label asp-for="Color" class="control-label"></label><br />
                         <ejs-colorpicker id="element" ejs-for="Color"></ejs-colorpicker>
                         <span asp-validation-for="Color" class="text-danger"></span>
                     </div>
                 </div>
-
-                <div class="col-md-3"></div>
             </div>
+
+            <div class="col-md-3"></div>
 
             <div class="row">
                 <div class="col-md-1"></div>
@@ -128,6 +126,16 @@
     </div>
 </div>
 
+@if (Model.RoleName != null)
+{
+    <p>@Model.RoleName</p>
+}
+else
+{
+    <p>No Role Assigned</p>
+}
+
+
 @if (!ViewData.ModelState.IsValid)
 {
     <div class="alert alert-danger">
@@ -141,43 +149,10 @@
     </div>
 }
 
-@Html.ValidationSummary(true)
-
 @section Scripts
 {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-
-    <script>
-        $(document).ready(function () {
-            $("#RoleId").change(function () {
-                var roleId = $(this).val();
-
-                $.get("/Mechanics/GetSpecialities", { roleId: roleId }, function (data) {
-                    var specialityDropdown = $("#SpecialityId");
-                    specialityDropdown.empty(); // Clear existing options
-
-                    // Add the new options returned from the server
-                    $.each(data, function (index, item) {
-                        specialityDropdown.append(new Option(item.text, item.value));
-                    });
-                });
-            });
-
-            // Initial population of speciality dropdown
-            var initialRoleId = $("#RoleId").val();
-            if (initialRoleId) {
-                $.get("/Mechanics/GetSpecialities", { roleId: initialRoleId }, function (data) {
-                    var specialityDropdown = $("#SpecialityId");
-                    specialityDropdown.empty(); // Clear existing options
-
-                    $.each(data, function (index, item) {
-                        specialityDropdown.append(new Option(item.text, item.value));
-                    });
-                });
-            }
-        });
-    </script>
 
 }

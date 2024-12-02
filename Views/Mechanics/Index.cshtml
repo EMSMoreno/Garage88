@@ -29,7 +29,7 @@
                               "<b>Email: </b>" + mechanicData.email + "<br/>" +
                               "<b>Address: </b>" + mechanicData.user.address + "<br/>" +
                               "<b>Phone Number: </b>" + mechanicData.user.phoneNumber + "<br/>" +
-                              "<b>Speciality: </b>" + mechanicData.role.name + " - " + mechanicData.specialty.name + "<br/>" +
+                              "<b>Speciality: </b>" + mechanicData.role.name + " - " + mechanicData.speciality.name + "<br/>" +
                               "<b>About: </b>" + mechanicData.about + "<br/>";
 
                           dialog.show();
@@ -65,29 +65,36 @@
                 {
                     <tr>
                         <td>
-                            @Html.DisplayFor(modelItem => item.FullName)
+                            @item.FirstName @item.LastName
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Role.Name)
+                            @item.RoleName
                         </td>
                         <td>
-                            @Html.DisplayFor(modelItem => item.Speciality.Name)
+                            @item.SpecialityName
                         </td>
                         <td id="@item.Id">
                             @if (this.User.Identity.IsAuthenticated && !User.IsInRole("Client"))
                             {
-                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-info btn-sm"><i class="fas fa-user-pen"></i></a>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-info btn-sm">
+                                    <i class="fas fa-user-pen"></i>
+                                </a>
                             }
 
-                            <a onclick="showEmployeeDetails(@item.Id)" class="btn btn-warning btn-sm"><i class="fas fa-list"></i></a>
+                            <a onclick="showMechanicDetails(@item.Id)" class="btn btn-warning btn-sm">
+                                <i class="fas fa-list"></i>
+                            </a>
 
                             @if (this.User.Identity.IsAuthenticated && !User.IsInRole("Client"))
                             {
-                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm pull-right" id="btnDelete"><i class="fas fa-trash"></i></a>
+                                <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger btn-sm pull-right" id="btnDelete">
+                                    <i class="fas fa-trash"></i>
+                                </a>
                             }
                         </td>
                     </tr>
                 }
+
             </tbody>
         </table>
     </div>
@@ -160,7 +167,7 @@
                 return false;
             });
             $("#btnYesDelete").click(function () {
-                window.location.href = '/Employees/Delete/' + id;
+                window.location.href = '/Mechanics/Delete/' + id;
             });
         });
     </script>

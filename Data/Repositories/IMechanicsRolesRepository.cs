@@ -26,7 +26,7 @@ namespace Garage88.Data.Repositories
 
         Task<Role> GetRoleAsync(Speciality model);
 
-        Task<int> GetRoleIdWithSpecialityAsync(int specialtyId);
+        Task<int> GetRoleIdWithSpecialityAsync(int specialityId);
 
     }
 }
