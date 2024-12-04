@@ -119,36 +119,48 @@ namespace Garage88.Helpers
 
         public async Task<Mechanic> ToMechanic(MechanicViewModel model, User user, bool isNew)
         {
-            if (!model.RoleId.HasValue || !model.SpecialityId.HasValue)
-            {
-                throw new ArgumentException("RoleId and SpecialityId must be provided.");
-            }
+            var role = await _mechanicsRolesRepository.GetRoleWithSpecialitiesAsync(model.RoleId);
 
-            var role = await _mechanicsRolesRepository.GetRoleWithSpecialitiesAsync(model.RoleId.Value);
             if (role == null)
             {
-                throw new ArgumentException($"Role with ID {model.RoleId.Value} not found.");
+                return null;
             }
 
-            var speciality = await _mechanicsRolesRepository.GetSpecialityAsync(model.SpecialityId.Value);
-            if (speciality == null)
+            var specialty = await _mechanicsRolesRepository.GetSpecialityAsync(model.SpecialityId);
+
+            if (specialty == null)
             {
-                throw new ArgumentException($"Speciality with ID {model.SpecialityId.Value} not found.");
+                return null;
             }
 
-            return new Mechanic
+            var mechanic = new Mechanic
             {
                 Id = isNew ? 0 : model.MechanicId,
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 About = model.About,
                 Role = role,
-                Speciality = speciality,
+                Speciality = specialty,
                 User = user,
                 Email = model.Email,
                 Color = model.Color,
-                PhotoId = model.PhotoId == Guid.Empty ? Guid.NewGuid() : model.PhotoId,
+                PhotoId = model.PhotoId == Guid.Empty ? new Guid() : model.PhotoId,
             };
+
+            if (isNew)
+            {
+                try
+                {
+                    await _mechanicRepository.CreateAsync(mechanic);
+                    return mechanic;
+                }
+                catch (Exception ex)
+                {
+                    return null;
+                }
+            }
+
+            return mechanic;
         }
 
         public MechanicViewModel ToMechanicViewModel(Mechanic mechanic, bool isNew)
@@ -168,7 +180,8 @@ namespace Garage88.Helpers
                 Roles = _mechanicsRolesRepository.GetComboRoles(),
                 Specialities = _mechanicsRolesRepository.GetComboSpeciality(isNew ? 0 : mechanic.Role.Id),
                 UserId = mechanic.User.Id,
-                Color = mechanic.Color
+                Color = mechanic.Color,
+                PhotoId = mechanic.PhotoId
             };
 
             return model;

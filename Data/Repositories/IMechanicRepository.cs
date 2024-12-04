@@ -18,7 +18,5 @@ namespace Garage88.Data.Repositories
 
         Task<List<Mechanic>> GetTechniciansMechanicsAsync();
 
-        IEnumerable<SelectListItem> GetSpecialitiesAsync();
-
     }
 }

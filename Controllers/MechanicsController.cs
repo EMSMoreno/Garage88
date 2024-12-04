@@ -36,15 +36,9 @@ namespace Garage88.Controllers
             _flashMessage = flashMessage;
         }
 
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            var mechanics = await _mechanicRepository.GetTechniciansMechanicsAsync();
-            Console.WriteLine($"Number of mechanics found: {mechanics.Count()}");
-
-            if (!mechanics.Any())
-            {
-                Console.WriteLine("No mechanics found.");
-            }
+            var mechanics = _mechanicRepository.GetAllWithUsers();
 
             return View(mechanics);
         }
@@ -360,19 +354,18 @@ namespace Garage88.Controllers
             var model = new MechanicViewModel
             {
                 Roles = _mechanicsRolesRepository.GetComboRoles(),
-                Specialities = _mechanicRepository.GetSpecialitiesAsync()
+                Specialities = _mechanicsRolesRepository.GetComboSpeciality(0)
             };
 
             return View(model);
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(MechanicViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var user = new User
+                var newUser = new User
                 {
                     FirstName = model.FirstName,
                     LastName = model.LastName,
@@ -380,37 +373,57 @@ namespace Garage88.Controllers
                     UserName = model.Email,
                     PhoneNumber = model.PhoneNumber,
                     Address = model.Address,
-                    ProfilePicture = Guid.NewGuid()
+                    ProfilePicture = new Guid(),
                 };
 
-                var result = await _userHelper.AddUserAsync(user, "DefaultPassword123");
+                var result = await _userHelper.AddUserAsync(newUser, "DefaultPassword123");
+
                 if (!result.Succeeded)
                 {
-                    _flashMessage.Danger("Error creating user.");
+                    _flashMessage.Danger("There was an error creating the mechanic user data.");
                     return View(model);
                 }
 
-                var mechanic = new Mechanic
+                var mechanic = await _converterHelper.ToMechanic(model, newUser, true);
+
+                if (mechanic == null)
                 {
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    Email = model.Email,
-                    About = string.IsNullOrWhiteSpace(model.About) ? "No details available." : model.About,
-                    User = user,
-                    PhotoId = Guid.NewGuid(),
-                    RoleId = model.RoleId ?? 1,  // Default to Role ID 1 if RoleId is null
-                    SpecialityId = model.SpecialityId ?? 1  // Default to Speciality ID 1 if SpecialityId is null
-                };
+                    _flashMessage.Danger("There was an error creating the mechanic.");
+                    return View(model);
+                }
 
-                await _mechanicRepository.CreateAsync(mechanic);
+                result = await _userHelper.AddUserToRoleAsync(newUser, mechanic.Role.PermissionsName);
 
-                _flashMessage.Confirmation("Mechanic created successfully!");
-                return RedirectToAction(nameof(Index));
+                if (!result.Succeeded)
+                {
+                    _flashMessage.Danger("There was an error adding the user to the required permission level.");
+                    return View(model);
+                }
+
+                var userToken = await _userHelper.GenerateEmailConfirmationTokenAsync(newUser);
+                string tokenLink = Url.Action("ConfirmEmail", "Account", new
+                {
+                    userId = newUser.Id,
+                    token = userToken
+                }, protocol: HttpContext.Request.Scheme);
+
+                Response isSent = await _mailHelper.SendEmail(model.Email, "Welcome to Garage88", $"<h1>Email Confirmation</h1>" +
+                   $"Welcome to Garage88!</br></br>First of all congratulations! You are now a new mechanic! </br>" +
+                   $"To allow you to access the website and the management system, " +
+                   $"please click in the following link:<a href= \"{tokenLink}\"> Confirm Email </a>", null);
+
+                if (isSent.IsSuccess)
+                {
+                    _flashMessage.Confirmation("mechanic was created with success! Please allow mechanic to know that he needs to confirm the email address!");
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    _flashMessage.Warning("There was an error sending the confirmation email. But the mechanic has been created. Ask System manager to validate the email address or Delete the mechanic and try adding him later.");
+                    return View(model);
+                }
             }
 
-            // If model is not valid, return the same view with errors
-            model.Roles = _mechanicsRolesRepository.GetComboRoles();
-            model.Specialities = _mechanicRepository.GetSpecialitiesAsync();
             return View(model);
         }
 
@@ -523,15 +536,11 @@ namespace Garage88.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> GetSpecialitiesAsync(int roleId)
+        [Route("Mechanics/GetSpecialtiesAsync")]
+        public async Task<JsonResult> GetSpecialitiesAsync(int roleId)
         {
-            if (roleId == 0)
-            {
-                return Json(new List<SelectListItem>());
-            }
-
-            var specialities = _mechanicsRolesRepository.GetComboSpeciality(roleId);
-            return Json(specialities.Select(s => new { id = s.Value, name = s.Text }));
+            var role = await _mechanicsRolesRepository.GetRoleWithSpecialitiesAsync(roleId);
+            return Json(role.Specialities.OrderBy(s => s.Name));
         }
 
         [HttpPost]
