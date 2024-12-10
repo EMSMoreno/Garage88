@@ -212,10 +212,12 @@ namespace Garage88.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Tenta buscar o usuário
                 var user = await _userHelper.GetUserByEmailAsync(model.UserName);
 
                 if (user == null)
                 {
+                    // Cria o objeto do usuário
                     user = new User
                     {
                         FirstName = model.FirstName,
@@ -226,71 +228,63 @@ namespace Garage88.Controllers
                         PhoneNumber = model.PhoneNumber,
                     };
 
-                    try
+                    // Tenta adicionar o usuário
+                    var result = await _userHelper.AddUserAsync(user, GenerateRandomPassword());
+
+                    if (!result.Succeeded)
                     {
-                        // Adiciona o usuário com uma senha gerada aleatoriamente
-                        var result = await _userHelper.AddUserAsync(user, GenerateRandomPassword());
-
-                        if (!result.Succeeded)
-                        {
-                            ModelState.AddModelError(string.Empty, "The user couldn't be created.");
-                            return View(model);
-                        }
-
-                        // Cria um novo cliente associado ao usuário
-                        var client = new Client
-                        {
-                            FirstName = model.FirstName,
-                            LastName = model.LastName,
-                            Email = model.UserName,
-                            Address = model.Address,
-                            User = user
-                        };
-
-                        await _clientRepository.CreateAsync(client);
-
-                        // Adiciona o usuário ao papel de "Client"
-                        result = await _userHelper.AddUserToRoleAsync(user, "Client");
-
-                        if (!result.Succeeded)
-                        {
-                            ModelState.AddModelError(string.Empty, "Failed to assign the user as a client.");
-                            return View(model);
-                        }
-
-                        // Gera um token de confirmação de e-mail
-                        string userToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
-                        string tokenLink = Url.Action("ConfirmEmail", "Account", new
-                        {
-                            userId = user.Id,
-                            token = userToken
-                        }, protocol: HttpContext.Request.Scheme);
-
-                        // Envia o e-mail de confirmação
-                        Response response = await _mailHelper.SendEmail(model.UserName, "Email confirmation",
-                            $"<h1>Email Confirmation</h1>" +
-                            $" To allow you to access the website, please click on the following link:</br></br><a href=\"{tokenLink}\">Confirm Email </a>", null);
-
-                        // Verifica se o envio do e-mail foi bem-sucedido
-                        if (!response.IsSuccess)
-                        {
-                            ModelState.AddModelError(string.Empty, "Failed to send confirmation email but your account was created. Login and change your password when possible.");
-                            return View(model);
-                        }
-
-                        _flashMessage.Info($"Client {model.FirstName} {model.LastName} has been successfully registered.");
-
-                        return RedirectToAction("Index", "Home");
-                    }
-                    catch (Exception ex)
-                    {
-                        ModelState.AddModelError(string.Empty, "An unexpected error occurred: " + ex.Message);
+                        ModelState.AddModelError(string.Empty, "The user couldn't be created.");
                         return View(model);
                     }
+
+                    // Cria e associa o cliente ao usuário
+                    var client = new Client
+                    {
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+                        Email = model.UserName,
+                        Address = model.Address,
+                        User = user
+                    };
+
+                    await _clientRepository.CreateAsync(client);
+
+                    // Adiciona o papel ao usuário
+                    result = await _userHelper.AddUserToRoleAsync(user, "Client");
+                    if (!result.Succeeded)
+                    {
+                        ModelState.AddModelError(string.Empty, "Failed to assign the user as a client.");
+                        return View(model);
+                    }
+
+                    // Gera o token de confirmação
+                    string userToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+                    string tokenLink = Url.Action("ConfirmEmail", "Account", new
+                    {
+                        userId = user.Id,
+                        token = userToken
+                    }, protocol: HttpContext.Request.Scheme);
+
+                    // Envia o e-mail de confirmação
+                    Response response = await _mailHelper.SendEmail(
+                        model.UserName,                     // Para
+                        "Email confirmation",               // Assunto
+                        $"<h1>Email Confirmation</h1>" +    // Corpo
+                        $"Please confirm your email by clicking <a href=\"{tokenLink}\">here</a>.",
+                        null                                // Sem anexos
+                    );
+
+                    if (!response.IsSuccess)
+                    {
+                        ModelState.AddModelError(string.Empty, "Failed to send confirmation email.");
+                        return View(model);
+                    }
+
+                    return RedirectToAction("Index", "Home");
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "This email is already registered. Try again.");
+                    ModelState.AddModelError(string.Empty, "This email is already registered.");
                 }
             }
 
