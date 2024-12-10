@@ -440,26 +440,38 @@ namespace Garage88.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var mechanic = await _mechanicRepository.GetMechanicByIdAsync(id.Value);
+            var mechanic = await _mechanicRepository.GetByIdAsync(id);
 
             if (mechanic == null)
             {
                 return NotFound();
             }
 
-            var model = _converterHelper.ToMechanicViewModel(mechanic, false);
-
-            if (model == null)
+            var user = await _userHelper.GetUserByIdAsync(mechanic.UserId);
+            if (user == null)
             {
-                return NotFound();
+                return NotFound("User associated with this mechanic not found.");
             }
+
+            var model = new MechanicViewModel
+            {
+                MechanicId = mechanic.Id,
+                UserId = mechanic.UserId, // Ensure this is set correctly
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+                Address = user.Address,
+                RoleId = mechanic.RoleId,
+                SpecialityId = mechanic.SpecialityId,
+                Color = mechanic.Color,
+                PhotoId = mechanic.PhotoId
+            };
+
+            ViewBag.Roles = _mechanicsRolesRepository.GetComboRoles();
+            ViewBag.Specialities = _mechanicsRolesRepository.GetComboSpeciality(mechanic.RoleId);
 
             return View(model);
         }
@@ -467,58 +479,88 @@ namespace Garage88.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(MechanicViewModel model)
         {
-            if (ModelState.IsValid)
+            if (string.IsNullOrEmpty(model.UserId))
             {
-                var user = await _userHelper.GetUserByIdAsync(model.UserId.ToString());
+                ModelState.AddModelError(string.Empty, "UserId is missing or empty.");
+                return View(model);
+            }
 
-                if (user == null)
+            Console.WriteLine($"UserId: {model.UserId}"); // Log the UserId for debugging
+
+            var user = await _userHelper.GetUserByIdAsync(model.UserId);
+            if (user == null)
+            {
+                ModelState.AddModelError(string.Empty, $"User not found for UserId: {model.UserId}");
+                ViewBag.Roles = _mechanicsRolesRepository.GetComboRoles();
+                ViewBag.Specialities = _mechanicsRolesRepository.GetComboSpeciality(model.RoleId);
+                return View(model);
+            }
+
+            // Atualizar os dados do usuário
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.PhoneNumber = model.PhoneNumber;
+            user.Address = model.Address;
+
+            // Verificar se o email foi alterado
+            if (!string.Equals(user.Email, model.Email, StringComparison.OrdinalIgnoreCase))
+            {
+                user.Email = model.Email;
+                user.UserName = model.Email;
+
+                // Gerar novo token de confirmação, se necessário
+                var token = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+                var confirmationResult = await _userHelper.ConfirmEmailAsync(user, token);
+
+                if (!confirmationResult.Succeeded)
                 {
-                    _flashMessage.Warning("There was an error updating the mechanic");
-                    return View(model);
-                }
-
-                user.Address = model.Address;
-                user.PhoneNumber = model.PhoneNumber;
-                user.FirstName = model.FirstName;
-                user.LastName = model.LastName;
-                if (user.Email != model.Email)
-                {
-                    user.UserName = model.Email;
-                    user.Email = model.Email;
-                    var token = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
-                    await _userHelper.ConfirmEmailAsync(user, token);
-                }
-
-                var result = await _userHelper.UpdateUserAsync(user);
-
-                if (!result.Succeeded)
-                {
-                    _flashMessage.Warning("There was an error updating the mechanic user information.");
-                    return View(model);
-                }
-
-                var mechanic = await _converterHelper.ToMechanic(model, user, false);
-
-                if (mechanic == null)
-                {
-                    _flashMessage.Warning("There was an error updating the mechanic.");
-                    return View(model);
-                }
-
-                try
-                {
-                    await _mechanicRepository.UpdateAsync(mechanic);
-                    _flashMessage.Confirmation("Mechanic was sucessfully updated.");
-                    return RedirectToAction(nameof(Index));
-                }
-                catch (Exception ex)
-                {
-                    _flashMessage.Danger("There was an error updating the mechanic. " + ex.InnerException.Message);
+                    ModelState.AddModelError(string.Empty, "Error confirming the updated email.");
+                    ViewBag.Roles = _mechanicsRolesRepository.GetComboRoles();
+                    ViewBag.Specialities = _mechanicsRolesRepository.GetComboSpeciality(model.RoleId);
                     return View(model);
                 }
             }
 
-            return View(model);
+            // Atualizar o usuário no banco
+            var result = await _userHelper.UpdateUserAsync(user);
+            if (!result.Succeeded)
+            {
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+
+                // Recarregar dropdowns em caso de erro
+                ViewBag.Roles = _mechanicsRolesRepository.GetComboRoles();
+                ViewBag.Specialities = _mechanicsRolesRepository.GetComboSpeciality(model.RoleId);
+                return View(model);
+            }
+
+            // Atualizar os dados do mecânico
+            var mechanic = await _mechanicRepository.GetByIdAsync(model.MechanicId);
+            if (mechanic == null)
+            {
+                ModelState.AddModelError(string.Empty, "Mechanic not found.");
+                ViewBag.Roles = _mechanicsRolesRepository.GetComboRoles();
+                ViewBag.Specialities = _mechanicsRolesRepository.GetComboSpeciality(model.RoleId);
+                return View(model);
+            }
+
+            mechanic.FirstName = model.FirstName;
+            mechanic.LastName = model.LastName;
+            mechanic.Email = model.Email;
+            mechanic.Address = model.Address;
+            mechanic.PhoneNumber = model.PhoneNumber;
+            mechanic.RoleId = model.RoleId;
+            mechanic.SpecialityId = model.SpecialityId;
+            mechanic.Color = string.IsNullOrEmpty(model.Color) ? "#FFFFFF" : model.Color;
+            mechanic.PhotoId = model.PhotoId;
+
+            await _mechanicRepository.UpdateAsync(mechanic);
+
+            // Redirecionar para a lista após atualização
+            TempData["SuccessMessage"] = "Mechanic updated successfully!";
+            return RedirectToAction("Index");
         }
 
         public async Task<IActionResult> Delete(int? id)
@@ -564,13 +606,31 @@ namespace Garage88.Controllers
         {
             if (Id == 0)
             {
-                return null;
+                return Json(new { error = "Invalid mechanic ID." });
             }
 
             var mechanic = await _mechanicRepository.GetMechanicByIdAsync(Id);
 
-            var json = Json(mechanic);
-            return json;
+            if (mechanic == null)
+            {
+                return Json(new { error = "Mechanic not found." });
+            }
+
+            var mechanicDetails = new
+            {
+                fullName = mechanic.FullName,
+                email = mechanic.Email,
+                user = new
+                {
+                    address = mechanic.User?.Address,
+                    phoneNumber = mechanic.User?.PhoneNumber
+                },
+                role = new { name = mechanic.Role?.Name },
+                speciality = new { name = mechanic.Speciality?.Name },
+                about = mechanic.About
+            };
+
+            return Json(mechanicDetails);
         }
     }
 }

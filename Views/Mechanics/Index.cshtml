@@ -10,37 +10,46 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 
 <script type="text/javascript">
-
-    function showMechanicDetails(mechanicId) {
-        debugger;
-
+            function showMechanicDetails(mechanicId) {
         $.ajax({
-            url: '@Url.Action("MechanicDetails", "Mechanics")',
-                      type: 'POST',
-                      dataType: 'json',
-                      data: {Id: mechanicId},
-                      success: function(mechanicData) {
-                          console.log(mechanicData);
+            url: '/Mechanics/MechanicDetails',
+            type: 'POST',
+            dataType: 'json',
+            data: { Id: mechanicId },
+            success: function (response) {
+                if (response.error) {
+                    alert(response.error);
+                    return;
+                }
 
-                          var dialog = document.getElementById("dialog").ej2_instances[0];
-                          dialog.header = mechanicData.fullName + " Details";
+                // Acessando a instância do diálogo
+                var dialog = document.getElementById("dialog").ej2_instances[0];
 
-                          dialog.content = "<b>Full Name: </b>" + mechanicData.fullName + "<br/>" +
-                              "<b>Email: </b>" + mechanicData.email + "<br/>" +
-                              "<b>Address: </b>" + mechanicData.user.address + "<br/>" +
-                              "<b>Phone Number: </b>" + mechanicData.user.phoneNumber + "<br/>" +
-                              "<b>Speciality: </b>" + mechanicData.role.name + " - " + mechanicData.speciality.name + "<br/>" +
-                              "<b>About: </b>" + mechanicData.about + "<br/>";
+                // Verificando se o diálogo foi encontrado
+                if (dialog) {
+                    // Atualizando o título e o conteúdo do diálogo
+                    dialog.header = `${response.fullName} Details`;
+                    dialog.content = `
+                        <b>Full Name:</b> ${response.fullName || 'N/A'}<br/>
+                        <b>Email:</b> ${response.email || 'N/A'}<br/>
+                        <b>Address:</b> ${response.user?.address || 'N/A'}<br/>
+                        <b>Phone Number:</b> ${response.user?.phoneNumber || 'N/A'}<br/>
+                        <b>Speciality:</b> ${response.role?.name || 'N/A'} - ${response.speciality?.name || 'N/A'}<br/>
+                        <b>About:</b> ${response.about || 'N/A'}<br/>
+                    `;
 
-                          dialog.show();
-                      },
-                      error: function(ex)
-                      {
-                          console.log("failed " + ex.message);
-                      }
+                    // Exibindo o diálogo
+                    dialog.show();
+                } else {
+                    console.error("Dialog instance not found");
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error fetching mechanic details:", error);
+                alert("An error occurred while fetching mechanic details.");
+            }
         });
     }
-
 </script>
 
 <div class="container-fluid" style="max-width:90%">
@@ -94,16 +103,13 @@
                         </td>
                     </tr>
                 }
-
             </tbody>
         </table>
     </div>
 
-    <div id='container' style="height:auto">
-
+    <div id="container" style="height:auto">
         <ejs-dialog id='dialog' visible="false" isModal="true" width="550px" showCloseIcon="true" allowDragging="false" overlayClick="onOverlayClick" target="#container">
             <e-dialog-animationsettings effect="Fade" duration="400" delay="0"></e-dialog-animationsettings>
-
         </ejs-dialog>
     </div>
 
