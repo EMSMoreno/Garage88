@@ -55,9 +55,12 @@
         </table>
     </div>
 
-    <a asp-action="Create" class="btn btn-primary" style="margin-top:50px;width:100%">
-        <i class="fa fa-user"></i> Add Client
-    </a>
+    @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Admin"))
+    {
+        <a asp-action="Create" class="btn btn-primary" style="margin-top:50px;width:100%">
+            <i class="fa fa-user"></i> Add Client
+        </a>
+    }
 
     <footer class="footer" style="position:Absolute; bottom:65px;font-size:14px">
         <table>
@@ -80,7 +83,6 @@
             </tr>
         </table>
     </footer>
-
 </div>
 
 @section Scripts {

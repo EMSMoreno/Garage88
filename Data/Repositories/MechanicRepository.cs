@@ -84,5 +84,11 @@ namespace Garage88.Data.Repositories
             return list;
         }
 
+        public async Task AddMechanicAsync(Mechanic mechanic)
+        {
+            await _context.Mechanics.AddAsync(mechanic);
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

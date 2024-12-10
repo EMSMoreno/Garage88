@@ -70,23 +70,29 @@ namespace Garage88.Data.Repositories
 
         public IEnumerable<SelectListItem> GetComboSpeciality(int roleId)
         {
-            var role = _context.MechanicsRoles.Find(roleId);
+            // Busca o Role com as especialidades relacionadas
+            var role = _context.MechanicsRoles.Include(r => r.Specialities)
+                                              .FirstOrDefault(r => r.Id == roleId);
+
+            // Lista para armazenar os itens
             var list = new List<SelectListItem>();
 
-            if (role != null)
+            if (role != null && role.Specialities.Any())
             {
-                list = _context.Specialities.Select(s => new SelectListItem
+                // Preenche a lista com as especialidades associadas ao Role
+                list = role.Specialities.Select(s => new SelectListItem
                 {
                     Text = s.Name,
                     Value = s.Id.ToString()
                 }).OrderBy(l => l.Text).ToList();
-
-                list.Insert(0, new SelectListItem
-                {
-                    Text = "[Select a speciality]",
-                    Value = "0"
-                });
             }
+
+            // Adiciona a opção inicial
+            list.Insert(0, new SelectListItem
+            {
+                Text = "[Select a Speciality]",
+                Value = "0"
+            });
 
             return list;
         }

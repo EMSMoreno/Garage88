@@ -40,11 +40,13 @@ namespace Garage88.Controllers
             return View(clients);
         }
 
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateClientViewModel model)
@@ -154,6 +156,7 @@ namespace Garage88.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -182,6 +185,7 @@ namespace Garage88.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(EditClientViewModel model)
@@ -255,7 +259,7 @@ namespace Garage88.Controllers
 
             return View(client);
         }
-
+        
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {

@@ -86,115 +86,115 @@ namespace Garage88.Controllers
             return View(model);
         }
 
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public IActionResult ExternalLogin(string provider, string returnurl = null)
-        {
-            var redirect = Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnurl });
-            var properties = _userHelper.ConfigureExternalAuthenticationProperties(provider, redirect);
-            return Challenge(properties, provider);
-        }
+        //[HttpPost]
+        //[AllowAnonymous]
+        //[ValidateAntiForgeryToken]
+        //public IActionResult ExternalLogin(string provider, string returnurl = null)
+        //{
+        //    var redirect = Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnurl });
+        //    var properties = _userHelper.ConfigureExternalAuthenticationProperties(provider, redirect);
+        //    return Challenge(properties, provider);
+        //}
 
-        [HttpGet]
-        public async Task<IActionResult> ExternalLoginCallback(string returnurl = null, string remoteError = null)
-        {
-            if (remoteError != null)
-            {
-                ModelState.AddModelError(string.Empty, "Error from external provider");
-                return View("Login");
-            }
+        //[HttpGet]
+        //public async Task<IActionResult> ExternalLoginCallback(string returnurl = null, string remoteError = null)
+        //{
+        //    if (remoteError != null)
+        //    {
+        //        ModelState.AddModelError(string.Empty, "Error from external provider");
+        //        return View("Login");
+        //    }
 
-            var info = await _userHelper.GetExternalLoginInfoAsync();
+        //    var info = await _userHelper.GetExternalLoginInfoAsync();
 
-            if (info == null)
-            {
-                return RedirectToAction("Login");
-            }
+        //    if (info == null)
+        //    {
+        //        return RedirectToAction("Login");
+        //    }
 
-            var result = await _userHelper.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+        //    var result = await _userHelper.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
 
-            if (result.Succeeded)
-            {
-                await _userHelper.UpdateExternalAuthenticationTokensAsync(info);
-                if (returnurl != null)
-                {
-                    return LocalRedirect(returnurl);
-                }
-                else return RedirectToAction("Index", "Home");
-            }
-            else
-            {
-                ViewData["ReturnUrl"] = returnurl;
-                ViewData["ProvierDisplayName"] = info.ProviderDisplayName;
-                var email = info.Principal.FindFirstValue(ClaimTypes.Email);
-                return View("ExternalLoginConfirmation", new ExternalLoginViewModel { Email = email });
-            }
-        }
+        //    if (result.Succeeded)
+        //    {
+        //        await _userHelper.UpdateExternalAuthenticationTokensAsync(info);
+        //        if (returnurl != null)
+        //        {
+        //            return LocalRedirect(returnurl);
+        //        }
+        //        else return RedirectToAction("Index", "Home");
+        //    }
+        //    else
+        //    {
+        //        ViewData["ReturnUrl"] = returnurl;
+        //        ViewData["ProvierDisplayName"] = info.ProviderDisplayName;
+        //        var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+        //        return View("ExternalLoginConfirmation", new ExternalLoginViewModel { Email = email });
+        //    }
+        //}
 
-        [HttpPost]
-        [AllowAnonymous]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginViewModel model, string? returnurl = null)
-        {
-            returnurl = returnurl ?? Url.Content("~/");
+        //[HttpPost]
+        //[AllowAnonymous]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> ExternalLoginConfirmation(ExternalLoginViewModel model, string? returnurl = null)
+        //{
+        //    returnurl = returnurl ?? Url.Content("~/");
 
-            if (ModelState.IsValid)
-            {
-                var info = await _userHelper.GetExternalLoginInfoAsync();
-                if (info == null)
-                {
-                    return View("Error");
-                }
-                var user = new User
-                {
-                    Email = model.Email,
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    UserName = model.Email,
-                };
+        //    if (ModelState.IsValid)
+        //    {
+        //        var info = await _userHelper.GetExternalLoginInfoAsync();
+        //        if (info == null)
+        //        {
+        //            return View("Error");
+        //        }
+        //        var user = new User
+        //        {
+        //            Email = model.Email,
+        //            FirstName = model.FirstName,
+        //            LastName = model.LastName,
+        //            UserName = model.Email,
+        //        };
 
-                var result = await _userHelper.CreateAsync(user);
+        //        var result = await _userHelper.CreateAsync(user);
 
-                if (result.Succeeded)
-                {
-                    var client = new Client
-                    {
-                        FirstName = model.FirstName,
-                        LastName = model.LastName,
-                        Email = model.Email,
-                        User = user
-                    };
+        //        if (result.Succeeded)
+        //        {
+        //            var client = new Client
+        //            {
+        //                FirstName = model.FirstName,
+        //                LastName = model.LastName,
+        //                Email = model.Email,
+        //                User = user
+        //            };
 
-                    await _clientRepository.CreateAsync(client);
+        //            await _clientRepository.CreateAsync(client);
 
-                    result = await _userHelper.AddUserToRoleAsync(user, "Client");
+        //            result = await _userHelper.AddUserToRoleAsync(user, "Client");
 
-                    if (!result.Succeeded)
-                    {
-                        ModelState.AddModelError(string.Empty, "The user couldn't be created, failed to assign as client");
-                        return View(model);
-                    }
+        //            if (!result.Succeeded)
+        //            {
+        //                ModelState.AddModelError(string.Empty, "The user couldn't be created, failed to assign as client");
+        //                return View(model);
+        //            }
 
-                    var token = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
-                    await _userHelper.ConfirmEmailAsync(user, token);
-                    await _userHelper.UpdateUserAsync(user);
+        //            var token = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+        //            await _userHelper.ConfirmEmailAsync(user, token);
+        //            await _userHelper.UpdateUserAsync(user);
 
-                    var loginResult = await _userHelper.AddLoginAsync(user, info);
+        //            var loginResult = await _userHelper.AddLoginAsync(user, info);
 
-                    if (loginResult.Succeeded)
-                    {
-                        await _userHelper.SignInAsync(user, isPersistent: false);
-                        await _userHelper.UpdateExternalAuthenticationTokensAsync(info);
-                        return LocalRedirect(returnurl);
-                    }
-                }
-                ModelState.AddModelError("Email", "User already exists");
-            }
+        //            if (loginResult.Succeeded)
+        //            {
+        //                await _userHelper.SignInAsync(user, isPersistent: false);
+        //                await _userHelper.UpdateExternalAuthenticationTokensAsync(info);
+        //                return LocalRedirect(returnurl);
+        //            }
+        //        }
+        //        ModelState.AddModelError("Email", "User already exists");
+        //    }
 
-            ViewData["ReturnUrl"] = returnurl;
-            return View(model);
-        }
+        //    ViewData["ReturnUrl"] = returnurl;
+        //    return View(model);
+        //}
 
         public async Task<IActionResult> Logout()
         {

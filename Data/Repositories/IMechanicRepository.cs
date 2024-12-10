@@ -18,5 +18,6 @@ namespace Garage88.Data.Repositories
 
         Task<List<Mechanic>> GetTechniciansMechanicsAsync();
 
+        Task AddMechanicAsync(Mechanic mechanic);
     }
 }

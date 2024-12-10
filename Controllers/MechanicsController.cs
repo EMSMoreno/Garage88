@@ -5,6 +5,7 @@ using Garage88.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Syncfusion.EJ2.Linq;
 using System.Data;
 using Vereyon.Web;
@@ -353,10 +354,12 @@ namespace Garage88.Controllers
         {
             var model = new MechanicViewModel
             {
-                Roles = _mechanicsRolesRepository.GetComboRoles(),
-                Specialities = _mechanicsRolesRepository.GetComboSpeciality(0)
+                User = new User(),
+                UserId = string.Empty
             };
 
+            ViewBag.Roles = _mechanicsRolesRepository.GetComboRoles();
+            ViewBag.Specialities = _mechanicsRolesRepository.GetComboSpeciality(0);
             return View(model);
         }
 
@@ -365,7 +368,8 @@ namespace Garage88.Controllers
         {
             if (ModelState.IsValid)
             {
-                var newUser = new User
+                // Step 1: Create the User
+                var user = new User
                 {
                     FirstName = model.FirstName,
                     LastName = model.LastName,
@@ -373,56 +377,65 @@ namespace Garage88.Controllers
                     UserName = model.Email,
                     PhoneNumber = model.PhoneNumber,
                     Address = model.Address,
-                    ProfilePicture = new Guid(),
                 };
 
-                var result = await _userHelper.AddUserAsync(newUser, "DefaultPassword123");
+                // Generate a default password
+                string defaultPassword = "TemporaryPassword123!";
 
+                // Step 2: Create the user and save to the database
+                var result = await _userHelper.AddUserAsync(user, defaultPassword);
+
+                // Check if the user creation failed and log the errors
                 if (!result.Succeeded)
                 {
-                    _flashMessage.Danger("There was an error creating the mechanic user data.");
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+
+                    // Repopulate dropdowns if the user creation fails
+                    model.Roles = new SelectList(_mechanicsRolesRepository.GetRolesWithSpecialities(), "Id", "Name", model.RoleId);
+                    model.Specialities = new SelectList(_mechanicsRolesRepository.GetRolesWithSpecialities(), "Id", "Name", model.SpecialityId);
+
                     return View(model);
                 }
 
-                var mechanic = await _converterHelper.ToMechanic(model, newUser, true);
-
-                if (mechanic == null)
+                // Ensure that the user is created and the user.Id is set
+                if (user.Id == null)
                 {
-                    _flashMessage.Danger("There was an error creating the mechanic.");
+                    ModelState.AddModelError(string.Empty, "Failed to create the user.");
                     return View(model);
                 }
 
-                result = await _userHelper.AddUserToRoleAsync(newUser, mechanic.Role.PermissionsName);
-
-                if (!result.Succeeded)
+                // Step 3: Create the Mechanic and associate with the UserId
+                var mechanic = new Mechanic
                 {
-                    _flashMessage.Danger("There was an error adding the user to the required permission level.");
-                    return View(model);
-                }
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Email = model.Email,
+                    About = model.About,
+                    Address = model.Address,
+                    PhoneNumber = model.PhoneNumber,
+                    UserId = user.Id,
+                    RoleId = model.RoleId,
+                    SpecialityId = model.SpecialityId,
+                    Color = string.IsNullOrEmpty(model.Color) ? "#FFFFFF" : model.Color,
+                    PhotoId = model.PhotoId
+                };
 
-                var userToken = await _userHelper.GenerateEmailConfirmationTokenAsync(newUser);
-                string tokenLink = Url.Action("ConfirmEmail", "Account", new
-                {
-                    userId = newUser.Id,
-                    token = userToken
-                }, protocol: HttpContext.Request.Scheme);
+                // Step 4: Save Mechanic in the database
+                await _mechanicRepository.AddMechanicAsync(mechanic); // Ensure this is an async method
 
-                Response isSent = await _mailHelper.SendEmail(model.Email, "Welcome to Garage88", $"<h1>Email Confirmation</h1>" +
-                   $"Welcome to Garage88!</br></br>First of all congratulations! You are now a new mechanic! </br>" +
-                   $"To allow you to access the website and the management system, " +
-                   $"please click in the following link:<a href= \"{tokenLink}\"> Confirm Email </a>", null);
+                // Optionally, assign a role to the User (if not already done in the creation step)
+                await _userHelper.AddUserToRoleAsync(user, "Mechanic");
 
-                if (isSent.IsSuccess)
-                {
-                    _flashMessage.Confirmation("mechanic was created with success! Please allow mechanic to know that he needs to confirm the email address!");
-                    return RedirectToAction(nameof(Index));
-                }
-                else
-                {
-                    _flashMessage.Warning("There was an error sending the confirmation email. But the mechanic has been created. Ask System manager to validate the email address or Delete the mechanic and try adding him later.");
-                    return View(model);
-                }
+                // Step 5: Redirect to the Index or another view
+                return RedirectToAction("Index");
             }
+
+            // Repopulate the roles and specialities dropdowns if validation fails
+            model.Roles = new SelectList(_mechanicsRolesRepository.GetRolesWithSpecialities(), "Id", "Name", model.RoleId);
+            model.Specialities = new SelectList(_mechanicsRolesRepository.GetRolesWithSpecialities(), "Id", "Name", model.SpecialityId);
 
             return View(model);
         }
@@ -456,7 +469,7 @@ namespace Garage88.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userHelper.GetUserByIdAsync(model.UserId);
+                var user = await _userHelper.GetUserByIdAsync(model.UserId.ToString());
 
                 if (user == null)
                 {
@@ -535,12 +548,14 @@ namespace Garage88.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpPost]
-        [Route("Mechanics/GetSpecialtiesAsync")]
-        public async Task<JsonResult> GetSpecialitiesAsync(int roleId)
+        [HttpGet]
+        public IActionResult GetSpecialities(int roleId)
         {
-            var role = await _mechanicsRolesRepository.GetRoleWithSpecialitiesAsync(roleId);
-            return Json(role.Specialities.OrderBy(s => s.Name));
+            var specialities = _mechanicsRolesRepository.GetComboSpeciality(roleId)
+                               .Where(s => s.Value != "0")
+                               .ToList();
+
+            return Json(specialities);
         }
 
         [HttpPost]

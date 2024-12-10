@@ -22,8 +22,16 @@ namespace Garage88.Data.Entities
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
 
+        public string PhoneNumber { get; set; }
+
+        public string Address { get; set; }
+
+        public int SpecialityId { get; set; }
+
         [Required(ErrorMessage = "Must insert the {0}.")]
         public Speciality Speciality { get; set; }
+
+        public int RoleId { get; set; }
 
         [Required(ErrorMessage = "Must insert the {0}.")]
         public Role Role { get; set; }
@@ -34,6 +42,8 @@ namespace Garage88.Data.Entities
         public Guid PhotoId { get; set; }
 
         public string FullName => $"{FirstName} {LastName}";
+
+        public string UserId { get; set; }
 
         public User User { get; set; }
 

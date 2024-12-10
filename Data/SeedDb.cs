@@ -4,6 +4,7 @@ using Garage88.Data;
 using Garage88.Data.Entities;
 using Microsoft.CodeAnalysis;
 using Microsoft.AspNetCore.Identity;
+using Syncfusion.EJ2.FileManager;
 
 namespace Garage88.Data
 {
@@ -11,11 +12,13 @@ namespace Garage88.Data
     {
         private readonly DataContext _context;
         private readonly IUserHelper _userHelper;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public SeedDb(DataContext context, IUserHelper userHelper)
+        public SeedDb(DataContext context, IUserHelper userHelper, RoleManager<IdentityRole> roleManager)
         {
             _context = context;
             _userHelper = userHelper;
+            _roleManager = roleManager;
         }
 
         public async Task SeedAsync()
@@ -24,6 +27,7 @@ namespace Garage88.Data
 
             await CheckCreatedRoles();
             await AddUserAsync();
+            await AddIdentityRolesAsync();
             await AddMechanicsRolesAsync();
             await AddMechanicsAsync();
             await AddBrandsAsync();
@@ -387,6 +391,19 @@ namespace Garage88.Data
             }
         }
 
+        private async Task AddIdentityRolesAsync()
+        {
+            var roles = new List<string> { "ADMIN", "CLIENT", "MECHANIC" };
+
+            foreach (var role in roles)
+            {
+                if (!await _roleManager.RoleExistsAsync(role))
+                {
+                    await _roleManager.CreateAsync(new IdentityRole { Name = role, NormalizedName = role.ToUpper() });
+                }
+            }
+        }
+
         private async Task AddMechanicsRolesAsync()
         {
             if (!_context.MechanicsRoles.Any())
@@ -573,7 +590,6 @@ namespace Garage88.Data
 
             }
         }
-
 
     }
 }
